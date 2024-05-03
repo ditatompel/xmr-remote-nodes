@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@tailwind variants;
+
+html,
+body {
+	@apply h-full;
+}
+
+.dashboard-card {
+	@apply bg-surface-50-900-token rounded-lg border-2 border-dashed border-gray-200 p-4 dark:border-gray-700;
+}

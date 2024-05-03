@@ -1,0 +1,120 @@
+<script>
+	import { DataHandler } from '@vincjo/datatables/remote';
+	import { format, formatDistance } from 'date-fns';
+	import { loadData } from './api-handler';
+	import { onMount, onDestroy } from 'svelte';
+	import { DtSrThSort, DtSrThFilter, DtSrRowCount } from '$lib/components/datatables/server';
+
+	const handler = new DataHandler([], { rowsPerPage: 10, totalRows: 0 });
+	let rows = handler.getRows();
+
+	const reloadData = () => {
+		handler.invalidate();
+	};
+
+	/** @type {number | undefined} */
+	let intervalId;
+	let intervalValue = 0;
+
+	const intervalOptions = [
+		{ value: 0, label: 'No' },
+		{ value: 5, label: '5s' },
+		{ value: 10, label: '10s' },
+		{ value: 30, label: '30s' },
+		{ value: 60, label: '1m' }
+	];
+
+	const startInterval = () => {
+		const seconds = intervalValue;
+		if (isNaN(seconds) || seconds < 0) {
+			return;
+		}
+
+		if (!intervalOptions.some((option) => option.value === seconds)) {
+			return;
+		}
+
+		if (intervalId) {
+			clearInterval(intervalId);
+		}
+
+		if (seconds > 0) {
+			reloadData();
+			intervalId = setInterval(() => {
+				reloadData();
+			}, seconds * 1000);
+		}
+	};
+
+	$: startInterval(); // Automatically start the interval on change
+
+	onDestroy(() => {
+		clearInterval(intervalId); // Clear the interval when the component is destroyed
+	});
+	onMount(() => {
+		handler.onChange((state) => loadData(state));
+		handler.invalidate();
+	});
+</script>
+
+<div class="mb-4">
+	<h1 class="h2 font-extrabold dark:text-white">Prober</h1>
+	<a class="variant-filled-success btn btn-sm mb-4" href="/app/prober/add">Add Prober</a>
+</div>
+
+<div class="dashboard-card">
+	<div class="flex justify-between">
+		<div class="invisible flex place-items-center md:visible">
+			<label for="autoRefreshInterval">Auto Refresh:</label>
+			<select
+				class="select ml-2"
+				id="autoRefreshInterval"
+				bind:value={intervalValue}
+				on:change={startInterval}
+			>
+				{#each intervalOptions as { value, label }}
+					<option {value}>{label}</option>
+				{/each}
+			</select>
+		</div>
+		<div class="flex place-items-center">
+			<button id="reloadDt" name="reloadDt" class="variant-filled-primary btn" on:click={reloadData}
+				>Reload</button
+			>
+		</div>
+	</div>
+
+	<div class="my-2 overflow-x-auto">
+		<table class="table table-hover table-compact w-full table-auto">
+			<thead>
+				<tr>
+					<DtSrThSort {handler} orderBy="id">ID</DtSrThSort>
+					<th>Name</th>
+					<th>API Key</th>
+					<DtSrThSort {handler} orderBy="last_submit_ts">Last Submit</DtSrThSort>
+				</tr>
+				<tr>
+					<DtSrThFilter {handler} filterBy="name" placeholder="Name" colspan={2} />
+					<DtSrThFilter {handler} filterBy="api_key" placeholder="API Key" colspan={2} />
+				</tr>
+			</thead>
+			<tbody>
+				{#each $rows as row (row.id)}
+					<tr>
+						<td>{row.id}</td>
+						<td>{row.name}</td>
+						<td>{row.api_key}</td>
+						<td>
+							{format(row.last_submit_ts * 1000, 'PP HH:mm')}<br />
+							{formatDistance(row.last_submit_ts * 1000, new Date(), { addSuffix: true })}
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+
+	<div class="flex justify-between mb-2">
+		<DtSrRowCount {handler} />
+	</div>
+</div>
