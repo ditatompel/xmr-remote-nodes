@@ -65,10 +65,10 @@
 
 <div class="mb-4">
 	<h1 class="h2 font-extrabold dark:text-white">Prober</h1>
-	<a class="variant-filled-success btn btn-sm mb-4" href="/app/prober/add">Add Prober</a>
 </div>
 
 <div class="dashboard-card">
+	<a class="variant-filled-success btn btn-sm mb-4" href="/app/prober/add">Add Prober</a>
 	<div class="flex justify-between">
 		<DtSrRowsPerPage {handler} />
 		<div class="invisible flex place-items-center md:visible">
