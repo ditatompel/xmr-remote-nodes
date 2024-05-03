@@ -3,7 +3,13 @@
 	import { format, formatDistance } from 'date-fns';
 	import { loadData } from './api-handler';
 	import { onMount, onDestroy } from 'svelte';
-	import { DtSrThSort, DtSrThFilter, DtSrRowCount } from '$lib/components/datatables/server';
+	import {
+		DtSrRowsPerPage,
+		DtSrThSort,
+		DtSrThFilter,
+		DtSrRowCount,
+		DtSrPagination
+	} from '$lib/components/datatables/server';
 
 	const handler = new DataHandler([], { rowsPerPage: 10, totalRows: 0 });
 	let rows = handler.getRows();
@@ -64,6 +70,7 @@
 
 <div class="dashboard-card">
 	<div class="flex justify-between">
+		<DtSrRowsPerPage {handler} />
 		<div class="invisible flex place-items-center md:visible">
 			<label for="autoRefreshInterval">Auto Refresh:</label>
 			<select
@@ -116,5 +123,6 @@
 
 	<div class="flex justify-between mb-2">
 		<DtSrRowCount {handler} />
+		<DtSrPagination {handler} />
 	</div>
 </div>
