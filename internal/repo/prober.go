@@ -2,6 +2,7 @@ package repo
 
 import (
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/ditatompel/xmr-nodes/internal/database"
@@ -26,10 +27,13 @@ type Prober struct {
 }
 
 type ProbersQueryParams struct {
-	Name        string
-	ApiKey      string
-	RowsPerPage int
-	Page        int
+	Name   string
+	ApiKey string
+
+	RowsPerPage   int
+	Page          int
+	SortBy        string
+	SortDirection string
 }
 
 type Probers struct {
@@ -80,7 +84,17 @@ func (repo *ProberRepo) Probers(q ProbersQueryParams) (Probers, error) {
 	}
 	queryParams = append(queryParams, q.RowsPerPage, (q.Page-1)*q.RowsPerPage)
 
-	query := fmt.Sprintf("SELECT id, name, api_key, last_submit_ts FROM tbl_prober %s ORDER BY id DESC LIMIT ? OFFSET ?", where)
+	allowedSort := []string{"id", "last_submit_ts"}
+	sortBy := "id"
+	if slices.Contains(allowedSort, q.SortBy) {
+		sortBy = q.SortBy
+	}
+	sortDirection := "DESC"
+	if q.SortDirection == "asc" {
+		sortDirection = "ASC"
+	}
+
+	query := fmt.Sprintf("SELECT id, name, api_key, last_submit_ts FROM tbl_prober %s ORDER BY %s %s LIMIT ? OFFSET ?", where, sortBy, sortDirection)
 
 	row, err := repo.db.Query(query, queryParams...)
 	if err != nil {

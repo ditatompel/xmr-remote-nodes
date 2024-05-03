@@ -12,7 +12,7 @@ const getParams = ({ pageNumber, rowsPerPage, sort, filters }) => {
 	let params = `page=${pageNumber}&limit=${rowsPerPage}`;
 
 	if (sort) {
-		params += `&orderBy=${sort.orderBy}&orderDir=${sort.direction}`;
+		params += `&sort_by=${sort.orderBy}&sort_direction=${sort.direction}`;
 	}
 	if (filters) {
 		params += filters.map(({ filterBy, value }) => `&${filterBy}=${value}`).join('');

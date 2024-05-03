@@ -90,10 +90,12 @@ func Prober(c *fiber.Ctx) error {
 	}
 
 	query := repo.ProbersQueryParams{
-		RowsPerPage: c.QueryInt("limit", 10),
-		Page:        c.QueryInt("page", 1),
-		Name:        c.Query("name"),
-		ApiKey:      c.Query("api_key"),
+		RowsPerPage:   c.QueryInt("limit", 10),
+		Page:          c.QueryInt("page", 1),
+		SortBy:        c.Query("sort_by", "id"),
+		SortDirection: c.Query("sort_direction", "desc"),
+		Name:          c.Query("name"),
+		ApiKey:        c.Query("api_key"),
 	}
 
 	prober, err := proberRepo.Probers(query)
