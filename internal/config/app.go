@@ -6,6 +6,7 @@ import (
 )
 
 type App struct {
+	// configuration for server
 	Debug       bool
 	Prefork     bool
 	Host        string
@@ -14,6 +15,11 @@ type App struct {
 	AllowOrigin string
 	SecretKey   string
 	LogLevel    string
+	// configuration for prober (client)
+	ServerEndpoint string
+	ApiKey         string
+	AcceptTor      bool
+	TorSocks       string
 }
 
 var app = &App{}
@@ -22,8 +28,9 @@ func AppCfg() *App {
 	return app
 }
 
-// LoadApp loads App configuration
+// loads App configuration
 func LoadApp() {
+	// server configuration
 	app.Host = os.Getenv("APP_HOST")
 	app.Port, _ = strconv.Atoi(os.Getenv("APP_PORT"))
 	app.Debug, _ = strconv.ParseBool(os.Getenv("APP_DEBUG"))
@@ -38,4 +45,9 @@ func LoadApp() {
 	if app.Debug {
 		app.LogLevel = "DEBUG"
 	}
+	// prober configuration
+	app.ServerEndpoint = os.Getenv("SERVER_ENDPOINT")
+	app.ApiKey = os.Getenv("API_KEY")
+	app.AcceptTor, _ = strconv.ParseBool(os.Getenv("ACCEPT_TOR"))
+	app.TorSocks = os.Getenv("TOR_SOCKS")
 }

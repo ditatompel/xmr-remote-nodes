@@ -10,6 +10,7 @@ require (
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/spf13/cobra v1.8.0
+	golang.org/x/net v0.21.0
 	golang.org/x/term v0.19.0
 )
 
