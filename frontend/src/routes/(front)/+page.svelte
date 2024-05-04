@@ -147,7 +147,7 @@
 	<div class="section-container text-token grid grid-cols-1 gap-2 md:grid-cols-3">
 		<a
 			class="card {currentVariant} card-hover overflow-hidden py-2 text-center"
-			href="?remote-node"
+			href="/remote-nodes"
 		>
 			<h2 class="h2 font-bold">Remote Nodes</h2>
 			<div class="space-y-4 p-4">
@@ -159,7 +159,7 @@
 			</div>
 		</a>
 
-		<a class="card {currentVariant} card-hover overflow-hidden py-2 text-center" href="?add-node">
+		<a class="card {currentVariant} card-hover overflow-hidden py-2 text-center" href="/add-node">
 			<h2 class="h2 font-bold">Add Node</h2>
 			<div class="space-y-4 p-4">
 				<p>
