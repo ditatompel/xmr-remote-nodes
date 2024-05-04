@@ -162,6 +162,8 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 		return node, err
 	}
 
+	fmt.Println(string(body))
+
 	reportNode := struct {
 		repo.MoneroNode `json:"result"`
 	}{}
@@ -170,12 +172,16 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 		// TODO: Post report to server
 		return node, err
 	}
-	node.IsAvailable = true
+	if reportNode.Status == "OK" {
+		node.IsAvailable = true
+	}
 	node.NetType = reportNode.NetType
 	node.AdjustedTime = reportNode.AdjustedTime
 	node.DatabaseSize = reportNode.DatabaseSize
 	node.Difficulty = reportNode.Difficulty
-	node.NodeVersion = reportNode.NodeVersion
+	node.Version = reportNode.Version
+
+	fmt.Println(prettyPrint(reportNode))
 
 	if resp.Header.Get("Access-Control-Allow-Origin") == "*" || resp.Header.Get("Access-Control-Allow-Origin") == "https://xmr.ditatompel.com" {
 		node.CorsCapable = true

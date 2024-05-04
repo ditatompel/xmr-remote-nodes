@@ -37,11 +37,12 @@ type MoneroNode struct {
 	IsTor           bool           `json:"is_tor" db:"is_tor"`
 	IsAvailable     bool           `json:"is_available" db:"is_available"`
 	NetType         string         `json:"nettype" db:"nettype"`
-	LastHeight      uint           `json:"last_height" db:"last_height"`
+	Height          uint           `json:"height" db:"height"`
 	AdjustedTime    uint           `json:"adjusted_time" db:"adjusted_time"`
 	DatabaseSize    uint           `json:"database_size" db:"database_size"`
 	Difficulty      uint           `json:"difficulty" db:"difficulty"`
-	NodeVersion     string         `json:"node_version" db:"node_version"`
+	Version         string         `json:"version" db:"version"`
+	Status          string         `json:"status,omitempty"`
 	Uptime          float32        `json:"uptime" db:"uptime"`
 	EstimateFee     uint           `json:"estimate_fee" db:"estimate_fee"`
 	Asn             uint           `json:"asn" db:"asn"`
@@ -109,7 +110,7 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 		sortDirection = "ASC"
 	}
 
-	query := fmt.Sprintf("SELECT id, protocol, hostname, port, is_tor, is_available, nettype, last_height, adjusted_time, database_size, difficulty, node_version, uptime, estimate_fee, ip_addr, asn, asn_name, country, country_name, city, lat, lon, date_entered, last_checked, last_check_status, cors_capable FROM tbl_node %s ORDER BY %s %s LIMIT ? OFFSET ?", where, sortBy, sortDirection)
+	query := fmt.Sprintf("SELECT id, protocol, hostname, port, is_tor, is_available, nettype, height, adjusted_time, database_size, difficulty, version, uptime, estimate_fee, ip_addr, asn, asn_name, country, country_name, city, lat, lon, date_entered, last_checked, last_check_status, cors_capable FROM tbl_node %s ORDER BY %s %s LIMIT ? OFFSET ?", where, sortBy, sortDirection)
 
 	row, err := repo.db.Query(query, queryParams...)
 	if err != nil {
@@ -123,7 +124,7 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 
 	for row.Next() {
 		node := MoneroNode{}
-		err = row.Scan(&node.Id, &node.Protocol, &node.Hostname, &node.Port, &node.IsTor, &node.IsAvailable, &node.NetType, &node.LastHeight, &node.AdjustedTime, &node.DatabaseSize, &node.Difficulty, &node.NodeVersion, &node.Uptime, &node.EstimateFee, &node.Ip, &node.Asn, &node.AsnName, &node.CountryName, &node.CountryCode, &node.City, &node.Lat, &node.Lon, &node.DateEntered, &node.LastChecked, &node.LastCheckStatus, &node.CorsCapable)
+		err = row.Scan(&node.Id, &node.Protocol, &node.Hostname, &node.Port, &node.IsTor, &node.IsAvailable, &node.NetType, &node.Height, &node.AdjustedTime, &node.DatabaseSize, &node.Difficulty, &node.Version, &node.Uptime, &node.EstimateFee, &node.Ip, &node.Asn, &node.AsnName, &node.CountryName, &node.CountryCode, &node.City, &node.Lat, &node.Lon, &node.DateEntered, &node.LastChecked, &node.LastCheckStatus, &node.CorsCapable)
 		if err != nil {
 			return nodes, err
 		}

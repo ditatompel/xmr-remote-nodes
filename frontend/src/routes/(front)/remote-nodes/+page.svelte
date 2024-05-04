@@ -256,7 +256,7 @@
 									port={row.port}
 								/></td
 							>
-							<td><NetTypeCell nettype={row.nettype} height={row.last_height} /></td>
+							<td><NetTypeCell nettype={row.nettype} height={row.height} /></td>
 							<td><ProtocolCell protocol={row.protocol} cors={row.cors} /></td>
 							<td
 								><CountryCellWithAsn
