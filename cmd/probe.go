@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net"
@@ -21,7 +22,8 @@ import (
 const RPCUserAgent = "ditatombot/0.0.1 (Monero RPC Monitoring; Contact: ditatombot@ditatompel.com)"
 
 type proberClient struct {
-	config *config.App
+	config  *config.App
+	message string
 }
 
 func newProber(cfg *config.App) *proberClient {
@@ -146,19 +148,22 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 
 	resp, err := client.Do(req)
 	if err != nil {
-		// TODO: Post report to server
+		p.message = err.Error()
+		p.reportResult(node, time.Since(startTime).Seconds())
 		return node, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		// TODO: Post report to server
-		return node, fmt.Errorf("status code: %d", resp.StatusCode)
+		p.message = fmt.Sprintf("status code: %d", resp.StatusCode)
+		p.reportResult(node, time.Since(startTime).Seconds())
+		return node, errors.New(p.message)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		// TODO: Post report to server
+		p.message = err.Error()
+		p.reportResult(node, time.Since(startTime).Seconds())
 		return node, err
 	}
 
@@ -167,7 +172,8 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 	}{}
 
 	if err := json.Unmarshal(body, &reportNode); err != nil {
-		// TODO: Post report to server
+		p.message = err.Error()
+		p.reportResult(node, time.Since(startTime).Seconds())
 		return node, err
 	}
 	if reportNode.Status == "OK" {
@@ -177,6 +183,7 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 	node.AdjustedTime = reportNode.AdjustedTime
 	node.DatabaseSize = reportNode.DatabaseSize
 	node.Difficulty = reportNode.Difficulty
+	node.Height = reportNode.Height
 	node.Version = reportNode.Version
 
 	if resp.Header.Get("Access-Control-Allow-Origin") == "*" || resp.Header.Get("Access-Control-Allow-Origin") == "https://xmr.ditatompel.com" {
@@ -233,7 +240,43 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 	node.EstimateFee = feeEstimate.Result.Fee
 
 	fmt.Printf("Took %f seconds\n", tookTime)
+
+	if err := p.reportResult(node, tookTime); err != nil {
+		return node, err
+	}
 	return node, nil
+}
+
+func (p *proberClient) reportResult(node repo.MoneroNode, tookTime float64) error {
+	jsonData, err := json.Marshal(repo.ProbeReport{
+		TookTime: tookTime,
+		Message:  p.message,
+		NodeInfo: node,
+	})
+	if err != nil {
+		return err
+	}
+
+	endpoint := fmt.Sprintf("%s/api/v1/job", p.config.ServerEndpoint)
+	req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(jsonData))
+	if err != nil {
+		return err
+	}
+	req.Header.Add("X-Prober-Api-Key", p.config.ApiKey)
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Set("User-Agent", RPCUserAgent)
+
+	client := &http.Client{Timeout: 60 * time.Second}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != 200 {
+		return fmt.Errorf("status code: %d", resp.StatusCode)
+	}
+	return nil
 }
 
 // for debug purposes

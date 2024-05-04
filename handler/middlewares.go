@@ -41,6 +41,6 @@ func CheckProber(c *fiber.Ctx) error {
 		})
 	}
 
-	c.Locals("prober", prober)
+	c.Locals("prober_id", prober.Id)
 	return c.Next()
 }

@@ -54,7 +54,7 @@ CREATE TABLE `tbl_node` (
   `adjusted_time` bigint(20) unsigned NOT NULL DEFAULT 0,
   `database_size` bigint(20) unsigned NOT NULL DEFAULT 0,
   `difficulty` bigint(20) unsigned NOT NULL DEFAULT 0,
-  `version` varchar(200) NOT NULL,
+  `version` varchar(200) NOT NULL DEFAULT '',
   `uptime` float(5,2) unsigned NOT NULL DEFAULT 0.00,
   `estimate_fee` int(9) unsigned NOT NULL DEFAULT 0,
   `ip_addr` varchar(200) NOT NULL,
@@ -70,6 +70,26 @@ CREATE TABLE `tbl_node` (
   `last_check_status` text DEFAULT NULL,
   `cors_capable` tinyint(1) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tbl_probe_log`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tbl_probe_log` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `node_id` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `prober_id` int(9) unsigned NOT NULL DEFAULT 0,
+  `is_available` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `height` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `adjusted_time` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `database_size` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `difficulty` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `estimate_fee` int(9) unsigned NOT NULL DEFAULT 0,
+  `date_checked` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `failed_reason` text NOT NULL DEFAULT '',
+  `fetch_runtime` float(5,2) unsigned DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `node_id` (`node_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `tbl_prober`;

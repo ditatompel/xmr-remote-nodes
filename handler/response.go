@@ -191,6 +191,33 @@ func GiveJob(c *fiber.Ctx) error {
 	})
 }
 
+func ProcessJob(c *fiber.Ctx) error {
+	moneroRepo := repo.NewMoneroRepo(database.GetDB())
+	report := repo.ProbeReport{}
+
+	if err := c.BodyParser(&report); err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
+
+	if err := moneroRepo.ProcessJob(report, c.Locals("prober_id").(int64)); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  "ok",
+		"message": "Success",
+		"data":    nil,
+	})
+}
+
 func Crons(c *fiber.Ctx) error {
 	cronRepo := repo.NewCron(database.GetDB())
 

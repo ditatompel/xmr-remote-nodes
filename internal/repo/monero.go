@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"math"
 	"net"
 	"slices"
 	"strings"
@@ -18,6 +19,7 @@ type MoneroRepository interface {
 	Add(protocol string, host string, port uint) error
 	Nodes(q MoneroQueryParams) (MoneroNodes, error)
 	GiveJob(acceptTor int) (MoneroNode, error)
+	ProcessJob(report ProbeReport, proberId int64) error
 }
 
 type MoneroRepo struct {
@@ -43,7 +45,7 @@ type MoneroNode struct {
 	Difficulty      uint           `json:"difficulty" db:"difficulty"`
 	Version         string         `json:"version" db:"version"`
 	Status          string         `json:"status,omitempty"`
-	Uptime          float32        `json:"uptime" db:"uptime"`
+	Uptime          float64        `json:"uptime" db:"uptime"`
 	EstimateFee     uint           `json:"estimate_fee" db:"estimate_fee"`
 	Asn             uint           `json:"asn" db:"asn"`
 	AsnName         string         `json:"asn_name" db:"asn_name"`
@@ -206,8 +208,8 @@ func (repo *MoneroRepo) GiveJob(acceptTor int) (MoneroNode, error) {
 
 	node := MoneroNode{}
 
-	query := fmt.Sprintf(`SELECT id, hostname, port, protocol, is_tor FROM tbl_node %s ORDER BY last_checked ASC LIMIT 1`, where)
-	err := repo.db.QueryRow(query, queryParams...).Scan(&node.Id, &node.Hostname, &node.Port, &node.Protocol, &node.IsTor)
+	query := fmt.Sprintf(`SELECT id, hostname, port, protocol, is_tor, last_check_status FROM tbl_node %s ORDER BY last_checked ASC LIMIT 1`, where)
+	err := repo.db.QueryRow(query, queryParams...).Scan(&node.Id, &node.Hostname, &node.Port, &node.Protocol, &node.IsTor, &node.LastCheckStatus)
 	if err != nil {
 		return node, err
 	}
@@ -219,4 +221,88 @@ func (repo *MoneroRepo) GiveJob(acceptTor int) (MoneroNode, error) {
 	}
 
 	return node, nil
+}
+
+type ProbeReport struct {
+	TookTime float64    `json:"took_time"`
+	Message  string     `json:"message"`
+	NodeInfo MoneroNode `json:"node_info"`
+}
+
+func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
+	if report.NodeInfo.Id == 0 {
+		return errors.New("Invalid node")
+	}
+
+	qInsertLog := `INSERT INTO tbl_probe_log (node_id, prober_id, is_available, height, adjusted_time, database_size, difficulty, estimate_fee, date_checked, failed_reason, fetch_runtime) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+
+	_, err := repo.db.Exec(qInsertLog, report.NodeInfo.Id, proberId, report.NodeInfo.IsAvailable, report.NodeInfo.Height, report.NodeInfo.AdjustedTime, report.NodeInfo.DatabaseSize, report.NodeInfo.Difficulty, report.NodeInfo.EstimateFee, time.Now().Unix(), report.Message, report.TookTime)
+	if err != nil {
+		return err
+	}
+
+	now := time.Now()
+	limitTs := now.AddDate(0, -1, 0).Unix()
+
+	nodeStats := struct {
+		OnlineCount  uint `db:"online"`
+		OfflineCount uint `db:"offline"`
+		TotalFetched uint `db:"total_fetched"`
+	}{}
+
+	qstats := `SELECT
+	SUM(if(is_available='1',1,0)) AS online,
+	SUM(if(is_available='0',1,0)) AS offline,
+	SUM(if(id='0',0,1)) AS total_fetched FROM
+	tbl_probe_log WHERE node_id = ? AND date_checked > ?`
+	repo.db.Get(&nodeStats, qstats, report.NodeInfo.Id, limitTs)
+
+	avgUptime := (float64(nodeStats.OnlineCount) / float64(nodeStats.TotalFetched)) * 100
+	report.NodeInfo.Uptime = math.Ceil(avgUptime*100) / 100
+
+	var statuses [5]int
+	errUnmarshal := report.NodeInfo.LastCheckStatus.Unmarshal(&statuses)
+	if errUnmarshal != nil {
+		fmt.Println("Warning", errUnmarshal.Error())
+		statuses = [5]int{2, 2, 2, 2, 2}
+	}
+
+	nodeAvailable := 0
+
+	if report.NodeInfo.IsAvailable {
+		nodeAvailable = 1
+	}
+	newStatuses := statuses[1:]
+	newStatuses = append(newStatuses, nodeAvailable)
+	statuesValueToDb, errMarshalStatus := json.Marshal(newStatuses)
+	if errMarshalStatus != nil {
+		fmt.Println("WARN", errMarshalStatus.Error())
+	}
+
+	// recheck IP
+	// TODO: Fill the data using GeoIP
+
+	// if report.NodeInfo.Ip != "" {
+	// 	ipInfo, errGeoIp := GetGeoIpInfo(report.NodeInfo.Ip)
+	// 	if errGeoIp == nil {
+	// 		report.NodeInfo.Asn = ipInfo.Asn
+	// 		report.NodeInfo.AsnName = ipInfo.AsnOrg
+	// 		report.NodeInfo.CountryCode = ipInfo.CountryCode
+	// 		report.NodeInfo.CountryName = ipInfo.CountryName
+	// 		report.NodeInfo.City = ipInfo.City
+	// 	}
+	// }
+
+	update := `UPDATE tbl_node SET
+        is_available = ?, nettype = ?, height = ?, adjusted_time = ?,
+        database_size = ?, difficulty = ?, version = ?, uptime = ?,
+        estimate_fee = ?, ip_addr = ?, asn = ?, asn_name = ?, country = ?,
+      country_name = ?, city = ?, last_checked = ?, last_check_status = ?,
+      cors_capable = ?
+    WHERE id = ?`
+
+	_, err = repo.db.Exec(update,
+		nodeAvailable, report.NodeInfo.NetType, report.NodeInfo.Height, report.NodeInfo.AdjustedTime, report.NodeInfo.DatabaseSize, report.NodeInfo.Difficulty, report.NodeInfo.Version, report.NodeInfo.Uptime, report.NodeInfo.EstimateFee, report.NodeInfo.Ip, report.NodeInfo.Asn, report.NodeInfo.AsnName, report.NodeInfo.CountryCode, report.NodeInfo.CountryName, report.NodeInfo.City, now.Unix(), string(statuesValueToDb), report.NodeInfo.CorsCapable, report.NodeInfo.Id)
+
+	return err
 }
