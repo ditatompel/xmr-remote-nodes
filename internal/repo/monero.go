@@ -280,18 +280,19 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 	}
 
 	// recheck IP
-	// TODO: Fill the data using GeoIP
-
-	// if report.NodeInfo.Ip != "" {
-	// 	ipInfo, errGeoIp := GetGeoIpInfo(report.NodeInfo.Ip)
-	// 	if errGeoIp == nil {
-	// 		report.NodeInfo.Asn = ipInfo.Asn
-	// 		report.NodeInfo.AsnName = ipInfo.AsnOrg
-	// 		report.NodeInfo.CountryCode = ipInfo.CountryCode
-	// 		report.NodeInfo.CountryName = ipInfo.CountryName
-	// 		report.NodeInfo.City = ipInfo.City
-	// 	}
-	// }
+	if report.NodeInfo.Ip != "" {
+		if ipInfo, errGeoIp := GetGeoIpInfo(report.NodeInfo.Ip); errGeoIp != nil {
+			fmt.Println("WARN:", errGeoIp.Error())
+		} else {
+			report.NodeInfo.Asn = ipInfo.Asn
+			report.NodeInfo.AsnName = ipInfo.AsnOrg
+			report.NodeInfo.CountryCode = ipInfo.CountryCode
+			report.NodeInfo.CountryName = ipInfo.CountryName
+			report.NodeInfo.City = ipInfo.City
+			report.NodeInfo.Lon = ipInfo.Longitude
+			report.NodeInfo.Lat = ipInfo.Latitude
+		}
+	}
 
 	update := `UPDATE tbl_node SET
         is_available = ?, nettype = ?, height = ?, adjusted_time = ?,
