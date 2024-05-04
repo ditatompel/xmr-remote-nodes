@@ -162,8 +162,6 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 		return node, err
 	}
 
-	fmt.Println(string(body))
-
 	reportNode := struct {
 		repo.MoneroNode `json:"result"`
 	}{}
@@ -180,8 +178,6 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 	node.DatabaseSize = reportNode.DatabaseSize
 	node.Difficulty = reportNode.Difficulty
 	node.Version = reportNode.Version
-
-	fmt.Println(prettyPrint(reportNode))
 
 	if resp.Header.Get("Access-Control-Allow-Origin") == "*" || resp.Header.Get("Access-Control-Allow-Origin") == "https://xmr.ditatompel.com" {
 		node.CorsCapable = true
