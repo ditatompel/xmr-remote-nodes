@@ -1,26 +1,41 @@
 <script>
-	import { applyAction, enhance } from '$app/forms';
-	import { slide } from 'svelte/transition';
+	import { invalidateAll, goto } from '$app/navigation';
+	import { apiUri } from '$lib/utils/common';
 	import { ProgressBar } from '@skeletonlabs/skeleton';
 	/** @type {import('./$types').PageData} */
 	export let data;
 
-	/** @type {import('./$types').ActionData} */
-	export let form;
+	/**
+	 * @typedef formResult
+	 * @type {object}
+	 * @property {string} status
+	 * @property {string} message
+	 * @property {null | object} data
+	 */
+	/** @type {formResult} */
+	export let formResult;
 
 	let isProcessing = false;
 
-	/** @type {import('./$types').SubmitFunction} */
-	const handleForm = async () => {
+	/** @param {{ currentTarget: EventTarget & HTMLFormElement}} event */
+	async function handleSubmit(event) {
 		isProcessing = true;
-		return async ({ result }) => {
-			isProcessing = false;
-			if (result.type === 'success' || result.type === 'redirect') {
-				close();
-			}
-			await applyAction(result);
-		};
-	};
+		const data = new FormData(event.currentTarget);
+
+		const response = await fetch(event.currentTarget.action, {
+			method: 'POST',
+			body: data
+		});
+
+		formResult = await response.json();
+		isProcessing = false;
+
+		if (formResult.status === 'ok') {
+			// rerun all `load` functions, following the successful update
+			await invalidateAll();
+			goto('/remote-nodes');
+		}
+	}
 </script>
 
 <header id="hero" class="hero-gradient py-7">
@@ -37,7 +52,12 @@
 	<div class="section-container text-center">
 		<p>Enter your Monero node information below (IPv4 host only):</p>
 
-		<form class="mx-auto w-full max-w-3xl py-2" method="POST" use:enhance={handleForm}>
+		<form
+			class="mx-auto w-full max-w-3xl py-2"
+			action={apiUri('/api/v1/nodes')}
+			method="POST"
+			on:submit|preventDefault={handleSubmit}
+		>
 			<div class="grid grid-cols-1 gap-4 py-6 md:grid-cols-4">
 				<label class="label">
 					<span>Protocol *</span>
@@ -50,7 +70,7 @@
 					<span>Host / IP *</span>
 					<input
 						class="input variant-form-material"
-						name="host"
+						name="hostname"
 						type="text"
 						placeholder="Eg: node.example.com or 172.16.17.18"
 						disabled={isProcessing}
@@ -74,24 +94,23 @@
 
 		<div class="mx-auto w-full max-w-3xl py-2">
 			{#if !isProcessing}
-				{#if form?.status === 'error'}
-					<div class="alert variant-ghost-error" transition:slide={{ duration: 500 }}>
-						<div class="alert-message">
-							<h3 class="h3">Error!</h3>
-							<p>{form.message}!</p>
-						</div>
+				{#if formResult?.status === 'error'}
+					<div class="mx-4 p-4 mb-4 text-sm rounded-lg bg-gray-700 text-red-400" role="alert">
+						<span class="font-medium">Error:</span>
+						{formResult.message}!
 					</div>
 				{/if}
-				{#if form?.status === 'ok'}
-					<div class="alert variant-ghost-success" transition:slide={{ duration: 500 }}>
-						<div class="alert-message">
-							<h3 class="h3">Success!</h3>
-							<p>{form.message}!</p>
-						</div>
+				{#if formResult?.status === 'ok'}
+					<div class="mx-4 p-4 mb-4 text-sm rounded-lg bg-gray-700 text-green-400" role="alert">
+						<span class="font-medium">Success:</span>
+						{formResult.message}!
 					</div>
 				{/if}
 			{:else}
 				<ProgressBar meter="bg-secondary-500" track="bg-secondary-500/30" value={undefined} />
+				<div class="mx-4 p-4 mb-4 text-sm rounded-lg bg-gray-700 text-blue-400" role="alert">
+					<span class="font-medium">Processing...</span>
+				</div>
 			{/if}
 		</div>
 

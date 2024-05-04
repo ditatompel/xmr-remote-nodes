@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/ditatompel/xmr-nodes/internal/database"
@@ -111,6 +112,36 @@ func Prober(c *fiber.Ctx) error {
 		"status":  "ok",
 		"message": "Success",
 		"data":    prober,
+	})
+}
+
+func AddNode(c *fiber.Ctx) error {
+	formPort := c.FormValue("port")
+	port, err := strconv.Atoi(formPort)
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"status":  "error",
+			"message": "Invalid port number",
+			"data":    nil,
+		})
+	}
+
+	protocol := c.FormValue("protocol")
+	hostname := c.FormValue("hostname")
+
+	moneroRepo := repo.NewMoneroRepo(database.GetDB())
+	if err := moneroRepo.Add(protocol, hostname, uint(port)); err != nil {
+		return c.JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  "ok",
+		"message": "Query Ok",
+		"data":    nil,
 	})
 }
 
