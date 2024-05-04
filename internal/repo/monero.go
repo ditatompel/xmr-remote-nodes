@@ -17,6 +17,7 @@ import (
 type MoneroRepository interface {
 	Add(protocol string, host string, port uint) error
 	Nodes(q MoneroQueryParams) (MoneroNodes, error)
+	GiveJob(acceptTor int) (MoneroNode, error)
 }
 
 type MoneroRepo struct {
@@ -186,4 +187,35 @@ func (repo *MoneroRepo) Add(protocol string, hostname string, port uint) error {
 	}
 
 	return nil
+}
+
+func (repo *MoneroRepo) GiveJob(acceptTor int) (MoneroNode, error) {
+	queryParams := []interface{}{}
+	whereQueries := []string{}
+	where := ""
+
+	if acceptTor != 1 {
+		whereQueries = append(whereQueries, "is_tor = ?")
+		queryParams = append(queryParams, 0)
+	}
+
+	if len(whereQueries) > 0 {
+		where = "WHERE " + strings.Join(whereQueries, " AND ")
+	}
+
+	node := MoneroNode{}
+
+	query := fmt.Sprintf(`SELECT id, hostname, port, protocol, is_tor FROM tbl_node %s ORDER BY last_checked ASC LIMIT 1`, where)
+	err := repo.db.QueryRow(query, queryParams...).Scan(&node.Id, &node.Hostname, &node.Port, &node.Protocol, &node.IsTor)
+	if err != nil {
+		return node, err
+	}
+
+	update := `UPDATE tbl_node SET last_checked = ? WHERE id = ?`
+	_, err = repo.db.Exec(update, time.Now().Unix(), node.Id)
+	if err != nil {
+		return node, err
+	}
+
+	return node, nil
 }

@@ -171,6 +171,26 @@ func AddNode(c *fiber.Ctx) error {
 	})
 }
 
+func GiveJob(c *fiber.Ctx) error {
+	acceptTor := c.QueryInt("accept_tor", 0)
+
+	moneroRepo := repo.NewMoneroRepo(database.GetDB())
+	node, err := moneroRepo.GiveJob(acceptTor)
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  "ok",
+		"message": "Success",
+		"data":    node,
+	})
+}
+
 func Crons(c *fiber.Ctx) error {
 	cronRepo := repo.NewCron(database.GetDB())
 
