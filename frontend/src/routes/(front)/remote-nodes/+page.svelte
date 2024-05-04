@@ -1,5 +1,82 @@
 <script>
+	import { DataHandler } from '@vincjo/datatables/remote';
+	import { format, formatDistance } from 'date-fns';
+	import { loadData } from './api-handler';
+	import { onMount, onDestroy } from 'svelte';
+	import {
+		DtSrRowsPerPage,
+		DtSrThSort,
+		DtSrThFilter,
+		DtSrRowCount,
+		DtSrPagination
+	} from '$lib/components/datatables/server';
+	import {
+		HostPortCell,
+		NetTypeCell,
+		ProtocolCell,
+		CountryCellWithAsn,
+		StatusCell,
+		UptimeCell,
+		EstimateFeeCell
+	} from './components';
+
 	export let data;
+	let filterNettype = 'any';
+	let filterProtocol = 'any';
+	let filterCc = 'any';
+	let filterStatus = -1;
+	let checkboxCors = false;
+
+	const handler = new DataHandler([], { rowsPerPage: 10, totalRows: 0 });
+	let rows = handler.getRows();
+
+	const reloadData = () => {
+		handler.invalidate();
+	};
+
+	/** @type {number | undefined} */
+	let intervalId;
+	let intervalValue = 0;
+
+	const intervalOptions = [
+		{ value: 0, label: 'No' },
+		{ value: 5, label: '5s' },
+		{ value: 10, label: '10s' },
+		{ value: 30, label: '30s' },
+		{ value: 60, label: '1m' }
+	];
+
+	const startInterval = () => {
+		const seconds = intervalValue;
+		if (isNaN(seconds) || seconds < 0) {
+			return;
+		}
+
+		if (!intervalOptions.some((option) => option.value === seconds)) {
+			return;
+		}
+
+		if (intervalId) {
+			clearInterval(intervalId);
+		}
+
+		if (seconds > 0) {
+			reloadData();
+			intervalId = setInterval(() => {
+				reloadData();
+			}, seconds * 1000);
+		}
+	};
+
+	$: startInterval(); // Automatically start the interval on change
+
+	onDestroy(() => {
+		clearInterval(intervalId); // Clear the interval when the component is destroyed
+	});
+	onMount(() => {
+		handler.onChange((state) => loadData(state));
+		handler.invalidate();
+	});
 </script>
 
 <header id="hero" class="hero-gradient py-7">
@@ -36,19 +113,40 @@
 	<div class="section-container">
 		<div class="space-y-2 overflow-x-auto">
 			<div class="flex justify-between">
-				<!-- <DtSrRowsPerPage {handler} /> -->
+				<DtSrRowsPerPage {handler} />
+				<div class="invisible flex place-items-center md:visible">
+					<label for="autoRefreshInterval">Auto Refresh:</label>
+					<select
+						class="select ml-2"
+						id="autoRefreshInterval"
+						bind:value={intervalValue}
+						on:change={startInterval}
+					>
+						{#each intervalOptions as { value, label }}
+							<option {value}>{label}</option>
+						{/each}
+					</select>
+				</div>
+				<div class="flex place-items-center">
+					<button
+						id="reloadDt"
+						name="reloadDt"
+						class="variant-filled-primary btn"
+						on:click={reloadData}>Reload</button
+					>
+				</div>
 			</div>
 
-			<!--
 			<table class="table table-hover table-compact w-full table-auto">
 				<thead>
 					<tr>
 						<th>Host:Port</th>
-						<th><label for="fNettype">Nettype</label></th>
-						<th><label for="fProtocol">Protocol</label></th>
-						<th><label for="fCc">Country</label></th>
-						<th><label for="fStatus">Status</label></th>
+						<th>Nettype</th>
+						<th>Protocol</th>
+						<th>Country</th>
+						<th>Status</th>
 						<th>Est. Fee</th>
+
 						<DtSrThSort {handler} orderBy="uptime">Uptime</DtSrThSort>
 						<DtSrThSort {handler} orderBy="last_checked">Check</DtSrThSort>
 					</tr>
@@ -100,6 +198,7 @@
 								}}
 							>
 								<option value="any">Any</option>
+								<!--
 								{#each data.countries as country}
 									{#if country.cc === ''}
 										<option value="UNKNOWN">UNKNOWN ({country.total_nodes})</option>
@@ -109,6 +208,7 @@
 										>
 									{/if}
 								{/each}
+                -->
 							</select>
 						</th>
 						<th colspan="2">
@@ -146,7 +246,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each $rows as row}
+					{#each $rows as row (row.id)}
 						<tr>
 							<td
 								><HostPortCell
@@ -173,23 +273,27 @@
 									statuses={row.last_check_statuses}
 								/></td
 							>
-							<td
-								><EstimateFeeCell
+							<td>
+								<!-- <EstimateFeeCell
 									estimate_fee={row.estimate_fee}
 									majority_fee={netFees[row.nettype]}
-								/></td
-							>
+								/>
+              -->
+							</td>
 							<td><UptimeCell uptime={row.uptime} /></td>
-							<td>{format(row.last_checked * 1000, 'PP HH:mm')}</td>
+							<td>
+								{format(row.last_checked * 1000, 'PP HH:mm')}<br />
+								{formatDistance(row.last_checked * 1000, new Date(), { addSuffix: true })}
+							</td>
 						</tr>
 					{/each}
 				</tbody>
 			</table>
-			<div class="flex justify-between">
+
+			<div class="flex justify-between mb-2">
 				<DtSrRowCount {handler} />
 				<DtSrPagination {handler} />
 			</div>
-      -->
 		</div>
 	</div>
 </section>

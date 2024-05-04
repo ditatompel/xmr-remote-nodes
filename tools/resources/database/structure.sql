@@ -39,6 +39,39 @@ CREATE TABLE `tbl_cron` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
+DROP TABLE IF EXISTS `tbl_node`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `tbl_node` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+  `protocol` varchar(6) NOT NULL DEFAULT 'http' COMMENT 'http | https',
+  `hostname` varchar(200) NOT NULL DEFAULT '',
+  `port` int(6) unsigned NOT NULL DEFAULT 0,
+  `is_tor` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `is_available` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  `nettype` varchar(100) NOT NULL COMMENT 'mainnet | stagenet | testnet',
+  `last_height` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `adjusted_time` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `database_size` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `difficulty` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `node_version` varchar(200) NOT NULL DEFAULT '',
+  `uptime` float(5,2) unsigned NOT NULL DEFAULT 0.00,
+  `estimate_fee` int(9) unsigned NOT NULL DEFAULT 0,
+  `ip_addr` varchar(200) NOT NULL,
+  `asn` int(9) unsigned NOT NULL DEFAULT 0,
+  `asn_name` varchar(200) NOT NULL DEFAULT '',
+  `country` varchar(200) NOT NULL DEFAULT '',
+  `country_name` varchar(255) NOT NULL DEFAULT '',
+  `city` varchar(200) NOT NULL DEFAULT '',
+  `lat` float NOT NULL DEFAULT 0 COMMENT 'latitude',
+  `lon` float NOT NULL DEFAULT 0 COMMENT 'longitude',
+  `date_entered` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `last_checked` bigint(20) unsigned NOT NULL DEFAULT 0,
+  `last_check_status` text DEFAULT NULL,
+  `cors_capable` tinyint(1) unsigned NOT NULL DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
 DROP TABLE IF EXISTS `tbl_prober`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

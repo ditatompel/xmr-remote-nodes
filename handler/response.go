@@ -115,6 +115,32 @@ func Prober(c *fiber.Ctx) error {
 	})
 }
 
+func MoneroNodes(c *fiber.Ctx) error {
+	moneroRepo := repo.NewMoneroRepo(database.GetDB())
+	query := repo.MoneroQueryParams{
+		RowsPerPage:   c.QueryInt("limit", 10),
+		Page:          c.QueryInt("page", 1),
+		SortBy:        c.Query("sort_by", "id"),
+		SortDirection: c.Query("sort_direction", "desc"),
+		Host:          c.Query("host"),
+	}
+
+	nodes, err := moneroRepo.Nodes(query)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  "ok",
+		"message": "Success",
+		"data":    nodes,
+	})
+}
+
 func AddNode(c *fiber.Ctx) error {
 	formPort := c.FormValue("port")
 	port, err := strconv.Atoi(formPort)
