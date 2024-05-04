@@ -13,6 +13,7 @@ import (
 type ProberRepository interface {
 	AddProber(name string) error
 	Probers(q ProbersQueryParams) (Probers, error)
+	CheckApi(key string) (Prober, error)
 }
 
 type ProberRepo struct {
@@ -115,4 +116,11 @@ func (repo *ProberRepo) Probers(q ProbersQueryParams) (Probers, error) {
 		probers.Items = append(probers.Items, &prober)
 	}
 	return probers, nil
+}
+
+func (repo *ProberRepo) CheckApi(key string) (Prober, error) {
+	prober := Prober{}
+	query := `SELECT id, name, api_key, last_submit_ts FROM tbl_prober WHERE api_key = ? LIMIT 1`
+	err := repo.db.QueryRow(query, key).Scan(&prober.Id, &prober.Name, &prober.ApiKey, &prober.LastSubmitTs)
+	return prober, err
 }

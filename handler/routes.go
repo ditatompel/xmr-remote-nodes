@@ -16,6 +16,6 @@ func V1Api(app *fiber.App) {
 	v1.Post("/prober", Prober)
 	v1.Get("/nodes", MoneroNodes)
 	v1.Post("/nodes", AddNode)
-	v1.Get("/job", GiveJob)
+	v1.Get("/job", CheckProber, GiveJob)
 	v1.Get("/crons", Crons)
 }
