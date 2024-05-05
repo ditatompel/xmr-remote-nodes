@@ -18,7 +18,7 @@
 		StatusCell,
 		UptimeCell,
 		EstimateFeeCell
-	} from './components';
+	} from '$lib/components/datatables/xmr';
 
 	export let data;
 	let filterNettype = 'any';
