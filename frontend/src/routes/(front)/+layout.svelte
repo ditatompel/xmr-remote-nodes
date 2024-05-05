@@ -9,16 +9,12 @@
 		Modal,
 		Drawer,
 		initializeStores,
-		getToastStore,
 		storePopup // PopUps
 	} from '@skeletonlabs/skeleton';
-	import { dev, browser } from '$app/environment';
 	import { MainNav, MobileDrawer } from '$lib/components/navigation';
 	import Footer from '$lib/components/Footer.svelte';
 
 	initializeStores();
-
-	const toastStore = getToastStore();
 
 	// popups
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
@@ -69,9 +65,6 @@
 			if (typeof page.data.meta.article === 'object') {
 				meta.article.author = page.data.meta.article.author ?? '';
 			}
-			// if (!dev) {
-			// 	promotionEnabled.set(page.data.promotionEnabled ?? false);
-			// }
 		}
 	});
 
@@ -90,65 +83,6 @@
 		// 	elemPage.scrollTop = 0;
 		// }
 	});
-
-	if (browser) {
-		/* Service Worker */
-		/** @type {any} */
-		let newWorker;
-
-		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker
-				.register('/service-worker.js', {
-					type: dev ? 'module' : 'classic'
-				})
-				.then((reg) => {
-					reg.addEventListener('updatefound', () => {
-						console.log('SW Update found');
-						// An updated service worker has appeared in reg.installing!
-						newWorker = reg.installing;
-
-						newWorker.addEventListener('statechange', () => {
-							// Has service worker state changed?
-							switch (newWorker.state) {
-								case 'installed':
-									// There is a new service worker available, show the notification
-									if (navigator.serviceWorker.controller) {
-										const notifUpdateSw = {
-											message: 'New version avaiable for this site is available.',
-											autohide: false,
-											action: {
-												label: 'Reload',
-												response: () => window.location.reload()
-											}
-										};
-										toastStore.trigger(notifUpdateSw);
-										// localStorage.clear();
-										// sessionStorage.clear();
-										newWorker.postMessage({ action: 'skipWaiting' });
-									}
-									break;
-							}
-						});
-					});
-				})
-				.catch((err) => {
-					console.log('error with service worker', err);
-				});
-
-			/** @type {any} */
-			let refreshing;
-			// The event listener that is fired when the service worker updates
-			// Here we reload the page
-			navigator.serviceWorker.addEventListener('controllerchange', function () {
-				if (refreshing) {
-					// console.log('refreshing');
-					return;
-				}
-				// window.location.reload();
-				refreshing = true;
-			});
-		}
-	}
 </script>
 
 <svelte:head>
@@ -190,16 +124,6 @@
 	<MobileDrawer />
 	<hr />
 </Drawer>
-
-<!-- <AppShell slotSidebarLeft="bg-surface-500/5 w-0 lg:w-64"> -->
-<!-- 	<svelte:fragment slot="header"> -->
-<!-- 		<MainNav /> -->
-<!-- 	</svelte:fragment> -->
-<!-- 	<slot /> -->
-<!-- 	<svelte:fragment slot="pageFooter"> -->
-<!-- 		<Footer /> -->
-<!-- 	</svelte:fragment> -->
-<!-- </AppShell> -->
 
 <MainNav />
 
