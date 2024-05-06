@@ -8,6 +8,12 @@ export const loadData = async (state) => {
 	return json.data.items ?? [];
 };
 
+export const loadCountries = async () => {
+  const response = await fetch(apiUri('/api/v1/countries'));
+  const json = await response.json();
+  return json.data ?? [];
+};
+
 const getParams = ({ pageNumber, rowsPerPage, sort, filters }) => {
 	let params = `page=${pageNumber}&limit=${rowsPerPage}`;
 

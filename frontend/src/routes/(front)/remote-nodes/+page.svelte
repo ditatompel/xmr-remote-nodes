@@ -1,7 +1,7 @@
 <script>
 	import { DataHandler } from '@vincjo/datatables/remote';
 	import { format, formatDistance } from 'date-fns';
-	import { loadData } from './api-handler';
+	import { loadData, loadCountries } from './api-handler';
 	import { onMount, onDestroy } from 'svelte';
 	import {
 		DtSrRowsPerPage,
@@ -26,6 +26,9 @@
 	let filterCc = 'any';
 	let filterStatus = -1;
 	let checkboxCors = false;
+
+	/** @type {{total_nodes: number, cc: string, name: string}[]} */
+	let countries = [];
 
 	const handler = new DataHandler([], { rowsPerPage: 10, totalRows: 0 });
 	let rows = handler.getRows();
@@ -109,6 +112,9 @@
 		clearInterval(intervalId); // Clear the interval when the component is destroyed
 	});
 	onMount(() => {
+		loadCountries().then((data) => {
+			countries = data;
+		});
 		handler.onChange((state) => loadData(state));
 		handler.invalidate();
 	});
@@ -233,8 +239,7 @@
 								}}
 							>
 								<option value="any">Any</option>
-								<!--
-								{#each data.countries as country}
+								{#each countries as country}
 									{#if country.cc === ''}
 										<option value="UNKNOWN">UNKNOWN ({country.total_nodes})</option>
 									{:else}
@@ -243,7 +248,6 @@
 										>
 									{/if}
 								{/each}
-                -->
 							</select>
 						</th>
 						<th colspan="2">
