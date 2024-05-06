@@ -1,11 +1,6 @@
-.PHONY: deploy-server ui build linux-amd64 linux-arm64
+.PHONY: deploy-prober deploy-server ui build linux-amd64 linux-arm64
 
 BINARY_NAME = xmr-nodes
-
-# Deploy server
-# To use this, make sure the inventory and deploy-server.yml file is properly configured
-deploy-server: build
-	ansible-playbook -i ./tools/ansible/inventory.ini -l server ./tools/ansible/deploy-server.yml -K
 
 build: ui linux-amd64 linux-arm64
 
@@ -22,3 +17,13 @@ clean:
 	go clean
 	rm -rfv ./bin
 	rm -rf ./frontend/build
+
+# Deploying new binary file to server and probers host
+# The deploy-* command doesn't build the binary file, so you need to run `make build` first.
+# And make sure the inventory and deploy-*.yml file is properly configured.
+
+deploy-server:
+	ansible-playbook -i ./tools/ansible/inventory.ini -l server ./tools/ansible/deploy-server.yml -K
+
+deploy-prober:
+	ansible-playbook -i ./tools/ansible/inventory.ini -l prober ./tools/ansible/deploy-prober.yml -K

@@ -1,0 +1,35 @@
+---
+- name: Deploy and Restart Prober Timer
+  hosts: all
+  become: true
+  tasks:
+    - name: Stop prober systemd timer
+      systemd:
+        name: xmr-nodes-prober.timer
+        state: stopped
+      when: inventory_hostname in groups['prober']
+
+    - name: Upload binary file (AMD64)
+      copy:
+        src: ../../bin/xmr-nodes-static-linux-amd64
+        dest: /path/to/remote/xmr-nodes/bin
+        owner: your_user
+        group: your_group
+        mode: 0755
+      when: inventory_hostname in groups['prober']
+
+    - name: Upload binary file (ARM64)
+      copy:
+        src: ../../bin/xmr-nodes-static-linux-arm64
+        dest: /path/to/remote/xmr-nodes/bin
+        owner: your_user
+        group: your_group
+        mode: 0755
+      when: inventory_hostname in groups['prober']
+
+
+    - name: Start systemd timer
+      systemd:
+        name: xmr-nodes-prober.timer
+        state: started
+      when: inventory_hostname in groups['prober']
