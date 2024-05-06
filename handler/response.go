@@ -115,6 +115,41 @@ func Prober(c *fiber.Ctx) error {
 	})
 }
 
+func MoneroNode(c *fiber.Ctx) error {
+	nodeId, err := c.ParamsInt("id", 0)
+	if err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
+
+	if nodeId == 0 {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+			"status":  "error",
+			"message": "Invalid node id",
+			"data":    nil,
+		})
+	}
+
+	moneroRepo := repo.NewMoneroRepo(database.GetDB())
+	node, err := moneroRepo.Node(nodeId)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"status":  "ok",
+		"message": "Success",
+		"data":    node,
+	})
+}
+
 func MoneroNodes(c *fiber.Ctx) error {
 	moneroRepo := repo.NewMoneroRepo(database.GetDB())
 	query := repo.MoneroQueryParams{

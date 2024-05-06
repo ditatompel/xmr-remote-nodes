@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -16,6 +17,7 @@ import (
 )
 
 type MoneroRepository interface {
+	Node(id int) (MoneroNode, error)
 	Add(protocol string, host string, port uint) error
 	Nodes(q MoneroQueryParams) (MoneroNodes, error)
 	GiveJob(acceptTor int) (MoneroNode, error)
@@ -62,6 +64,19 @@ type MoneroNode struct {
 	FailedCount     uint           `json:"failed_count,omitempty" db:"failed_count"`
 	LastCheckStatus types.JSONText `json:"last_check_statuses" db:"last_check_status"`
 	CorsCapable     bool           `json:"cors" db:"cors_capable"`
+}
+
+func (repo *MoneroRepo) Node(id int) (MoneroNode, error) {
+	node := MoneroNode{}
+	err := repo.db.Get(&node, `SELECT * FROM tbl_node WHERE id = ?`, id)
+	if err != nil && err != sql.ErrNoRows {
+		fmt.Println("WARN:", err)
+		return node, errors.New("Can't get node information")
+	}
+	if err == sql.ErrNoRows {
+		return node, errors.New("Node not found")
+	}
+	return node, err
 }
 
 type MoneroNodes struct {

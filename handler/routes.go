@@ -16,6 +16,7 @@ func V1Api(app *fiber.App) {
 	v1.Post("/prober", Prober)
 	v1.Get("/nodes", MoneroNodes)
 	v1.Post("/nodes", AddNode)
+	v1.Get("/nodes/id/:id", MoneroNode)
 	v1.Get("/nodes/logs", ProbeLogs)
 	v1.Get("/fees", NetFee)
 	v1.Get("/countries", Countries)
