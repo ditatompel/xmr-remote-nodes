@@ -100,6 +100,13 @@
 </script>
 
 <header id="hero" class="hero-gradient py-7">
+	<div class="card text-token mx-auto flex w-fit justify-center p-4">
+		<ol class="breadcrumb">
+			<li class="crumb"><a class="link underline" href="/remote-nodes">Remote Nodes</a></li>
+			<li class="crumb-separator" aria-hidden>/</li>
+			<li>Logs</li>
+		</ol>
+	</div>
 	<div class="section-container text-center">
 		<h1 class="h1 pb-2 font-extrabold">{data.meta.title}</h1>
 		<p class="mx-auto max-w-3xl">
