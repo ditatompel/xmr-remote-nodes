@@ -104,9 +104,19 @@ func (repo *CronRepo) postRunTask(id int, nextRun int64, runtime float64) {
 
 func (repo *CronRepo) execCron(slug string) {
 	switch slug {
-	case "something":
+	case "delete_old_probe_logs":
 		fmt.Println("Running task", slug)
-		// do task
+		repo.deleteOldProbeLogs()
 		break
+	}
+}
+
+func (repo *CronRepo) deleteOldProbeLogs() {
+	// for now, we only delete stats older than 2 days
+	startTs := time.Now().AddDate(0, 0, -2).Unix()
+	query := `DELETE FROM tbl_probe_log WHERE date_checked < ?`
+	_, err := repo.db.Exec(query, startTs)
+	if err != nil {
+		fmt.Println(err)
 	}
 }
