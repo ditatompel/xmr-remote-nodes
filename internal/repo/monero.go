@@ -319,6 +319,17 @@ func (repo *MoneroRepo) Add(protocol string, hostname string, port uint) error {
 	return nil
 }
 
+func (repo *MoneroRepo) Delete(id uint) error {
+	if _, err := repo.db.Exec(`DELETE FROM tbl_node WHERE id = ?`, id); err != nil {
+		return err
+	}
+	if _, err := repo.db.Exec(`DELETE FROM tbl_probe_log WHERE node_id = ?`, id); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (repo *MoneroRepo) GiveJob(acceptTor int) (MoneroNode, error) {
 	queryParams := []interface{}{}
 	whereQueries := []string{}
@@ -431,6 +442,11 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 
 	_, err = repo.db.Exec(update,
 		nodeAvailable, report.NodeInfo.NetType, report.NodeInfo.Height, report.NodeInfo.AdjustedTime, report.NodeInfo.DatabaseSize, report.NodeInfo.Difficulty, report.NodeInfo.Version, report.NodeInfo.Uptime, report.NodeInfo.EstimateFee, report.NodeInfo.Ip, report.NodeInfo.Asn, report.NodeInfo.AsnName, report.NodeInfo.CountryCode, report.NodeInfo.CountryName, report.NodeInfo.City, now.Unix(), string(statuesValueToDb), report.NodeInfo.CorsCapable, report.NodeInfo.Id)
+
+	if avgUptime <= 0 && nodeStats.TotalFetched > 300 {
+		fmt.Println("Deleting Monero node (0% uptime from > 300 records)")
+		repo.Delete(report.NodeInfo.Id)
+	}
 
 	return err
 }
