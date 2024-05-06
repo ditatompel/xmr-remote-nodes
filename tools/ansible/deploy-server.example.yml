@@ -1,0 +1,21 @@
+---
+- name: Deploy and Restart Services
+  hosts: all
+  become: true
+  tasks:
+    - name: Stop server systemd daemon
+      systemd:
+        name: xmr-nodes-server.service
+        state: stopped
+      when: inventory_hostname in groups['server']
+
+    - name: Upload binary file
+      copy:
+        src: ../../bin/xmr-nodes-static-linux-amd64
+        dest: /path/to/remote/server/bin
+
+    - name: Start systemd daemon
+      systemd:
+        name: xmr-nodes-server.service
+        state: started
+      when: inventory_hostname in groups['server']

@@ -1,6 +1,11 @@
-.PHONY: ui build linux-amd64 linux-arm64
+.PHONY: deploy-server ui build linux-amd64 linux-arm64
 
 BINARY_NAME = xmr-nodes
+
+# Deploy server
+# To use this, make sure the inventory and deploy-server.yml file is properly configured
+deploy-server: build
+	ansible-playbook -i ./tools/ansible/inventory.ini -l server ./tools/ansible/deploy-server.yml -K
 
 build: ui linux-amd64 linux-arm64
 
