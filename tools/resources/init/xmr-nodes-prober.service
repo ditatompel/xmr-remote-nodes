@@ -4,7 +4,7 @@ After=network.target
 
 [Service]
 Type=oneshot
-User=ditatompel
+User=your_user
 WorkingDirectory=/path/to/project/dir
 ExecStart=/path/to/project/dir/bin/xmr-nodes-static-linux-arm64 probe
 TimeoutSec=90

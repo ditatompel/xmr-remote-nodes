@@ -7,7 +7,7 @@ WantedBy=multi-user.target
 
 [Service]
 Type=simple
-User=ditatompel
+User=your_user
 Restart=always
 WorkingDirectory=/path/to/project/dir
 ExecStart=/path/to/project/dir/bin/xmr-nodes-static-linux-arm64 serve
