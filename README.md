@@ -14,4 +14,16 @@ For initial server setup:
 4. Build the binary with `make build`.
 5. Run the service with `./bin/xmr-nodes-static-linux-<YOUR_CPU_ARCH> serve`.
 
+To create admin user (for creating prober API key from Web-UI, execute `./bin/xmr-nodes-static-linux-<YOUR_CPU_ARCH> admin create`).
+
 Systemd example: [./tools/resources/init/xmr-nodes-server.service](./tools/resources/init/xmr-nodes-server.service).
+
+For initial prober setup:
+
+1. Create API key for prober
+2. Copy `.env.example` to `.env` and edit it to match with prober environment.
+3. Build the binary with `make build`.
+4. Run the service with `./bin/xmr-nodes-static-linux-<YOUR_CPU_ARCH> prober`.
+
+Systemd example: [xmr-nodes-prober.service](./tools/resources/init/xmr-nodes-prober.service) and [xmr-nodes-prober.timer](./tools/resources/init/xmr-nodes-prober.timer).
+
