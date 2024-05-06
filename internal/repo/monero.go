@@ -73,6 +73,11 @@ type MoneroNodes struct {
 
 type MoneroQueryParams struct {
 	Host          string
+	NetType       string
+	Protocol      string
+	CC            string // 2 letter country code
+	Status        int
+	Cors          int
 	RowsPerPage   int
 	Page          int
 	SortBy        string
@@ -88,6 +93,36 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 		whereQueries = append(whereQueries, "(hostname LIKE ? OR ip_addr LIKE ?)")
 		queryParams = append(queryParams, "%"+q.Host+"%")
 		queryParams = append(queryParams, "%"+q.Host+"%")
+	}
+	if q.NetType != "any" {
+		whereQueries = append(whereQueries, "nettype = ?")
+		queryParams = append(queryParams, q.NetType)
+	}
+	if q.Protocol != "any" {
+		if q.Protocol == "tor" {
+			whereQueries = append(whereQueries, "is_tor = ?")
+			queryParams = append(queryParams, 1)
+		} else {
+			whereQueries = append(whereQueries, "(protocol = ? AND is_tor = ?)")
+			queryParams = append(queryParams, q.Protocol)
+			queryParams = append(queryParams, 0)
+		}
+	}
+	if q.CC != "any" {
+		whereQueries = append(whereQueries, "country = ?")
+		if q.CC == "UNKNOWN" {
+			queryParams = append(queryParams, "")
+		} else {
+			queryParams = append(queryParams, q.CC)
+		}
+	}
+	if q.Status != -1 {
+		whereQueries = append(whereQueries, "is_available = ?")
+		queryParams = append(queryParams, q.Status)
+	}
+	if q.Cors != -1 {
+		whereQueries = append(whereQueries, "cors_capable = ?")
+		queryParams = append(queryParams, 1)
 	}
 
 	if len(whereQueries) > 0 {

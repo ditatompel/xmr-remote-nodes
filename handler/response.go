@@ -123,6 +123,11 @@ func MoneroNodes(c *fiber.Ctx) error {
 		SortBy:        c.Query("sort_by", "id"),
 		SortDirection: c.Query("sort_direction", "desc"),
 		Host:          c.Query("host"),
+		NetType:       c.Query("nettype", "any"),
+		Protocol:      c.Query("protocol", "any"),
+		CC:            c.Query("cc", "any"),
+		Status:        c.QueryInt("status", -1),
+		Cors:          c.QueryInt("cors", -1),
 	}
 
 	nodes, err := moneroRepo.Nodes(query)

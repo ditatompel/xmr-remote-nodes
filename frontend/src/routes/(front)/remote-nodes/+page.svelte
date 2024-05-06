@@ -195,8 +195,8 @@
 						<DtSrThFilter {handler} filterBy="host" placeholder="Filter Host / IP" />
 						<th>
 							<select
-								id="fNettype"
-								name="fNettype"
+								id="nettype"
+								name="nettype"
 								class="select variant-form-material"
 								bind:value={filterNettype}
 								on:change={() => {
@@ -212,8 +212,8 @@
 						</th>
 						<th>
 							<select
-								id="fProtocol"
-								name="fProtocol"
+								id="protocol"
+								name="protocol"
 								class="select variant-form-material"
 								bind:value={filterProtocol}
 								on:change={() => {
@@ -229,12 +229,12 @@
 						</th>
 						<th>
 							<select
-								id="fCc"
-								name="fCc"
+								id="cc"
+								name="cc"
 								class="select variant-form-material"
 								bind:value={filterCc}
 								on:change={() => {
-									handler.filter(filterCc, 'country');
+									handler.filter(filterCc, 'cc');
 									handler.invalidate();
 								}}
 							>
@@ -252,8 +252,8 @@
 						</th>
 						<th colspan="2">
 							<select
-								id="fStatus"
-								name="fStatus"
+								id="status"
+								name="status"
 								class="select variant-form-material"
 								bind:value={filterStatus}
 								on:change={() => {
@@ -267,12 +267,12 @@
 							</select>
 						</th>
 						<th colspan="2">
-							<label for="fCors" class="flex items-center justify-center space-x-2">
+							<label for="cors" class="flex items-center justify-center space-x-2">
 								<input
-									id="fCors"
+									id="cors"
+									name="cors"
 									class="checkbox"
 									type="checkbox"
-									name="fCors"
 									bind:checked={checkboxCors}
 									on:change={() => {
 										handler.filter(checkboxCors === true ? 1 : -1, 'cors');
