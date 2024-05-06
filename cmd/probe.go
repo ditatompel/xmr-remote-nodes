@@ -73,8 +73,8 @@ func runProbe() {
 
 func (p *proberClient) getJob() (repo.MoneroNode, error) {
 	queryParams := ""
-	if p.config.ApiKey != "" {
-		queryParams = "?api_key=" + p.config.ApiKey
+	if p.config.AcceptTor {
+		queryParams = "?accept_tor=1"
 	}
 
 	node := repo.MoneroNode{}
