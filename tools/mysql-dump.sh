@@ -11,4 +11,8 @@ mariadb-dump --no-data --skip-comments xmr_nodes | \
     sed 's/ AUTO_INCREMENT=[0-9]*//g' >            \
     "./tools/resources/database/structure.sql"
 
+## Dump `tbl_cron` only
+# mariadb-dump --no-create-info --skip-comments xmr_nodes tbl_cron > \
+#     "./tools/resources/database/tbl_cron.sql"
+
 # vim: set ts=4 sw=4 tw=0 et ft=sh:

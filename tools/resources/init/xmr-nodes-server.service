@@ -1,0 +1,16 @@
+[Unit]
+Description=xmr-node server service
+After=network.target mariadb.service
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+Type=simple
+User=ditatompel
+Restart=always
+WorkingDirectory=/srv/http/users/ditatompel/vhosts/xmr.ditatompel.com
+ExecStart=/srv/http/users/ditatompel/vhosts/xmr.ditatompel.com/bin/xmr-nodes-static-linux-arm64 serve
+SyslogIdentifier=xmr-node-server
+
+# vim: filetype=systemd
