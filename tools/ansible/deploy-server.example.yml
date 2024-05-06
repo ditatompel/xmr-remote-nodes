@@ -13,6 +13,9 @@
       copy:
         src: ../../bin/xmr-nodes-static-linux-amd64
         dest: /path/to/remote/server/bin
+        Owner: your_user
+        Group: your_group
+        mode: 0755
 
     - name: Start systemd daemon
       systemd:
