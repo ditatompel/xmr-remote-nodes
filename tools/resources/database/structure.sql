@@ -87,7 +87,7 @@ CREATE TABLE `tbl_probe_log` (
   `estimate_fee` int(9) unsigned NOT NULL DEFAULT 0,
   `date_checked` bigint(20) unsigned NOT NULL DEFAULT 0,
   `failed_reason` text NOT NULL DEFAULT '',
-  `fetch_runtime` float(5,2) unsigned DEFAULT NULL,
+  `fetch_runtime` float(5,2) unsigned NOT NULL DEFAULT 0.00,
   PRIMARY KEY (`id`),
   KEY `node_id` (`node_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;

@@ -293,8 +293,9 @@
 									is_tor={row.is_tor}
 									hostname={row.hostname}
 									port={row.port}
-								/></td
-							>
+								/>
+								<a class="anchor" href="/remote-nodes/logs/?node_id={row.id}">[Logs]</a>
+							</td>
 							<td><NetTypeCell nettype={row.nettype} height={row.height} /></td>
 							<td><ProtocolCell protocol={row.protocol} cors={row.cors} /></td>
 							<td

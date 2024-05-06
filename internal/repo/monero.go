@@ -22,6 +22,7 @@ type MoneroRepository interface {
 	ProcessJob(report ProbeReport, proberId int64) error
 	NetFee() []NetFee
 	Countries() ([]MoneroCountries, error)
+	Logs(q MoneroLogQueryParams) (MoneroNodeFetchLogs, error)
 }
 
 type MoneroRepo struct {
@@ -171,6 +172,95 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 	}
 
 	return nodes, nil
+}
+
+type MoneroLogQueryParams struct {
+	NodeId     int    // 0 fpr all, >0 for specific node
+	WorkerId   int    // 0 for all, >0 for specific worker
+	Status     int    // -1 for all, 0 for failed, 1 for success
+	FailReason string // empty for all, if not empty, will be used as search from failed_reaso
+
+	RowsPerPage   int
+	Page          int
+	SortBy        string
+	SortDirection string
+}
+
+type ProbeLog struct {
+	Id           int     `db:"id" json:"id,omitempty"`
+	NodeId       int     `db:"node_id" json:"node_id"`
+	ProberId     int     `db:"prober_id" json:"prober_id"`
+	Status       int     `db:"is_available" json:"status"`
+	Height       int     `db:"height" json:"height"`
+	AdjustedTime int     `db:"adjusted_time" json:"adjusted_time"`
+	DatabaseSize int     `db:"database_size" json:"database_size"`
+	Difficulty   int     `db:"difficulty" json:"difficulty"`
+	EstimateFee  int     `db:"estimate_fee" json:"estimate_fee"`
+	DateChecked  int     `db:"date_checked" json:"date_checked"`
+	FailedReason string  `db:"failed_reason" json:"failed_reason"`
+	FetchRuntime float64 `db:"fetch_runtime" json:"fetch_runtime"`
+}
+
+type MoneroNodeFetchLogs struct {
+	TotalRows   int         `json:"total_rows"`
+	RowsPerPage int         `json:"rows_per_page"`
+	Items       []*ProbeLog `json:"items"`
+}
+
+func (repo *MoneroRepo) Logs(q MoneroLogQueryParams) (MoneroNodeFetchLogs, error) {
+	queryParams := []interface{}{}
+	whereQueries := []string{}
+	where := ""
+
+	if q.NodeId != 0 {
+		whereQueries = append(whereQueries, "node_id = ?")
+		queryParams = append(queryParams, q.NodeId)
+	}
+
+	if len(whereQueries) > 0 {
+		where = "WHERE " + strings.Join(whereQueries, " AND ")
+	}
+
+	fetchLogs := MoneroNodeFetchLogs{}
+
+	queryTotalRows := fmt.Sprintf("SELECT COUNT(id) FROM tbl_probe_log %s", where)
+	err := repo.db.QueryRow(queryTotalRows, queryParams...).Scan(&fetchLogs.TotalRows)
+	if err != nil {
+		return fetchLogs, err
+	}
+	queryParams = append(queryParams, q.RowsPerPage, (q.Page-1)*q.RowsPerPage)
+
+	allowedSort := []string{"date_checked", "fetch_runtime"}
+	sortBy := "id"
+	if slices.Contains(allowedSort, q.SortBy) {
+		sortBy = q.SortBy
+	}
+	sortDirection := "DESC"
+	if q.SortDirection == "asc" {
+		sortDirection = "ASC"
+	}
+
+	query := fmt.Sprintf("SELECT id, node_id, prober_id, is_available, height, adjusted_time, database_size, difficulty, estimate_fee, date_checked, failed_reason, fetch_runtime FROM tbl_probe_log %s ORDER BY %s %s LIMIT ? OFFSET ?", where, sortBy, sortDirection)
+
+	row, err := repo.db.Query(query, queryParams...)
+	if err != nil {
+		return fetchLogs, err
+	}
+	defer row.Close()
+
+	fetchLogs.RowsPerPage = q.RowsPerPage
+
+	for row.Next() {
+		probeLog := ProbeLog{}
+		err = row.Scan(&probeLog.Id, &probeLog.NodeId, &probeLog.ProberId, &probeLog.Status, &probeLog.Height, &probeLog.AdjustedTime, &probeLog.DatabaseSize, &probeLog.Difficulty, &probeLog.EstimateFee, &probeLog.DateChecked, &probeLog.FailedReason, &probeLog.FetchRuntime)
+		if err != nil {
+			return fetchLogs, err
+		}
+
+		fetchLogs.Items = append(fetchLogs.Items, &probeLog)
+	}
+
+	return fetchLogs, nil
 }
 
 func (repo *MoneroRepo) Add(protocol string, hostname string, port uint) error {
