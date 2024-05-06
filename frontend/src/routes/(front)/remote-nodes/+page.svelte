@@ -34,6 +34,41 @@
 		handler.invalidate();
 	};
 
+	/**
+	 * Array containing network fees.
+	 * For now, I use static data to reduce the amount of API calls.
+	 * See the values from `/api/v1/fees`
+	 * @type {{ nettype: string, estimate_fee: number }[]}
+	 */
+	const netFees = [
+		{
+			nettype: 'mainnet',
+			estimate_fee: 20000
+		},
+		{
+			nettype: 'stagenet',
+			estimate_fee: 58000
+		},
+		{
+			nettype: 'testnet',
+			estimate_fee: 20000
+		}
+	];
+
+	/** @type {Object.<string, number>} */
+	let majorityFee = netFees.reduce(
+		/**
+		 * @param {Object.<string, number>} o
+		 * @param {{ nettype: string, estimate_fee: number }} key
+		 * @returns {Object.<string, number>}
+		 */
+		(o, key) => ({
+			...o,
+			[key.nettype]: key.estimate_fee
+		}),
+		{}
+	);
+
 	/** @type {number | undefined} */
 	let intervalId;
 	let intervalValue = 0;
@@ -274,11 +309,10 @@
 								/></td
 							>
 							<td>
-								<!-- <EstimateFeeCell
+								<EstimateFeeCell
 									estimate_fee={row.estimate_fee}
-									majority_fee={netFees[row.nettype]}
+									majority_fee={majorityFee[row.nettype]}
 								/>
-              -->
 							</td>
 							<td><UptimeCell uptime={row.uptime} /></td>
 							<td>

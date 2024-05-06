@@ -22,6 +22,6 @@ export async function load({ data }) {
 				description: metaDefaults.description,
 				image: metaDefaults.image
 			}
-		}
+		},
 	};
 }

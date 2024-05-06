@@ -171,6 +171,15 @@ func AddNode(c *fiber.Ctx) error {
 	})
 }
 
+func NetFee(c *fiber.Ctx) error {
+	moneroRepo := repo.NewMoneroRepo(database.GetDB())
+	return c.JSON(fiber.Map{
+		"status":  "ok",
+		"message": "Success",
+		"data":    moneroRepo.NetFee(),
+	})
+}
+
 func GiveJob(c *fiber.Ctx) error {
 	acceptTor := c.QueryInt("accept_tor", 0)
 

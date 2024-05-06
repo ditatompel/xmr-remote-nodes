@@ -20,6 +20,7 @@ type MoneroRepository interface {
 	Nodes(q MoneroQueryParams) (MoneroNodes, error)
 	GiveJob(acceptTor int) (MoneroNode, error)
 	ProcessJob(report ProbeReport, proberId int64) error
+	NetFee() []NetFee
 }
 
 type MoneroRepo struct {
@@ -306,4 +307,27 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 		nodeAvailable, report.NodeInfo.NetType, report.NodeInfo.Height, report.NodeInfo.AdjustedTime, report.NodeInfo.DatabaseSize, report.NodeInfo.Difficulty, report.NodeInfo.Version, report.NodeInfo.Uptime, report.NodeInfo.EstimateFee, report.NodeInfo.Ip, report.NodeInfo.Asn, report.NodeInfo.AsnName, report.NodeInfo.CountryCode, report.NodeInfo.CountryName, report.NodeInfo.City, now.Unix(), string(statuesValueToDb), report.NodeInfo.CorsCapable, report.NodeInfo.Id)
 
 	return err
+}
+
+type NetFee struct {
+	Nettype     string `json:"nettype" db:"nettype"`
+	EstimateFee uint   `json:"estimate_fee" db:"estimate_fee"`
+	NodeCount   int    `json:"node_count" db:"node_count"`
+}
+
+func (repo *MoneroRepo) NetFee() []NetFee {
+	netTypes := [3]string{"mainnet", "stagenet", "testnet"}
+	netFees := []NetFee{}
+
+	for _, net := range netTypes {
+		fees := NetFee{}
+		err := repo.db.Get(&fees, `SELECT COUNT(id) AS node_count, nettype, estimate_fee FROM tbl_node WHERE nettype = ? GROUP BY estimate_fee ORDER BY node_count DESC LIMIT 1`, net)
+		if err != nil {
+			fmt.Println("WARN:", err.Error())
+			continue
+		}
+		netFees = append(netFees, fees)
+	}
+
+	return netFees
 }
