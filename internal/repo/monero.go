@@ -21,6 +21,7 @@ type MoneroRepository interface {
 	GiveJob(acceptTor int) (MoneroNode, error)
 	ProcessJob(report ProbeReport, proberId int64) error
 	NetFee() []NetFee
+	Countries() ([]MoneroCountries, error)
 }
 
 type MoneroRepo struct {
@@ -330,4 +331,17 @@ func (repo *MoneroRepo) NetFee() []NetFee {
 	}
 
 	return netFees
+}
+
+type MoneroCountries struct {
+	TotalNodes int    `json:"total_nodes" db:"total_nodes"`
+	Cc         string `json:"cc" db:"country"`
+	Name       string `json:"name" db:"country_name"`
+}
+
+func (repo *MoneroRepo) Countries() ([]MoneroCountries, error) {
+	countries := []MoneroCountries{}
+
+	err := repo.db.Select(&countries, `SELECT COUNT(id) AS total_nodes, country, country_name FROM tbl_node GROUP BY country ORDER BY country ASC`)
+	return countries, err
 }

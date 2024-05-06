@@ -180,6 +180,23 @@ func NetFee(c *fiber.Ctx) error {
 	})
 }
 
+func Countries(c *fiber.Ctx) error {
+	moneroRepo := repo.NewMoneroRepo(database.GetDB())
+	countries, err := moneroRepo.Countries()
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
+	return c.JSON(fiber.Map{
+		"status":  "ok",
+		"message": "Success",
+		"data":    countries,
+	})
+}
+
 func GiveJob(c *fiber.Ctx) error {
 	acceptTor := c.QueryInt("accept_tor", 0)
 
