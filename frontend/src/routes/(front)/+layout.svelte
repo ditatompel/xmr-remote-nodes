@@ -127,7 +127,7 @@
 
 <MainNav />
 
-<div class="pt-10 md:pt-12">
+<div class="pt-10 md:pt-12 min-h-screen">
 	<slot />
 </div>
 
