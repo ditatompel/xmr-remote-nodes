@@ -8,10 +8,14 @@ export const loadData = async (state) => {
 	return json.data.items ?? [];
 };
 
-export const deleteData = async (id) => {
-	const response = await fetch(apiUri(`/api/v1/prober/${id}`), {
-		method: 'DELETE',
-		credentials: 'include'
+export const createProber = async (name) => {
+	const response = await fetch(apiUri('/api/v1/prober'), {
+		method: 'POST',
+		credentials: 'include',
+		headers: {
+			'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({ name })
 	});
 	const json = await response.json();
 	return json;
@@ -25,6 +29,15 @@ export const editProber = async (id, name) => {
 			'Content-Type': 'application/json'
 		},
 		body: JSON.stringify({ name })
+	});
+	const json = await response.json();
+	return json;
+};
+
+export const deleteProber = async (id) => {
+	const response = await fetch(apiUri(`/api/v1/prober/${id}`), {
+		method: 'DELETE',
+		credentials: 'include'
 	});
 	const json = await response.json();
 	return json;

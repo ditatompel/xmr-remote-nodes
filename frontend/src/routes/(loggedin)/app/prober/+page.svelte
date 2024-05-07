@@ -1,7 +1,7 @@
 <script>
 	import { DataHandler } from '@vincjo/datatables/remote';
 	import { format, formatDistance } from 'date-fns';
-	import { loadData, deleteData, editProber } from './api-handler';
+	import { loadData, createProber, editProber, deleteProber } from './api-handler';
 	import { onMount, onDestroy } from 'svelte';
 	import { getModalStore, getToastStore } from '@skeletonlabs/skeleton';
 	import {
@@ -13,6 +13,36 @@
 	} from '$lib/components/datatables/server';
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
+
+	function showAddModal() {
+		/** @type {import('@skeletonlabs/skeleton').ModalSettings} */
+		const modal = {
+			type: 'prompt',
+			// Data
+			title: 'Enter Name',
+			body: 'Enter a name for the prober',
+			valueAttr: { type: 'text', minlength: 3, maxlength: 50, required: true },
+			response: (r) => {
+				if (!r) return;
+				createProber(r)
+					.then((res) => {
+						if (res.status !== 'ok') {
+							toastStore.trigger({ message: 'Failed to create prober' });
+						} else {
+							toastStore.trigger({
+								message: 'Prober created',
+								background: 'variant-filled-success'
+							});
+							handler.invalidate();
+						}
+					})
+					.catch(() => {
+						toastStore.trigger({ message: 'Failed to create prober' });
+					});
+			}
+		};
+		modalStore.trigger(modal);
+	}
 
 	/**
 	 * @param {string} proberId
@@ -28,6 +58,7 @@
 			value: proberName,
 			valueAttr: { type: 'text', minlength: 3, maxlength: 50, required: true },
 			response: (r) => {
+				if (!r) return;
 				editProber(proberId, r)
 					.then((res) => {
 						if (res.status !== 'ok') {
@@ -57,7 +88,7 @@
 			/** @param {boolean} r */
 			response: async (r) => {
 				if (r) {
-					deleteData(id)
+					deleteProber(id)
 						.then((res) => {
 							if (res.status !== 'ok') {
 								toastStore.trigger({ message: 'Failed to delete prober' });
@@ -134,7 +165,7 @@
 </div>
 
 <div class="dashboard-card">
-	<a class="variant-filled-success btn btn-sm mb-4" href="/app/prober/add">Add Prober</a>
+	<button class="variant-filled-success btn btn-sm mb-4" on:click={showAddModal}>Add Prober</button>
 	<div class="flex justify-between">
 		<DtSrRowsPerPage {handler} />
 		<div class="invisible flex place-items-center md:visible">
