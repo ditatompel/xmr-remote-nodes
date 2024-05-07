@@ -1,12 +1,9 @@
 <script>
 	import { page } from '$app/stores';
+	import { navs } from './navs';
 	import { LightSwitch, getDrawerStore } from '@skeletonlabs/skeleton';
 
 	const drawerStore = getDrawerStore();
-
-	function drawerOpen() {
-		drawerStore.open({});
-	}
 </script>
 
 <nav class="fixed w-full z-20 top-0 start-0 bg-surface-100-800-token shadow-2xl">
@@ -22,7 +19,7 @@
 			<button
 				class="btn btn-sm mr-4 md:hidden"
 				aria-label="Mobile Drawer Button"
-				on:click={drawerOpen}
+				on:click={() => drawerStore.open({})}
 			>
 				<span>
 					<svg viewBox="0 0 100 80" class="fill-token h-4 w-4">
@@ -44,19 +41,16 @@
 						aria-current={$page.url.pathname === '/' ? 'page' : undefined}>Home</a
 					>
 				</li>
-				<li>
-					<a
-						href="/remote-nodes"
-						class={$page.url.pathname.startsWith('/remote-nodes') ? 'active' : 'nav-link'}
-						>Remote Nodes</a
-					>
-				</li>
-				<li>
-					<a
-						href="/add-node"
-						class={$page.url.pathname.startsWith('/add-node') ? 'active' : 'nav-link'}>Add Node</a
-					>
-				</li>
+				{#each navs as nav}
+					<li>
+						<a
+							href={nav.path}
+							class={$page.url.pathname.startsWith(nav.path) ? 'active' : 'nav-link'}
+						>
+							{nav.name}
+						</a>
+					</li>
+				{/each}
 			</ul>
 		</div>
 	</div>

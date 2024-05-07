@@ -1,6 +1,6 @@
 <script>
 	import { page } from '$app/stores';
-	import { navs } from './navs';
+	import { adminNavs } from './navs';
 </script>
 
 <aside
@@ -10,7 +10,7 @@
 >
 	<div class="h-full overflow-y-auto px-3 pb-4">
 		<ul class="space-y-2 font-medium list-none" data-sveltekit-preload-data="false">
-			{#each navs as nav}
+			{#each adminNavs as nav}
 				<li>
 					<a
 						href={nav.path}
