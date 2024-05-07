@@ -134,9 +134,7 @@
 				id="reloadDt"
 				name="reloadDt"
 				class="variant-filled-primary btn"
-				on:click={() => handler.invalidate()}
-			>
-				>Reload</button
+				on:click={() => handler.invalidate()}>Reload</button
 			>
 		</div>
 	</div>
