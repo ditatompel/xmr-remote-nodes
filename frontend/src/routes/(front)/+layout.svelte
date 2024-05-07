@@ -1,22 +1,9 @@
 <script>
-	// import { writable } from 'svelte/store';
 	import { page } from '$app/stores';
-	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import '../../app.css';
-	import {
-		Toast,
-		Modal,
-		Drawer,
-		initializeStores,
-		storePopup // PopUps
-	} from '@skeletonlabs/skeleton';
+	import { Drawer } from '@skeletonlabs/skeleton';
 	import { MainNav, MobileDrawer } from '$lib/components/navigation';
 	import Footer from '$lib/components/Footer.svelte';
-
-	initializeStores();
-
-	// popups
-	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 
 	/* prettier-ignore */
 	const metaDefaults = {
@@ -76,8 +63,6 @@
 	<meta name="twitter:description" content={meta.twitter.description} />
 </svelte:head>
 
-<Modal />
-<Toast />
 <Drawer>
 	<h2 class="p-4">Navigation</h2>
 	<hr />

@@ -7,7 +7,15 @@ html,
 body {
 	@apply h-full;
 }
-
+p {
+  @apply mb-2;
+}
+.link {
+  @apply text-primary-800 dark:text-primary-500 hover:brightness-110;
+}
+a.external {
+  @apply link after:content-['_↗']
+}
 .dashboard-card {
 	@apply bg-surface-50-900-token rounded-lg border-2 border-dashed border-gray-200 p-4 dark:border-gray-700;
 }

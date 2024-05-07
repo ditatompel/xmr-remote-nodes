@@ -1,28 +1,22 @@
 <script>
-	// import { base } from '$app/paths';
 	import '../app.css';
+	import { Toast, Modal } from '@skeletonlabs/skeleton';
 	import { beforeNavigate, afterNavigate } from '$app/navigation';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
-	import {
-		ProgressBar,
-		initializeStores,
-		storePopup // PopUps
-	} from '@skeletonlabs/skeleton';
+	import { ProgressBar, initializeStores, storePopup } from '@skeletonlabs/skeleton';
 
 	initializeStores();
-
-	// popups
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
-
 	let isLoading = false;
 
-	// progress bar show
 	beforeNavigate(() => (isLoading = true));
-
 	afterNavigate(() => {
 		isLoading = false;
 	});
 </script>
+
+<Modal />
+<Toast />
 
 {#if isLoading}
 	<ProgressBar

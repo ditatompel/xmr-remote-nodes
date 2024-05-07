@@ -61,6 +61,6 @@
 		@apply block rounded bg-primary-500 p-2 text-black;
 	}
 	.nav-link {
-		@apply block rounded hover:bg-secondary-500 md:p-2 hover:text-black;
+		@apply block rounded hover:bg-secondary-500 md:p-2 hover:text-white;
 	}
 </style>

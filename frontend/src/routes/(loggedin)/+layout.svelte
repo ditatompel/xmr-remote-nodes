@@ -1,10 +1,7 @@
 <script>
-	import { Toast, Drawer, Modal } from '@skeletonlabs/skeleton';
+	import { Drawer } from '@skeletonlabs/skeleton';
 	import { AdminNav, AdminSidebar, AdminMobileDrawer } from '$lib/components/navigation';
 </script>
-
-<Toast />
-<Modal />
 
 <Drawer>
 	<h2 class="p-4">Navigation</h2>
