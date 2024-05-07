@@ -19,7 +19,7 @@
 	// progress bar show
 	beforeNavigate(() => (isLoading = true));
 
-	afterNavigate((/* params */) => {
+	afterNavigate(() => {
 		isLoading = false;
 	});
 </script>
@@ -33,4 +33,3 @@
 	/>
 {/if}
 <slot />
-
