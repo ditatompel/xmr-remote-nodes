@@ -1,7 +1,7 @@
 <script>
 	import { DataHandler } from '@vincjo/datatables/remote';
 	import { format, formatDistance } from 'date-fns';
-	import { loadData, deleteData } from './api-handler';
+	import { loadData, deleteData, editProber } from './api-handler';
 	import { onMount, onDestroy } from 'svelte';
 	import { getModalStore, getToastStore } from '@skeletonlabs/skeleton';
 	import {
@@ -13,6 +13,40 @@
 	} from '$lib/components/datatables/server';
 	const modalStore = getModalStore();
 	const toastStore = getToastStore();
+
+	/**
+	 * @param {string} proberId
+	 * @param {string} proberName
+	 */
+	function showEditModal(proberId, proberName) {
+		/** @type {import('@skeletonlabs/skeleton').ModalSettings} */
+		const modal = {
+			type: 'prompt',
+			// Data
+			title: 'Enter Name',
+			body: 'Enter a new name for the prober',
+			value: proberName,
+			valueAttr: { type: 'text', minlength: 3, maxlength: 50, required: true },
+			response: (r) => {
+				editProber(proberId, r)
+					.then((res) => {
+						if (res.status !== 'ok') {
+							toastStore.trigger({ message: 'Failed to edit prober' });
+						} else {
+							toastStore.trigger({
+								message: 'Prober edited',
+								background: 'variant-filled-success'
+							});
+							handler.invalidate();
+						}
+					})
+					.catch(() => {
+						toastStore.trigger({ message: 'Failed to edit prober' });
+					});
+			}
+		};
+		modalStore.trigger(modal);
+	}
 
 	/** @param {number} id */
 	const handleDelete = (id) => {
@@ -143,7 +177,11 @@
 						<td>
 							{row.id}
 							<button
-								class="variant-filled-error btn btn-sm mr-1"
+								class="variant-filled-secondary btn btn-sm mr-1"
+								on:click={() => showEditModal(row.id, row.name)}>Edit</button
+							>
+							<button
+								class="variant-filled-error btn btn-sm"
 								name="delete_{row.id}"
 								on:click={() => {
 									handleDelete(row.id);

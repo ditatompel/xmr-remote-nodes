@@ -104,6 +104,31 @@ func Prober(c *fiber.Ctx) error {
 			"message": "Success",
 			"data":    nil,
 		})
+	} else if c.Method() == "PATCH" {
+		payload := repo.Prober{}
+		if err := c.BodyParser(&payload); err != nil {
+			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+				"status":  "error",
+				"message": err.Error(),
+				"data":    nil,
+			})
+		}
+		if payload.Name == "" {
+			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+				"status":  "error",
+				"message": "Please fill prober name",
+				"data":    nil,
+			})
+		}
+		id, _ := strconv.Atoi(c.Params("id"))
+		err := proberRepo.Update(id, payload.Name)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"status":  "error",
+				"message": err.Error(),
+				"data":    nil,
+			})
+		}
 	}
 
 	query := repo.ProbersQueryParams{
