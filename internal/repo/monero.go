@@ -471,6 +471,8 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 		repo.Delete(report.NodeInfo.Id)
 	}
 
+	repo.db.Exec(`UPDATE tbl_prober SET last_submit_ts = ? WHERE id = ?`, now.Unix(), proberId)
+
 	return err
 }
 
