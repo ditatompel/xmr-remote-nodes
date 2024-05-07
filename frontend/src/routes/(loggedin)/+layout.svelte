@@ -3,6 +3,9 @@
 	import { AdminNav, AdminSidebar, AdminMobileDrawer } from '$lib/components/navigation';
 </script>
 
+<svelte:head>
+	<meta name="robots" content="noindex,nofollow" />
+</svelte:head>
 <Drawer>
 	<h2 class="p-4">Navigation</h2>
 	<hr />

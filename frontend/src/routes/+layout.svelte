@@ -1,5 +1,6 @@
 <script>
 	import '../app.css';
+	import { page } from '$app/stores';
 	import { Toast, Modal } from '@skeletonlabs/skeleton';
 	import { beforeNavigate, afterNavigate } from '$app/navigation';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
@@ -13,7 +14,40 @@
 	afterNavigate(() => {
 		isLoading = false;
 	});
+
+	/* prettier-ignore */
+	const meta = {
+		title: 'Monero (XMR)',
+		description: 'Monero is private, decentralized cryptocurrency that keeps your finances confidential and secure.',
+		keywords: 'monero,xmr,monero node,xmrnode,cryptocurrency,testnet monero node,stagenet monero node,xmr node'
+	};
+
+	page.subscribe((page) => {
+		if (typeof page.data.meta === 'object') {
+			meta.title = page.data.meta.title ?? meta.title;
+			meta.description = page.data.meta.description ?? meta.description;
+			meta.keywords = page.data.meta.keywords ?? meta.description;
+		}
+	});
 </script>
+
+<svelte:head>
+	<title>{meta.title} — xmr.ditatompel.com</title>
+	<!-- Meta Tags -->
+	<meta name="title" content="{meta.title} — xmr.ditatompel.com" />
+	<meta name="description" content={meta.description} />
+	<meta name="keywords" content={meta.keywords} />
+	<meta name="theme-color" content="#272b31" />
+	<meta name="author" content="ditatompel" />
+
+	<!-- Open Graph - https://ogp.me/ -->
+	<meta property="og:site_name" content="xmr.ditatompel.com" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://xmr.ditatompel.com{$page.url.pathname}" />
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:title" content="{meta.title} — xmr.ditatompel.com" />
+	<meta property="og:description" content={meta.description} />
+</svelte:head>
 
 <Modal />
 <Toast />
