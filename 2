@@ -71,7 +71,6 @@
 							bind:value={filterState}
 							on:change={() => {
 								handler.filter(filterState, 'cron_state');
-								handler.invalidate();
 							}}
 						>
 							<option value={-1}>Any</option>
@@ -87,7 +86,6 @@
 							bind:value={filterEnabled}
 							on:change={() => {
 								handler.filter(filterEnabled, 'is_enabled');
-								handler.invalidate();
 							}}
 						>
 							<option value={-1}>Any</option>

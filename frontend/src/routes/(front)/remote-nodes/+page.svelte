@@ -2,13 +2,14 @@
 	import { DataHandler } from '@vincjo/datatables/remote';
 	import { format, formatDistance } from 'date-fns';
 	import { loadData, loadCountries } from './api-handler';
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import {
 		DtSrRowsPerPage,
 		DtSrThSort,
 		DtSrThFilter,
 		DtSrRowCount,
-		DtSrPagination
+		DtSrPagination,
+		DtSrAutoRefresh
 	} from '$lib/components/datatables/server';
 	import {
 		HostPortCell,
@@ -32,10 +33,6 @@
 
 	const handler = new DataHandler([], { rowsPerPage: 10, totalRows: 0 });
 	let rows = handler.getRows();
-
-	const reloadData = () => {
-		handler.invalidate();
-	};
 
 	/**
 	 * Array containing network fees.
@@ -72,45 +69,6 @@
 		{}
 	);
 
-	/** @type {number | undefined} */
-	let intervalId;
-	let intervalValue = 0;
-
-	const intervalOptions = [
-		{ value: 0, label: 'No' },
-		{ value: 5, label: '5s' },
-		{ value: 10, label: '10s' },
-		{ value: 30, label: '30s' },
-		{ value: 60, label: '1m' }
-	];
-
-	const startInterval = () => {
-		const seconds = intervalValue;
-		if (isNaN(seconds) || seconds < 0) {
-			return;
-		}
-
-		if (!intervalOptions.some((option) => option.value === seconds)) {
-			return;
-		}
-
-		if (intervalId) {
-			clearInterval(intervalId);
-		}
-
-		if (seconds > 0) {
-			reloadData();
-			intervalId = setInterval(() => {
-				reloadData();
-			}, seconds * 1000);
-		}
-	};
-
-	$: startInterval(); // Automatically start the interval on change
-
-	onDestroy(() => {
-		clearInterval(intervalId); // Clear the interval when the component is destroyed
-	});
 	onMount(() => {
 		loadCountries().then((data) => {
 			countries = data;
@@ -156,24 +114,14 @@
 			<div class="flex justify-between">
 				<DtSrRowsPerPage {handler} />
 				<div class="invisible flex place-items-center md:visible">
-					<label for="autoRefreshInterval">Auto Refresh:</label>
-					<select
-						class="select ml-2"
-						id="autoRefreshInterval"
-						bind:value={intervalValue}
-						on:change={startInterval}
-					>
-						{#each intervalOptions as { value, label }}
-							<option {value}>{label}</option>
-						{/each}
-					</select>
+					<DtSrAutoRefresh {handler} />
 				</div>
 				<div class="flex place-items-center">
 					<button
 						id="reloadDt"
 						name="reloadDt"
 						class="variant-filled-primary btn"
-						on:click={reloadData}>Reload</button
+						on:click={() => handler.invalidate()}>Reload</button
 					>
 				</div>
 			</div>
