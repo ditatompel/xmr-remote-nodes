@@ -20,7 +20,6 @@
 	export let data;
 
 	let pageId = '0';
-	let filterProberId = 0;
 	let filterStatus = -1;
 
 	/** @type {MoneroNode | null} */
@@ -67,10 +66,10 @@
 		}
 	};
 
-	$: startInterval(); // Automatically start the interval on change
+	$: startInterval();
 
 	onDestroy(() => {
-		clearInterval(intervalId); // Clear the interval when the component is destroyed
+		clearInterval(intervalId);
 	});
 	onMount(() => {
 		pageId = new URLSearchParams(window.location.search).get('node_id') || '0';
@@ -161,7 +160,7 @@
 					<thead>
 						<tr>
 							<th>#ID</th>
-							<th><label for="prober_id">Prober</label></th>
+							<th>Prober ID</th>
 							<th><label for="status">Status</label></th>
 							<th>Height</th>
 							<th>Adjusted Time</th>
@@ -172,21 +171,7 @@
 							<DtSrThSort {handler} orderBy="fetch_runtime">Runtime</DtSrThSort>
 						</tr>
 						<tr>
-							<th colspan="2">
-								<select
-									id="prober_id"
-									name="prober_id"
-									class="select variant-form-material"
-									bind:value={filterProberId}
-									on:change={() => {
-										handler.filter(filterProberId, 'prober_id');
-										handler.invalidate();
-									}}
-								>
-									<option value={0}>Any</option>
-								</select>
-							</th>
-							<th colspan="2">
+							<th colspan="3">
 								<select
 									id="status"
 									name="status"
@@ -206,7 +191,7 @@
 								{handler}
 								filterBy="failed_reason"
 								placeholder="Filter reason"
-								colspan={6}
+								colspan={7}
 							/>
 						</tr>
 					</thead>

@@ -190,10 +190,10 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 }
 
 type MoneroLogQueryParams struct {
-	NodeId     int    // 0 fpr all, >0 for specific node
-	WorkerId   int    // 0 for all, >0 for specific worker
-	Status     int    // -1 for all, 0 for failed, 1 for success
-	FailReason string // empty for all, if not empty, will be used as search from failed_reaso
+	NodeId       int    // 0 fpr all, >0 for specific node
+	WorkerId     int    // 0 for all, >0 for specific worker
+	Status       int    // -1 for all, 0 for failed, 1 for success
+	FailedReason string // empty for all, if not empty, will be used as search from failed_reaso
 
 	RowsPerPage   int
 	Page          int
@@ -230,6 +230,14 @@ func (repo *MoneroRepo) Logs(q MoneroLogQueryParams) (MoneroNodeFetchLogs, error
 	if q.NodeId != 0 {
 		whereQueries = append(whereQueries, "node_id = ?")
 		queryParams = append(queryParams, q.NodeId)
+	}
+	if q.Status != -1 {
+		whereQueries = append(whereQueries, "is_available = ?")
+		queryParams = append(queryParams, q.Status)
+	}
+	if q.FailedReason != "" {
+		whereQueries = append(whereQueries, "failed_reason LIKE ?")
+		queryParams = append(queryParams, "%"+q.FailedReason+"%")
 	}
 
 	if len(whereQueries) > 0 {

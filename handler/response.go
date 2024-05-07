@@ -189,6 +189,8 @@ func ProbeLogs(c *fiber.Ctx) error {
 		SortBy:        c.Query("sort_by", "id"),
 		SortDirection: c.Query("sort_direction", "desc"),
 		NodeId:        c.QueryInt("node_id", 0),
+		Status:        c.QueryInt("status", -1),
+		FailedReason:  c.Query("failed_reason"),
 	}
 
 	logs, err := moneroRepo.Logs(query)
