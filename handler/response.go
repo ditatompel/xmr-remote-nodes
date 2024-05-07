@@ -88,6 +88,22 @@ func Prober(c *fiber.Ctx) error {
 				"data":    nil,
 			})
 		}
+	} else if c.Method() == "DELETE" {
+		id, _ := strconv.Atoi(c.Params("id"))
+		err := proberRepo.Delete(id)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"status":  "error",
+				"message": err.Error(),
+				"data":    nil,
+			})
+		}
+
+		return c.JSON(fiber.Map{
+			"status":  "ok",
+			"message": "Success",
+			"data":    nil,
+		})
 	}
 
 	query := repo.ProbersQueryParams{

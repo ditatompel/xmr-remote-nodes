@@ -14,6 +14,7 @@ type ProberRepository interface {
 	AddProber(name string) error
 	Probers(q ProbersQueryParams) (Probers, error)
 	CheckApi(key string) (Prober, error)
+	Delete(id int) error
 }
 
 type ProberRepo struct {
@@ -123,4 +124,10 @@ func (repo *ProberRepo) CheckApi(key string) (Prober, error) {
 	query := `SELECT id, name, api_key, last_submit_ts FROM tbl_prober WHERE api_key = ? LIMIT 1`
 	err := repo.db.QueryRow(query, key).Scan(&prober.Id, &prober.Name, &prober.ApiKey, &prober.LastSubmitTs)
 	return prober, err
+}
+
+func (repo *ProberRepo) Delete(id int) error {
+	query := `DELETE FROM tbl_prober WHERE id = ?`
+	_, err := repo.db.Exec(query, id)
+	return err
 }

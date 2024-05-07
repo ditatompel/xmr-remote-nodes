@@ -8,6 +8,15 @@ export const loadData = async (state) => {
 	return json.data.items ?? [];
 };
 
+export const deleteData = async (id) => {
+	const response = await fetch(apiUri(`/api/v1/prober/${id}`), {
+		method: 'DELETE',
+		credentials: 'include'
+	});
+	const json = await response.json();
+	return json;
+};
+
 const getParams = ({ pageNumber, rowsPerPage, sort, filters }) => {
 	let params = `page=${pageNumber}&limit=${rowsPerPage}`;
 

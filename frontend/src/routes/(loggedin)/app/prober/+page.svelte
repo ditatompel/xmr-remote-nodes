@@ -1,8 +1,9 @@
 <script>
 	import { DataHandler } from '@vincjo/datatables/remote';
 	import { format, formatDistance } from 'date-fns';
-	import { loadData } from './api-handler';
+	import { loadData, deleteData } from './api-handler';
 	import { onMount, onDestroy } from 'svelte';
+	import { getModalStore, getToastStore } from '@skeletonlabs/skeleton';
 	import {
 		DtSrRowsPerPage,
 		DtSrThSort,
@@ -10,6 +11,37 @@
 		DtSrRowCount,
 		DtSrPagination
 	} from '$lib/components/datatables/server';
+	const modalStore = getModalStore();
+	const toastStore = getToastStore();
+
+	/** @param {number} id */
+	const handleDelete = (id) => {
+		modalStore.trigger({
+			type: 'confirm',
+			title: 'Please Confirm',
+			body: 'Are you sure you wish to proceed?',
+			/** @param {boolean} r */
+			response: async (r) => {
+				if (r) {
+					deleteData(id)
+						.then((res) => {
+							if (res.status !== 'ok') {
+								toastStore.trigger({ message: 'Failed to delete prober' });
+							} else {
+								toastStore.trigger({
+									message: 'Prober deleted',
+									background: 'variant-filled-success'
+								});
+								handler.invalidate();
+							}
+						})
+						.catch(() => {
+							toastStore.trigger({ message: 'Prober could not be deleted' });
+						});
+				}
+			}
+		});
+	};
 
 	const handler = new DataHandler([], { rowsPerPage: 10, totalRows: 0 });
 	let rows = handler.getRows();
@@ -108,7 +140,16 @@
 			<tbody>
 				{#each $rows as row (row.id)}
 					<tr>
-						<td>{row.id}</td>
+						<td>
+							{row.id}
+							<button
+								class="variant-filled-error btn btn-sm mr-1"
+								name="delete_{row.id}"
+								on:click={() => {
+									handleDelete(row.id);
+								}}>Delete</button
+							>
+						</td>
 						<td>{row.name}</td>
 						<td>{row.api_key}</td>
 						<td>
