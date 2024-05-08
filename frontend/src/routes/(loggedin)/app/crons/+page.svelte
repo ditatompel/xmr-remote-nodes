@@ -10,7 +10,7 @@
 		DtSrAutoRefresh
 	} from '$lib/components/datatables/server';
 
-	const handler = new DataHandler([], { rowsPerPage: 1000, totalRows: 0 });
+	const handler = new DataHandler([], { rowsPerPage: 10, totalRows: 0 });
 	let rows = handler.getRows();
 
 	/** @type {string | number} */
@@ -73,8 +73,8 @@
 							}}
 						>
 							<option value={-1}>Any</option>
-							<option value={1}>Running</option>
-							<option value={0}>Idle</option>
+							<option value="1">Running</option>
+							<option value="0">Idle</option>
 						</select>
 					</th>
 					<th>
@@ -89,8 +89,8 @@
 							}}
 						>
 							<option value={-1}>Any</option>
-							<option value={1}>Yes</option>
-							<option value={0}>No</option>
+							<option value="1">Yes</option>
+							<option value="0">No</option>
 						</select>
 					</th>
 				</tr>

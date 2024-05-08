@@ -16,6 +16,7 @@ func V1Api(app *fiber.App) {
 	v1.Post("/prober", CookieProtected, Prober)
 	v1.Patch("/prober/:id", CookieProtected, Prober)
 	v1.Delete("/prober/:id", CookieProtected, Prober)
+	v1.Get("/crons", CookieProtected, Crons)
 	v1.Get("/nodes", MoneroNodes)
 	v1.Post("/nodes", AddNode)
 	v1.Get("/nodes/id/:id", MoneroNode)
@@ -24,5 +25,4 @@ func V1Api(app *fiber.App) {
 	v1.Get("/countries", Countries)
 	v1.Get("/job", CheckProber, GiveJob)
 	v1.Post("/job", CheckProber, ProcessJob)
-	v1.Get("/crons", Crons)
 }
