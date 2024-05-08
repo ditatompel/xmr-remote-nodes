@@ -35,7 +35,7 @@
 		if (formResult.status === 'ok') {
 			// rerun all `load` functions, following the successful update
 			await invalidateAll();
-			goto('/app/dashboard/');
+			goto('/app/prober/');
 		}
 	}
 </script>

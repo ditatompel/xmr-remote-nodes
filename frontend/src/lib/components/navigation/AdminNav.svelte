@@ -4,18 +4,7 @@
 	import { apiUri } from '$lib/utils/common';
 
 	const drawerStore = getDrawerStore();
-	function drawerOpen() {
-		drawerStore.open({});
-	}
-
-	/**
-	 * @typedef formResult
-	 * @type {object}
-	 * @property {string} status
-	 * @property {string} message
-	 * @property {null | object} data
-	 */
-	/** @type {formResult} */
+	/** @type {ApiResponse} */
 	let formResult;
 
 	/** @param {{ currentTarget: EventTarget & HTMLFormElement}} event */
@@ -34,7 +23,6 @@
 		formResult = await response.json();
 
 		if (formResult.status === 'ok') {
-			// rerun all `load` functions, following the successful update
 			await invalidateAll();
 			goto('/login/');
 		}
@@ -48,7 +36,7 @@
 				<button
 					class="btn btn-sm inline-flex items-center md:hidden"
 					aria-label="Mobile Drawer Button"
-					on:click={drawerOpen}
+					on:click={() => drawerStore.open({})}
 				>
 					<span>
 						<svg viewBox="0 0 100 80" class="fill-token h-4 w-4">
@@ -58,8 +46,7 @@
 						</svg>
 					</span>
 				</button>
-
-				<a href="/app/dashboard/" class="ms-2 flex md:me-24" aria-label="title">
+				<a href="/app/prober/" class="ms-2 flex md:me-24" aria-label="title">
 					<span class="hidden self-center whitespace-nowrap text-2xl font-semibold lg:block"
 						>XMR Nodes</span
 					>
