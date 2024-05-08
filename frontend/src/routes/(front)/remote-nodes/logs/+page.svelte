@@ -176,21 +176,3 @@
 		</div>
 	</section>
 {/if}
-
-<style lang="postcss">
-	.section-container {
-		@apply mx-auto w-full max-w-7xl p-4;
-	}
-	/* Hero Gradient */
-	/* prettier-ignore */
-	.hero-gradient {
-  background-image:
-    radial-gradient(at 0% 0%, rgba(242, 104, 34, .4) 0px, transparent 50%),
-    radial-gradient(at 98% 1%, rgba(var(--color-warning-900) / 0.33) 0px, transparent 50%);
-  }
-	/*
-  td:nth-child(1) {
-  @apply max-w-20;
-  }
-  */
-</style>
