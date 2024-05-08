@@ -412,10 +412,10 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 	}{}
 
 	qstats := `SELECT
-	SUM(if(is_available='1',1,0)) AS online,
-	SUM(if(is_available='0',1,0)) AS offline,
-	SUM(if(id='0',0,1)) AS total_fetched FROM
-	tbl_probe_log WHERE node_id = ? AND date_checked > ?`
+		SUM(if(is_available='1',1,0)) AS online,
+		SUM(if(is_available='0',1,0)) AS offline,
+		SUM(if(id='0',0,1)) AS total_fetched
+	FROM tbl_probe_log WHERE node_id = ? AND date_checked > ?`
 	repo.db.Get(&nodeStats, qstats, report.NodeInfo.Id, limitTs)
 
 	avgUptime := (float64(nodeStats.OnlineCount) / float64(nodeStats.TotalFetched)) * 100
@@ -457,12 +457,12 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 
 	if report.NodeInfo.IsAvailable {
 		update := `UPDATE tbl_node SET
-        is_available = ?, nettype = ?, height = ?, adjusted_time = ?,
-        database_size = ?, difficulty = ?, version = ?, uptime = ?,
-        estimate_fee = ?, ip_addr = ?, asn = ?, asn_name = ?, country = ?,
-      country_name = ?, city = ?, last_checked = ?, last_check_status = ?,
-      cors_capable = ?
-    WHERE id = ?`
+			is_available = ?, nettype = ?, height = ?, adjusted_time = ?,
+			database_size = ?, difficulty = ?, version = ?, uptime = ?,
+			estimate_fee = ?, ip_addr = ?, asn = ?, asn_name = ?, country = ?,
+			country_name = ?, city = ?, last_checked = ?, last_check_status = ?,
+			cors_capable = ?
+		WHERE id = ?`
 		_, err = repo.db.Exec(update,
 			nodeAvailable, report.NodeInfo.NetType, report.NodeInfo.Height, report.NodeInfo.AdjustedTime, report.NodeInfo.DatabaseSize, report.NodeInfo.Difficulty, report.NodeInfo.Version, report.NodeInfo.Uptime, report.NodeInfo.EstimateFee, report.NodeInfo.Ip, report.NodeInfo.Asn, report.NodeInfo.AsnName, report.NodeInfo.CountryCode, report.NodeInfo.CountryName, report.NodeInfo.City, now.Unix(), string(statuesValueToDb), report.NodeInfo.CorsCapable, report.NodeInfo.Id)
 	} else {
