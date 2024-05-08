@@ -64,6 +64,7 @@
 						class="input variant-form-material"
 						name="hostname"
 						type="text"
+						required
 						placeholder="Eg: node.example.com or 172.16.17.18"
 						disabled={isProcessing}
 					/>
@@ -74,6 +75,7 @@
 						class="input variant-form-material"
 						name="port"
 						type="number"
+						required
 						placeholder="Eg: 18081"
 						disabled={isProcessing}
 					/>
@@ -107,7 +109,7 @@
 		</div>
 
 		<p>
-			Here you can find list of <a class="anchor" href="/remote-nodes">Monero Remote Node</a>.
+			Here you can find list of <a class="anchor" href="/remote-nodes/">Monero Remote Node</a>.
 		</p>
 	</div>
 </section>
