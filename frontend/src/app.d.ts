@@ -22,6 +22,12 @@ declare global {
     is_available: boolean;
     nettype: string;
   }
+
+  interface ApiResponse {
+    status: string;
+    message: string;
+    data: null | object | object[];
+  }
 }
 
 export {};

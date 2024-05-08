@@ -2,17 +2,10 @@
 	import { invalidateAll, goto } from '$app/navigation';
 	import { apiUri } from '$lib/utils/common';
 	import { ProgressBar } from '@skeletonlabs/skeleton';
+
 	/** @type {import('./$types').PageData} */
 	export let data;
-
-	/**
-	 * @typedef formResult
-	 * @type {object}
-	 * @property {string} status
-	 * @property {string} message
-	 * @property {null | object} data
-	 */
-	/** @type {formResult} */
+	/** @type {ApiResponse} */
 	export let formResult;
 
 	let isProcessing = false;
@@ -31,7 +24,6 @@
 		isProcessing = false;
 
 		if (formResult.status === 'ok') {
-			// rerun all `load` functions, following the successful update
 			await invalidateAll();
 			goto('/remote-nodes');
 		}
