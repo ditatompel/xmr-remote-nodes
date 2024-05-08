@@ -176,8 +176,8 @@ func (repo *CronRepo) execCron(slug string) {
 }
 
 func (repo *CronRepo) deleteOldProbeLogs() {
-	// for now, we only delete stats older than 2 days
-	startTs := time.Now().AddDate(0, 0, -2).Unix()
+	// for now, we only delete stats older than 1 month +2 days
+	startTs := time.Now().AddDate(0, -1, -2).Unix()
 	query := `DELETE FROM tbl_probe_log WHERE date_checked < ?`
 	_, err := repo.db.Exec(query, startTs)
 	if err != nil {
