@@ -1,9 +1,14 @@
 import { apiUri } from '$lib/utils/common';
+import { goto } from '$app/navigation';
 
 /** @param {import('@vincjo/datatables/remote/state')} state */
 export const loadData = async (state) => {
 	const response = await fetch(apiUri(`/api/v1/prober?${getParams(state)}`));
 	const json = await response.json();
+	if (json.data === null) {
+		goto('/login');
+		return;
+	}
 	state.setTotalRows(json.data.total_rows ?? 0);
 	return json.data.items ?? [];
 };
