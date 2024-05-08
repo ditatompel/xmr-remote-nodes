@@ -34,29 +34,8 @@
 	const handler = new DataHandler([], { rowsPerPage: 10, totalRows: 0 });
 	let rows = handler.getRows();
 
-	/**
-	 * Array containing network fees.
-	 * For now, I use static data to reduce the amount of API calls.
-	 * See the values from `/api/v1/fees`
-	 * @type {{ nettype: string, estimate_fee: number }[]}
-	 */
-	const netFees = [
-		{
-			nettype: 'mainnet',
-			estimate_fee: 20000
-		},
-		{
-			nettype: 'stagenet',
-			estimate_fee: 58000
-		},
-		{
-			nettype: 'testnet',
-			estimate_fee: 20000
-		}
-	];
-
 	/** @type {Object.<string, number>} */
-	let majorityFee = netFees.reduce(
+	let majorityFee = data.netFees.reduce(
 		/**
 		 * @param {Object.<string, number>} o
 		 * @param {{ nettype: string, estimate_fee: number }} key
@@ -81,10 +60,9 @@
 <header id="hero" class="hero-gradient py-7">
 	<div class="section-container text-center">
 		<h1 class="h1 pb-2 font-extrabold">{data.meta.title}</h1>
+		<!-- prettier-ignore -->
 		<p class="mx-auto max-w-3xl">
-			<strong>Monero remote node</strong> is a device on the internet running the Monero software with
-			full copy of the Monero blockchain that doesn't run on the same local machine where the Monero
-			wallet is located.
+			<strong>Monero remote node</strong> is a device on the internet running the Monero software with full copy of the Monero blockchain that doesn't run on the same local machine where the Monero wallet is located.
 		</p>
 	</div>
 	<div class="mx-auto w-full max-w-3xl px-20">
@@ -92,19 +70,11 @@
 	</div>
 </header>
 
+<!-- prettier-ignore -->
 <section id="introduction ">
 	<div class="section-container text-center !max-w-4xl">
-		<p>
-			Remote node can be used by people who, for their own reasons (usually because of hardware
-			requirements, disk space, or technical abilities), cannot/don't want to run their own node and
-			prefer to relay on one publicly available on the Monero network.
-		</p>
-		<p>
-			Using an open node will allow to make a transaction instantaneously, without the need to
-			download the blockchain and sync to the Monero network first, but at the cost of the control
-			over your privacy. the <strong>Monero community suggests to always run your own node</strong> to
-			obtain the maximum possible privacy and to help decentralize the network.
-		</p>
+		<p>Remote node can be used by people who, for their own reasons (usually because of hardware requirements, disk space, or technical abilities), cannot/don't want to run their own node and prefer to relay on one publicly available on the Monero network.</p>
+		<p>Using an open node will allow to make a transaction instantaneously, without the need to download the blockchain and sync to the Monero network first, but at the cost of the control over your privacy. the <strong>Monero community suggests to always run your own node</strong> to obtain the maximum possible privacy and to help decentralize the network.</p>
 	</div>
 </section>
 
@@ -135,7 +105,6 @@
 						<th>Country</th>
 						<th>Status</th>
 						<th>Est. Fee</th>
-
 						<DtSrThSort {handler} orderBy="uptime">Uptime</DtSrThSort>
 						<DtSrThSort {handler} orderBy="last_checked">Check</DtSrThSort>
 					</tr>
