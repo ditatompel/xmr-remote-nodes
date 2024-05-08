@@ -11,9 +11,8 @@ import (
 	"net/http"
 	"os"
 	"time"
-
-	"github.com/ditatompel/xmr-nodes/internal/config"
-	"github.com/ditatompel/xmr-nodes/internal/repo"
+	"xmr-remote-nodes/internal/config"
+	"xmr-remote-nodes/internal/repo"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/net/proxy"

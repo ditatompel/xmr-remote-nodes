@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"github.com/ditatompel/xmr-nodes/internal/database"
-	"github.com/ditatompel/xmr-nodes/internal/repo"
+	"xmr-remote-nodes/internal/database"
+	"xmr-remote-nodes/internal/repo"
 
 	"github.com/gofiber/fiber/v2"
 )

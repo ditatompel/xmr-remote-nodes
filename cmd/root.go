@@ -2,8 +2,7 @@ package cmd
 
 import (
 	"os"
-
-	"github.com/ditatompel/xmr-nodes/internal/config"
+	"xmr-remote-nodes/internal/config"
 
 	"github.com/spf13/cobra"
 )

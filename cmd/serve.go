@@ -5,12 +5,11 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-
-	"github.com/ditatompel/xmr-nodes/frontend"
-	"github.com/ditatompel/xmr-nodes/handler"
-	"github.com/ditatompel/xmr-nodes/internal/config"
-	"github.com/ditatompel/xmr-nodes/internal/database"
-	"github.com/ditatompel/xmr-nodes/internal/repo"
+	"xmr-remote-nodes/frontend"
+	"xmr-remote-nodes/handler"
+	"xmr-remote-nodes/internal/config"
+	"xmr-remote-nodes/internal/database"
+	"xmr-remote-nodes/internal/repo"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"

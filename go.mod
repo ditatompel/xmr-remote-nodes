@@ -1,4 +1,4 @@
-module github.com/ditatompel/xmr-nodes
+module xmr-remote-nodes
 
 go 1.22.2
 

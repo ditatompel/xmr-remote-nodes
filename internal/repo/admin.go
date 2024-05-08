@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
-
-	"github.com/ditatompel/xmr-nodes/internal/database"
+	"xmr-remote-nodes/internal/database"
 
 	"github.com/alexedwards/argon2id"
 )

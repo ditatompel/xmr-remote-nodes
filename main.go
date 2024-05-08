@@ -1,6 +1,6 @@
 package main
 
-import "github.com/ditatompel/xmr-nodes/cmd"
+import "xmr-remote-nodes/cmd"
 
 func main() {
 	cmd.Execute()
