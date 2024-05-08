@@ -455,16 +455,20 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 		}
 	}
 
-	update := `UPDATE tbl_node SET
+	if report.NodeInfo.IsAvailable {
+		update := `UPDATE tbl_node SET
         is_available = ?, nettype = ?, height = ?, adjusted_time = ?,
         database_size = ?, difficulty = ?, version = ?, uptime = ?,
         estimate_fee = ?, ip_addr = ?, asn = ?, asn_name = ?, country = ?,
       country_name = ?, city = ?, last_checked = ?, last_check_status = ?,
       cors_capable = ?
     WHERE id = ?`
-
-	_, err = repo.db.Exec(update,
-		nodeAvailable, report.NodeInfo.NetType, report.NodeInfo.Height, report.NodeInfo.AdjustedTime, report.NodeInfo.DatabaseSize, report.NodeInfo.Difficulty, report.NodeInfo.Version, report.NodeInfo.Uptime, report.NodeInfo.EstimateFee, report.NodeInfo.Ip, report.NodeInfo.Asn, report.NodeInfo.AsnName, report.NodeInfo.CountryCode, report.NodeInfo.CountryName, report.NodeInfo.City, now.Unix(), string(statuesValueToDb), report.NodeInfo.CorsCapable, report.NodeInfo.Id)
+		_, err = repo.db.Exec(update,
+			nodeAvailable, report.NodeInfo.NetType, report.NodeInfo.Height, report.NodeInfo.AdjustedTime, report.NodeInfo.DatabaseSize, report.NodeInfo.Difficulty, report.NodeInfo.Version, report.NodeInfo.Uptime, report.NodeInfo.EstimateFee, report.NodeInfo.Ip, report.NodeInfo.Asn, report.NodeInfo.AsnName, report.NodeInfo.CountryCode, report.NodeInfo.CountryName, report.NodeInfo.City, now.Unix(), string(statuesValueToDb), report.NodeInfo.CorsCapable, report.NodeInfo.Id)
+	} else {
+		update := `UPDATE tbl_node SET is_available = ?,  uptime = ?, last_checked = ?, last_check_status = ? WHERE id = ?`
+		_, err = repo.db.Exec(update, nodeAvailable, report.NodeInfo.Uptime, now.Unix(), string(statuesValueToDb), report.NodeInfo.Id)
+	}
 
 	if avgUptime <= 0 && nodeStats.TotalFetched > 300 {
 		fmt.Println("Deleting Monero node (0% uptime from > 300 records)")
