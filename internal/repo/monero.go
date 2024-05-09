@@ -81,8 +81,6 @@ func (repo *MoneroRepo) Node(id int) (MoneroNode, error) {
 type MoneroNodes struct {
 	TotalRows   int           `json:"total_rows"`
 	RowsPerPage int           `json:"rows_per_page"`
-	CurrentPage int           `json:"current_page"`
-	NextPage    int           `json:"next_page"`
 	Items       []*MoneroNode `json:"items"`
 }
 
@@ -173,8 +171,6 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 	defer row.Close()
 
 	nodes.RowsPerPage = q.RowsPerPage
-	nodes.CurrentPage = q.Page
-	nodes.NextPage = q.Page + 1
 
 	for row.Next() {
 		node := MoneroNode{}

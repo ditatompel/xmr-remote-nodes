@@ -1,12 +1,15 @@
-# XMR Nodes
+# XMR Remote Nodes
+
+Source code of [https://xmr.ditatompel.com](https://xmr.ditatompel.com).
 
 ## Requirements
 
-- [GeoIP Database](https://dev.maxmind.com/geoip/geoip2/geolite2/) (place it to `./assets/geoip`, see [./internal/repo/geoip.go](./internal/repo/geoip.go)).
+- Linux Machine (AMD64 or ARM64)
+- [GeoIP Database](https://dev.maxmind.com/geoip/geoip2/geolite2/) (for server, optional). Place it to `./assets/geoip`, see [./internal/repo/geoip.go](./internal/repo/geoip.go).
 
 ## Installation
 
-For initial server setup:
+### For initial server setup:
 
 1. Create database structure and import `tbl_cron` data from [./tools/resources/database](./tools/resources/database).
 2. Download [GeoIP Database](https://dev.maxmind.com/geoip/geoip2/geolite2/) and place it to `./assets/geoip`. (see [./internal/repo/geoip.go](./internal/repo/geoip.go)).
@@ -18,7 +21,7 @@ To create admin user (for creating prober API key from Web-UI, execute `./bin/xm
 
 Systemd example: [./tools/resources/init/xmr-nodes-server.service](./tools/resources/init/xmr-nodes-server.service).
 
-For initial prober setup:
+### For initial prober setup:
 
 1. Create API key for prober
 2. Copy `.env.example` to `.env` and edit it to match with prober environment.
