@@ -108,10 +108,17 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 		queryParams = append(queryParams, "%"+q.Host+"%")
 	}
 	if q.NetType != "any" {
+		if q.NetType != "mainnet" && q.NetType != "stagenet" && q.NetType != "testnet" {
+			return MoneroNodes{}, errors.New("Invalid nettype, must be one of 'mainnet', 'stagenet', 'testnet' or 'any'")
+		}
 		whereQueries = append(whereQueries, "nettype = ?")
 		queryParams = append(queryParams, q.NetType)
 	}
 	if q.Protocol != "any" {
+		allowedProtocols := []string{"tor", "http", "https"}
+		if !slices.Contains(allowedProtocols, q.Protocol) {
+			return MoneroNodes{}, errors.New("Invalid protocol, must be one of '" + strings.Join(allowedProtocols, "', '") + "' or 'any'")
+		}
 		if q.Protocol == "tor" {
 			whereQueries = append(whereQueries, "is_tor = ?")
 			queryParams = append(queryParams, 1)
