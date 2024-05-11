@@ -2,10 +2,11 @@
 export async function load({ data }) {
 	return {
 		meta: {
-			title: 'Monero (XMR)',
+			title: 'Monero Remote Node',
 			description:
-				'Monero is private, decentralized cryptocurrency that keeps your finances confidential and secure.',
-			keywords: 'monero,xmr,monero node,xmrnode,cryptocurrency'
+				'A website that helps you monitor your favourite Monero remote nodes, a device on the internet running the Monero software with copy of the Monero blockchain.',
+			keywords:
+				'monero,monero,xmr,monero node,xmrnode,cryptocurrency,monero remote node,monero testnet,monero stagenet'
 		},
 		links: [
 			{ text: 'moneroworld.com', uri: 'https://moneroworld.com' },

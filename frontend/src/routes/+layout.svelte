@@ -17,9 +17,9 @@
 
 	/* prettier-ignore */
 	const meta = {
-		title: 'Monero (XMR)',
-		description: 'Monero is private, decentralized cryptocurrency that keeps your finances confidential and secure.',
-		keywords: 'monero,xmr,monero node,xmrnode,cryptocurrency,testnet monero node,stagenet monero node,xmr node'
+		title: 'Monero Remote Node',
+		description: 'A website that helps you monitor your favourite Monero remote nodes, a device on the internet running the Monero software with copy of the Monero blockchain.',
+		keywords: 'monero,monero,xmr,monero node,xmrnode,cryptocurrency,monero remote node,monero testnet,monero stagenet'
 	};
 
 	page.subscribe((page) => {
