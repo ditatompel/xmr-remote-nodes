@@ -40,6 +40,11 @@ func serve() {
 		panic(err)
 	}
 
+	// run db migrations
+	if err := database.MigrateDb(database.GetDB()); err != nil {
+		panic(err)
+	}
+
 	// Define Fiber config & app.
 	app := fiber.New(fiberConfig())
 

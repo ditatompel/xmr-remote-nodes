@@ -61,7 +61,9 @@ This command only available during migration process and will be removed in futu
 		action := newImport(database.GetDB())
 
 		for _, node := range response.Data {
-			action.processData(node)
+			if err := action.processData(node); err != nil {
+				fmt.Println(err)
+			}
 		}
 
 		fmt.Println("Total Source Data: ", len(response.Data))

@@ -11,11 +11,10 @@ Source code of [https://xmr.ditatompel.com](https://xmr.ditatompel.com).
 
 ### For initial server setup:
 
-1. Create database structure and import `tbl_cron` data from [./tools/resources/database](./tools/resources/database).
-2. Download [GeoIP Database](https://dev.maxmind.com/geoip/geoip2/geolite2/) and place it to `./assets/geoip`. (see [./internal/repo/geoip.go](./internal/repo/geoip.go)).
-3. Copy `.env.example` to `.env` and edit it to match with server environment.
-4. Build the binary with `make build`.
-5. Run the service with `./bin/xmr-nodes-static-linux-<YOUR_CPU_ARCH> serve`.
+1. Download [GeoIP Database](https://dev.maxmind.com/geoip/geoip2/geolite2/) and place it to `./assets/geoip`. (see [./internal/repo/geoip.go](./internal/repo/geoip.go)).
+2. Copy `.env.example` to `.env` and edit it to match with server environment.
+3. Build the binary with `make build`.
+4. Run the service with `./bin/xmr-nodes-static-linux-<YOUR_CPU_ARCH> serve`.
 
 To create admin user (for creating prober API key from Web-UI, execute `./bin/xmr-nodes-static-linux-<YOUR_CPU_ARCH> admin create`).
 
