@@ -18,10 +18,11 @@ func newImport(db *database.DB) *importClient {
 }
 
 type importData struct {
-	Hostname string `json:"hostname"`
-	Port     int    `json:"port"`
-	Protocol string `json:"protocol"`
-	IsTor    bool   `json:"is_tor"`
+	Hostname    string `json:"hostname"`
+	Port        int    `json:"port"`
+	Protocol    string `json:"protocol"`
+	IsTor       bool   `json:"is_tor"`
+	DateEntered int    `json:"date_entered"`
 }
 
 var importCmd = &cobra.Command{
@@ -84,8 +85,8 @@ func (i *importClient) processData(node importData) error {
 	}
 
 	// insert
-	query = `INSERT INTO tbl_node (hostname, port, protocol, is_tor, nettype, ip_addr, last_check_status) VALUES (?, ?, ?, ?, ?, ?, ?)`
-	_, err = i.db.Exec(query, node.Hostname, node.Port, node.Protocol, node.IsTor, "", "", "[2,2,2,2,2]")
+	query = `INSERT INTO tbl_node (hostname, port, protocol, is_tor, nettype, ip_addr, date_entered, last_check_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+	_, err = i.db.Exec(query, node.Hostname, node.Port, node.Protocol, node.IsTor, "", "", node.DateEntered, "[2,2,2,2,2]")
 	if err != nil {
 		return err
 	}
