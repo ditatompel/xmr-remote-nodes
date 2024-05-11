@@ -1,11 +1,11 @@
 {
   "name": "xmr.ditatompel.com",
-  "short_name": "xmr-nodes",
+  "short_name": "xmr-remote-nodes",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#272b31",
   "theme_color": "#272b31",
-  "description": "WA Bot UI",
+  "description": "Monero Remote Nodes",
   "icons": [{
     "src": "/img/icon/android-icon-36x36.png",
     "sizes": "36x36",
