@@ -4,9 +4,8 @@ export async function load({ data }) {
 		// prettier-ignore
 		meta: {
 			title: 'Public Monero Remote Nodes List',
-			description:
-				'Monero is private, decentralized cryptocurrency that keeps your finances confidential and secure.',
-			keywords: 'monero remote nodes,public monero nodes,monero public nodes,monero wallet'
+			description: 'List of public Monero remote nodes that you can use with your favourite Monero wallet. You can filter by country, protocol, or CORS capable nodes.',
+			keywords: 'monero remote nodes,public monero nodes,monero public nodes,monero wallet,tor monero node,monero cors rpc'
 		},
 		/**
 		 * Array containing network fees.
