@@ -1,20 +1,21 @@
 package config
 
 import (
+	"log/slog"
 	"os"
 	"strconv"
 )
 
 type App struct {
+	// general config
+	LogLevel string
 	// configuration for server
-	Debug       bool
 	Prefork     bool
 	Host        string
 	Port        int
 	ProxyHeader string
 	AllowOrigin string
 	SecretKey   string
-	LogLevel    string
 	// configuration for prober (client)
 	ServerEndpoint string
 	ApiKey         string
@@ -30,21 +31,27 @@ func AppCfg() *App {
 
 // loads App configuration
 func LoadApp() {
+	// general config
+	app.LogLevel = os.Getenv("LOG_LEVEL")
+	switch app.LogLevel {
+	case "DEBUG":
+		slog.SetLogLoggerLevel(slog.LevelDebug)
+	case "ERROR":
+		slog.SetLogLoggerLevel(slog.LevelError)
+	case "WARN":
+		slog.SetLogLoggerLevel(slog.LevelWarn)
+	default:
+		slog.SetLogLoggerLevel(slog.LevelInfo)
+	}
+
 	// server configuration
 	app.Host = os.Getenv("APP_HOST")
 	app.Port, _ = strconv.Atoi(os.Getenv("APP_PORT"))
-	app.Debug, _ = strconv.ParseBool(os.Getenv("APP_DEBUG"))
 	app.Prefork, _ = strconv.ParseBool(os.Getenv("APP_PREFORK"))
 	app.ProxyHeader = os.Getenv("APP_PROXY_HEADER")
 	app.AllowOrigin = os.Getenv("APP_ALLOW_ORIGIN")
 	app.SecretKey = os.Getenv("SECRET_KEY")
-	app.LogLevel = os.Getenv("LOG_LEVEL")
-	if app.LogLevel == "" {
-		app.LogLevel = "INFO"
-	}
-	if app.Debug {
-		app.LogLevel = "DEBUG"
-	}
+
 	// prober configuration
 	app.ServerEndpoint = os.Getenv("SERVER_ENDPOINT")
 	app.ApiKey = os.Getenv("API_KEY")

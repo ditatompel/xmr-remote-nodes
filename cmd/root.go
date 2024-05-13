@@ -9,8 +9,6 @@ import (
 
 const AppVer = "0.0.1"
 
-var LogLevel string
-
 var rootCmd = &cobra.Command{
 	Use:     "xmr-nodes",
 	Short:   "XMR Nodes",
@@ -26,5 +24,4 @@ func Execute() {
 
 func init() {
 	config.LoadAll(".env")
-	LogLevel = config.AppCfg().LogLevel
 }

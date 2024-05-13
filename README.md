@@ -4,7 +4,9 @@ Source code of [https://xmr.ditatompel.com](https://xmr.ditatompel.com).
 
 ## Requirements
 
+- Go >= 1.22
 - Linux Machine (AMD64 or ARM64)
+- MySQL/MariaDB (for server)
 - [GeoIP Database](https://dev.maxmind.com/geoip/geoip2/geolite2/) (for server, optional). Place it to `./assets/geoip`, see [./internal/repo/geoip.go](./internal/repo/geoip.go).
 
 ## Installation

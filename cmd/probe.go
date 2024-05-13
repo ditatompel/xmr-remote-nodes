@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net"
 	"net/http"
 	"os"
@@ -47,7 +48,6 @@ func runProbe() {
 		fmt.Println("Please set SERVER_ENDPOINT in .env")
 		os.Exit(1)
 	}
-	fmt.Printf("Accept Tor: %t\n", cfg.AcceptTor)
 
 	if cfg.AcceptTor && cfg.TorSocks == "" {
 		fmt.Println("Please set TOR_SOCKS in .env")
@@ -58,16 +58,16 @@ func runProbe() {
 
 	node, err := probe.getJob()
 	if err != nil {
-		fmt.Println(err)
+		slog.Error(fmt.Sprintf("[PROBE] getJob: %s", err.Error()))
 		os.Exit(1)
 	}
 
 	fetchNode, err := probe.fetchNode(node)
 	if err != nil {
-		fmt.Println(err)
+		slog.Error(fmt.Sprintf("[PROBE] fetchNode: %s", err.Error()))
 		os.Exit(1)
 	}
-	fmt.Println(prettyPrint(fetchNode))
+	slog.Debug(fmt.Sprintf("[PROBE] fetchNode: %s", prettyPrint(fetchNode)))
 }
 
 func (p *proberClient) getJob() (repo.MoneroNode, error) {
@@ -79,6 +79,7 @@ func (p *proberClient) getJob() (repo.MoneroNode, error) {
 	node := repo.MoneroNode{}
 
 	endpoint := fmt.Sprintf("%s/api/v1/job%s", p.config.ServerEndpoint, queryParams)
+	slog.Info(fmt.Sprintf("[PROBE] Getting node from %s", endpoint))
 
 	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
 	if err != nil {
@@ -108,6 +109,7 @@ func (p *proberClient) getJob() (repo.MoneroNode, error) {
 	}
 
 	node = response.Data
+	slog.Info(fmt.Sprintf("[PROBE] Got node: %s://%s:%d", node.Protocol, node.Hostname, node.Port))
 
 	return node, nil
 }
@@ -116,6 +118,8 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 	startTime := time.Now()
 	endpoint := fmt.Sprintf("%s://%s:%d/json_rpc", node.Protocol, node.Hostname, node.Port)
 	rpcParam := []byte(`{"jsonrpc": "2.0","id": "0","method": "get_info"}`)
+	slog.Info(fmt.Sprintf("[PROBE] Fetching node info from %s", endpoint))
+	slog.Debug(fmt.Sprintf("[PROBE] RPC param: %s", string(rpcParam)))
 
 	req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(rpcParam))
 	if err != nil {
@@ -238,8 +242,7 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 	tookTime := time.Since(startTime).Seconds()
 	node.EstimateFee = feeEstimate.Result.Fee
 
-	fmt.Printf("Took %f seconds\n", tookTime)
-
+	slog.Info(fmt.Sprintf("[PROBE] Took %f seconds", tookTime))
 	if err := p.reportResult(node, tookTime); err != nil {
 		return node, err
 	}

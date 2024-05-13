@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"log/slog"
 	"os"
 	"os/signal"
 	"syscall"
@@ -49,12 +50,13 @@ func serve() {
 	app := fiber.New(fiberConfig())
 
 	// recover
-	app.Use(recover.New(recover.Config{EnableStackTrace: appCfg.Debug}))
+	app.Use(recover.New(recover.Config{EnableStackTrace: true}))
 
 	// logger middleware
-	if appCfg.Debug {
+	if appCfg.LogLevel == "DEBUG" {
 		app.Use(logger.New(logger.Config{
-			Format: "[${time}] ${status} - ${latency} ${method} ${path} ${queryParams} ${ip} ${ua}\n",
+			Format:     "${time} DEBUG [HTTP] ${status} - ${latency} ${method} ${path} ${queryParams} ${ip} ${ua}\n",
+			TimeFormat: "2006/01/02 15:04:05",
 		}))
 	}
 
@@ -88,14 +90,14 @@ func serve() {
 	go func() {
 		// capture sigterm and other system call here
 		<-sigCh
-		fmt.Println("Shutting down HTTP server...")
+		slog.Info("Shutting down HTTP server...")
 		_ = app.Shutdown()
 	}()
 
 	// start http server
 	serverAddr := fmt.Sprintf("%s:%d", appCfg.Host, appCfg.Port)
 	if err := app.Listen(serverAddr); err != nil {
-		fmt.Printf("Server is not running! error: %v", err)
+		slog.Error(fmt.Sprintf("Server is not running! error: %v", err))
 	}
 }
 

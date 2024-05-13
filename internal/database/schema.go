@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"log/slog"
 )
 
 type migrateFn func(*DB) error
@@ -11,11 +12,11 @@ var dbMigrate = [...]migrateFn{v1}
 func MigrateDb(db *DB) error {
 	version := getSchemaVersion(db)
 	if version < 0 {
-		return fmt.Errorf("can't get database schema version")
+		return fmt.Errorf("[DB] can't get database schema version")
 	} else if version == 0 {
-		fmt.Println("No database schema version found, creating schema version 1")
+		slog.Warn("[DB] No database schema version found, creating schema version 1")
 	} else {
-		fmt.Println("Database schema version:", version)
+		slog.Info(fmt.Sprintf("[DB] Current database schema version: %d", version))
 	}
 
 	for ; version < len(dbMigrate); version++ {
@@ -25,7 +26,7 @@ func MigrateDb(db *DB) error {
 		}
 
 		migrateFn := dbMigrate[version]
-		fmt.Println("Migrating database schema version:", version+1)
+		slog.Info(fmt.Sprintf("[DB] Migrating database schema version %d", version+1))
 
 		if err := migrateFn(db); err != nil {
 			tx.Rollback()
@@ -64,7 +65,9 @@ func setSchemaVersion(db *DB, version int) error {
 }
 
 func v1(db *DB) error {
+	slog.Debug("[DB] Migrating database schema version 1")
 	// table: tbl_admin
+	slog.Debug("[DB] Creating table: tbl_admin")
 	_, err := db.Exec(`CREATE TABLE tbl_admin (
 		id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 		username VARCHAR(255) NOT NULL,
@@ -76,12 +79,14 @@ func v1(db *DB) error {
 	if err != nil {
 		return err
 	}
+	slog.Debug("[DB] Adding unique key to table: tbl_admin")
 	_, err = db.Exec(`ALTER TABLE tbl_admin ADD UNIQUE KEY (username)`)
 	if err != nil {
 		return err
 	}
 
 	// table: tbl_cron
+	slog.Debug("[DB] Creating table: tbl_cron")
 	_, err = db.Exec(`CREATE TABLE tbl_cron (
 		id INT(8) UNSIGNED NOT NULL AUTO_INCREMENT,
 		title VARCHAR(255) NOT NULL DEFAULT '',
@@ -98,6 +103,7 @@ func v1(db *DB) error {
 	if err != nil {
 		return err
 	}
+	slog.Debug("[DB] Adding default cron jobs to table: tbl_cron")
 	_, err = db.Exec(`INSERT INTO tbl_cron (title, slug, description, run_every)
 		VALUES ('Delete old probe logs', 'delete_old_probe_logs', 'Delete old probe log from the database',120);`)
 	if err != nil {
@@ -105,6 +111,7 @@ func v1(db *DB) error {
 	}
 
 	// table: tbl_node
+	slog.Debug("[DB] Creating table: tbl_node")
 	_, err = db.Exec(`CREATE TABLE tbl_node (
 		id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 		protocol VARCHAR(6) NOT NULL DEFAULT 'http' COMMENT 'http | https',
@@ -139,6 +146,7 @@ func v1(db *DB) error {
 	}
 
 	// table: tbl_prober
+	slog.Debug("[DB] Creating table: tbl_prober")
 	_, err = db.Exec(`CREATE TABLE tbl_prober (
 		id INT(9) UNSIGNED NOT NULL AUTO_INCREMENT,
 		name VARCHAR(255) NOT NULL,
@@ -149,12 +157,15 @@ func v1(db *DB) error {
 	if err != nil {
 		return err
 	}
+
+	slog.Debug("[DB] Adding unique key to table: tbl_prober")
 	_, err = db.Exec(`ALTER TABLE tbl_prober ADD UNIQUE KEY (api_key)`)
 	if err != nil {
 		return err
 	}
 
 	// table: tbl_probe_log
+	slog.Debug("[DB] Creating table: tbl_probe_log")
 	_, err = db.Exec(`CREATE TABLE tbl_probe_log (
 		id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 		node_id INT(11) UNSIGNED NOT NULL DEFAULT 0,
@@ -173,6 +184,7 @@ func v1(db *DB) error {
 	if err != nil {
 		return err
 	}
+	slog.Debug("[DB] Adding key to table: tbl_probe_log")
 	_, err = db.Exec(`ALTER TABLE tbl_probe_log ADD KEY (node_id)`)
 	if err != nil {
 		return err
