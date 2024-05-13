@@ -18,7 +18,7 @@ import (
 	"golang.org/x/net/proxy"
 )
 
-const RPCUserAgent = "ditatombot/0.0.1 (Monero RPC Monitoring; Contact: ditatombot@ditatompel.com)"
+const RPCUserAgent = "ditatombot/0.0.1 (Monero RPC Monitoring; https://github.com/ditatompel/xmr-remote-nodes)"
 
 type proberClient struct {
 	config  *config.App
