@@ -3,14 +3,7 @@
 	import { apiUri } from '$lib/utils/common';
 	import { ProgressBar, LightSwitch } from '@skeletonlabs/skeleton';
 
-	/**
-	 * @typedef formResult
-	 * @type {object}
-	 * @property {string} status
-	 * @property {string} message
-	 * @property {null | object} data
-	 */
-	/** @type {formResult} */
+	/** @type {ApiResponse} */
 	export let formResult;
 
 	let isProcessing = false;
@@ -33,7 +26,6 @@
 		isProcessing = false;
 
 		if (formResult.status === 'ok') {
-			// rerun all `load` functions, following the successful update
 			await invalidateAll();
 			goto('/app/prober/');
 		}
@@ -52,48 +44,20 @@
 		<div
 			class="w-full rounded-lg shadow border md:mt-0 sm:max-w-md xl:p-0 bg-white border-gray-700 dark:bg-gray-800"
 		>
+			<!-- prettier-ignore -->
 			<div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-				<h1
-					class="text-xl font-bold leading-tight tracking-tight tmd:text-2xl text-gray-900 dark:text-white"
-				>
-					Sign in to your account
-				</h1>
-				<form
-					class="space-y-4 md:space-y-6"
-					action={apiUri('/auth/login')}
-					method="POST"
-					on:submit|preventDefault={handleSubmit}
+				<h1 class="text-xl font-bold leading-tight tracking-tight tmd:text-2xl text-gray-900 dark:text-white">Sign in to your account</h1>
+				<form class="space-y-4 md:space-y-6" action={apiUri('/auth/login')} method="POST" on:submit|preventDefault={handleSubmit}
 				>
 					<div>
-						<label
-							for="username"
-							class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label
-						>
-						<input
-							type="text"
-							name="username"
-							id="username"
-							class="input"
-							placeholder="username"
-							required
-						/>
+						<label for="username" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Username</label>
+						<input type="text" name="username" id="username" class="input" placeholder="username" required />
 					</div>
 					<div>
-						<label
-							for="password"
-							class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label
-						>
-						<input
-							type="password"
-							name="password"
-							id="password"
-							placeholder="••••••••"
-							class="input"
-							required
-						/>
+						<label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Password</label>
+						<input type="password" name="password" id="password" placeholder="••••••••" class="input" required />
 					</div>
 					<button type="submit" class="btn variant-filled-primary w-full">Sign in</button>
-
 					<LightSwitch />
 				</form>
 			</div>
