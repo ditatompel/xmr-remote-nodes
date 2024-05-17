@@ -20,7 +20,7 @@ export async function load({ data }) {
 			},
 			{
 				nettype: 'stagenet',
-				estimate_fee: 58000
+				estimate_fee: 57000
 			},
 			{
 				nettype: 'testnet',
