@@ -1,13 +1,18 @@
 # XMR Remote Nodes
 
-Source code of [https://xmr.ditatompel.com](https://xmr.ditatompel.com).
+Source code of [https://xmr.ditatompel.com](https://xmr.ditatompel.com), a website that helps you monitor your favourite Monero remote nodes.
 
 ## Requirements
 
+### Server & Prober requirements
+
 - Go >= 1.22
 - Linux Machine (AMD64 or ARM64)
-- MySQL/MariaDB (for server)
-- [GeoIP Database](https://dev.maxmind.com/geoip/geoip2/geolite2/) (for server, optional). Place it to `./assets/geoip`, see [./internal/repo/geoip.go](./internal/repo/geoip.go).
+
+### Server requirements
+
+- MySQL/MariaDB
+- [GeoIP Database](https://dev.maxmind.com/geoip/geoip2/geolite2/) (optional). Place it to `./assets/geoip`, see [./internal/repo/geoip.go](./internal/repo/geoip.go).
 
 ## Installation
 
