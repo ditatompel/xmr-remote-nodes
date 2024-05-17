@@ -13,16 +13,28 @@ import (
 )
 
 var probersCmd = &cobra.Command{
-	Use:   "probers [search]",
-	Short: "[server] Get registered probers",
-	Long: `Get list of registered prober machines.
+	Use:   "probers",
+	Short: "[server] Add, edit, delete, and show registered probers",
+	Long: `Command to administer prober machines.
+
+This command should only be run on the server which directly connect to the MySQL database.
+	`,
+	Run: func(cmd *cobra.Command, _ []string) {
+		cmd.Help()
+	},
+}
+
+var listProbersCmd = &cobra.Command{
+	Use:   "list [search]",
+	Short: "Print registered probers",
+	Long: `Print list of registered prober machines.
 
 Use [search] args to filter results by name or api key.
 
 "sort-by" flag can be "id" or "last_submit_ts"
 "sort-dir" flag can be "asc" or "desc"`,
 	Example: `# To sort probers by last submit time in ascending order that contains "sin1":
-xmr-nodes probers -s last_submit_ts -d asc sin1`,
+xmr-nodes probers list -s last_submit_ts -d asc sin1`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := database.ConnectDB(); err != nil {
 			panic(err)
@@ -58,8 +70,19 @@ xmr-nodes probers -s last_submit_ts -d asc sin1`,
 	},
 }
 
+var addProbersCmd = &cobra.Command{
+	Use:   "add [name]",
+	Short: "[server] Add new prober",
+	Long:  `Add new prober machine.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("TODO: Add new prober")
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(probersCmd)
-	probersCmd.Flags().StringP("sort-by", "s", "last_submit_ts", "Sort by column name, can be id or last_submit_ts")
-	probersCmd.Flags().StringP("sort-dir", "d", "desc", "Sort direction, can be asc or desc")
+	probersCmd.AddCommand(listProbersCmd)
+	probersCmd.AddCommand(addProbersCmd)
+	listProbersCmd.Flags().StringP("sort-by", "s", "last_submit_ts", "Sort by column name, can be id or last_submit_ts")
+	listProbersCmd.Flags().StringP("sort-dir", "d", "desc", "Sort direction, can be asc or desc")
 }
