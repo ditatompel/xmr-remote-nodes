@@ -8,11 +8,8 @@
 
 <nav class="fixed w-full z-20 top-0 start-0 bg-surface-100-800-token shadow-2xl">
 	<div class="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between px-4 py-1">
-		<a href="/" class="flex items-center space-x-3 rtl:space-x-reverse" aria-label="ditatompel">
-			<span
-				class="txt-logo-gradient hidden self-center whitespace-nowrap text-2xl font-semibold lg:block"
-				>XMR Nodes</span
-			>
+		<a href="/" class="flex items-center space-x-3 rtl:space-x-reverse" aria-label="xmr nodes">
+			<span class="self-center whitespace-nowrap text-2xl font-semibold lg:block">XMR Nodes</span>
 		</a>
 		<div class="flex items-center space-x-1 md:order-2 md:space-x-0 rtl:space-x-reverse">
 			<LightSwitch />
