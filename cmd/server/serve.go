@@ -14,7 +14,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/encryptcookie"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
@@ -62,10 +61,6 @@ func serve() {
 		AllowCredentials: true,
 	}))
 
-	// cookie
-	app.Use(encryptcookie.New(encryptcookie.Config{Key: appCfg.SecretKey}))
-
-	handler.AppRoute(app)
 	handler.V1Api(app)
 	app.Use("/", filesystem.New(filesystem.Config{
 		Root: frontend.SvelteKitHandler(),

@@ -4,11 +4,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func AppRoute(app *fiber.App) {
-	app.Post("/auth/login", Login)
-	app.Post("/auth/logout", Logout)
-}
-
 func V1Api(app *fiber.App) {
 	v1 := app.Group("/api/v1")
 

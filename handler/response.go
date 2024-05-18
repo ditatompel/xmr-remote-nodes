@@ -1,64 +1,12 @@
 package handler
 
 import (
-	"fmt"
 	"strconv"
-	"time"
 	"xmr-remote-nodes/internal/database"
 	"xmr-remote-nodes/internal/repo"
 
 	"github.com/gofiber/fiber/v2"
 )
-
-func Login(c *fiber.Ctx) error {
-	payload := repo.Admin{}
-	if err := c.BodyParser(&payload); err != nil {
-		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
-			"status":  "error",
-			"message": err.Error(),
-			"data":    nil,
-		})
-	}
-
-	repo := repo.NewAdminRepo(database.GetDB())
-	res, err := repo.Login(payload.Username, payload.Password)
-	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"status":  "error",
-			"message": err.Error(),
-			"data":    nil,
-		})
-	}
-
-	token := fmt.Sprintf("auth_%d_%d", res.Id, time.Now().Unix())
-	c.Cookie(&fiber.Cookie{
-		Name:     "xmr-nodes-ui",
-		Value:    token,
-		Expires:  time.Now().Add(time.Hour * 24),
-		HTTPOnly: true,
-	})
-
-	return c.JSON(fiber.Map{
-		"status":  "ok",
-		"message": "Logged in",
-		"data":    nil,
-	})
-}
-
-func Logout(c *fiber.Ctx) error {
-	c.Cookie(&fiber.Cookie{
-		Name:     "xmr-nodes-ui",
-		Value:    "",
-		Expires:  time.Now(),
-		HTTPOnly: true,
-	})
-
-	return c.JSON(fiber.Map{
-		"status":  "ok",
-		"message": "Logged out",
-		"data":    nil,
-	})
-}
 
 func MoneroNode(c *fiber.Ctx) error {
 	nodeId, err := c.ParamsInt("id", 0)

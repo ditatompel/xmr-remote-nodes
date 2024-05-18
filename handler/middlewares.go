@@ -7,19 +7,6 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func CookieProtected(c *fiber.Ctx) error {
-	cookie := c.Cookies("xmr-nodes-ui")
-	if cookie == "" {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
-			"status":  "error",
-			"message": "Unauthorized",
-			"data":    nil,
-		})
-	}
-
-	return c.Next()
-}
-
 func CheckProber(c *fiber.Ctx) error {
 	key := c.Get("X-Prober-Api-Key")
 	if key == "" {
