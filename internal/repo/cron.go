@@ -4,15 +4,13 @@ import (
 	"fmt"
 	"log/slog"
 	"math"
-	"slices"
-	"strings"
 	"time"
 	"xmr-remote-nodes/internal/database"
 )
 
 type CronRepository interface {
 	RunCronProcess()
-	Crons(q CronQueryParams) (CronTasks, error)
+	Crons() ([]Cron, error)
 }
 
 type CronRepo struct {
@@ -70,73 +68,12 @@ func (repo *CronRepo) RunCronProcess() {
 	}
 }
 
-type CronQueryParams struct {
-	Title         string
-	Description   string
-	IsEnabled     int
-	CronState     int
-	RowsPerPage   int
-	Page          int
-	SortBy        string
-	SortDirection string
-}
+func (repo *CronRepo) Crons() ([]Cron, error) {
+	query := `SELECT id, title, slug, description, run_every, last_run, next_run, run_time, cron_state, is_enabled FROM tbl_cron`
 
-type CronTasks struct {
-	TotalRows   int     `json:"total_rows"`
-	RowsPerPage int     `json:"rows_per_page"`
-	Items       []*Cron `json:"items"`
-}
-
-func (repo *CronRepo) Crons(q CronQueryParams) (CronTasks, error) {
-	queryParams := []interface{}{}
-	whereQueries := []string{}
-	where := ""
-
-	if q.Title != "" {
-		whereQueries = append(whereQueries, "title LIKE ?")
-		queryParams = append(queryParams, "%"+q.Title+"%")
-	}
-	if q.Description != "" {
-		whereQueries = append(whereQueries, "description LIKE ?")
-		queryParams = append(queryParams, "%"+q.Description+"%")
-	}
-	if q.IsEnabled != -1 {
-		whereQueries = append(whereQueries, "is_enabled = ?")
-		queryParams = append(queryParams, q.IsEnabled)
-	}
-	if q.CronState != -1 {
-		whereQueries = append(whereQueries, "cron_state = ?")
-		queryParams = append(queryParams, q.CronState)
-	}
-	if len(whereQueries) > 0 {
-		where = "WHERE " + strings.Join(whereQueries, " AND ")
-	}
-	tasks := CronTasks{}
-
-	queryTotalRows := fmt.Sprintf("SELECT COUNT(id) FROM tbl_cron %s", where)
-	err := repo.db.QueryRow(queryTotalRows, queryParams...).Scan(&tasks.TotalRows)
-	if err != nil {
-		return tasks, err
-	}
-	queryParams = append(queryParams, q.RowsPerPage, (q.Page-1)*q.RowsPerPage)
-	allowedSort := []string{"id", "run_every", "last_run", "next_run", "run_time"}
-	sortBy := "id"
-	if slices.Contains(allowedSort, q.SortBy) {
-		sortBy = q.SortBy
-	}
-	sortDirection := "DESC"
-	if q.SortDirection == "asc" {
-		sortDirection = "ASC"
-	}
-
-	query := fmt.Sprintf("SELECT id, title, slug, description, run_every, last_run, next_run, run_time, cron_state, is_enabled FROM tbl_cron %s ORDER BY %s %s LIMIT ? OFFSET ?", where, sortBy, sortDirection)
-	err = repo.db.Select(&tasks.Items, query, queryParams...)
-	if err != nil {
-		return tasks, err
-	}
-	tasks.RowsPerPage = q.RowsPerPage
-
-	return tasks, nil
+	var tasks []Cron
+	err := repo.db.Select(&tasks, query)
+	return tasks, err
 }
 
 func (repo *CronRepo) queueList() ([]Cron, error) {

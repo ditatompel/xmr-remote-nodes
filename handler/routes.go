@@ -12,7 +12,6 @@ func AppRoute(app *fiber.App) {
 func V1Api(app *fiber.App) {
 	v1 := app.Group("/api/v1")
 
-	v1.Get("/crons", CookieProtected, Crons)
 	v1.Get("/nodes", MoneroNodes)
 	v1.Post("/nodes", AddNode)
 	v1.Get("/nodes/id/:id", MoneroNode)

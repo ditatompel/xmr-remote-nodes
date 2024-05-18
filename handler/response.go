@@ -256,32 +256,3 @@ func ProcessJob(c *fiber.Ctx) error {
 		"data":    nil,
 	})
 }
-
-func Crons(c *fiber.Ctx) error {
-	cronRepo := repo.NewCron(database.GetDB())
-	query := repo.CronQueryParams{
-		RowsPerPage:   c.QueryInt("limit", 10),
-		Page:          c.QueryInt("page", 1),
-		SortBy:        c.Query("sort_by", "id"),
-		SortDirection: c.Query("sort_direction", "desc"),
-		Title:         c.Query("title"),
-		Description:   c.Query("description"),
-		IsEnabled:     c.QueryInt("is_enabled", -1),
-		CronState:     c.QueryInt("cron_state", -1),
-	}
-
-	crons, err := cronRepo.Crons(query)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"status":  "error",
-			"message": err.Error(),
-			"data":    nil,
-		})
-	}
-
-	return c.JSON(fiber.Map{
-		"status":  "ok",
-		"message": "Success",
-		"data":    crons,
-	})
-}
