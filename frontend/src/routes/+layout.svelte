@@ -1,10 +1,18 @@
 <script>
 	import '../app.css';
 	import { page } from '$app/stores';
-	import { Toast, Modal } from '@skeletonlabs/skeleton';
+	import {
+		Toast,
+		Modal,
+		Drawer,
+		ProgressBar,
+		initializeStores,
+		storePopup
+	} from '@skeletonlabs/skeleton';
 	import { beforeNavigate, afterNavigate } from '$app/navigation';
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
-	import { ProgressBar, initializeStores, storePopup } from '@skeletonlabs/skeleton';
+	import { MainNav, MobileDrawer } from '$lib/components/navigation';
+	import Footer from '$lib/components/Footer.svelte';
 
 	initializeStores();
 	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
@@ -60,4 +68,18 @@
 		meter="bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600"
 	/>
 {/if}
-<slot />
+
+<Drawer>
+	<h2 class="p-4">Navigation</h2>
+	<hr />
+	<MobileDrawer />
+	<hr />
+</Drawer>
+
+<MainNav />
+
+<div class="pt-10 md:pt-12 min-h-screen">
+	<slot />
+</div>
+
+<Footer />
