@@ -1,4 +1,4 @@
-package cmd
+package server
 
 import (
 	"fmt"
@@ -6,6 +6,7 @@ import (
 	"strings"
 	"text/tabwriter"
 	"time"
+	"xmr-remote-nodes/cmd"
 	"xmr-remote-nodes/internal/database"
 	"xmr-remote-nodes/internal/repo"
 
@@ -80,7 +81,7 @@ var addProbersCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.AddCommand(probersCmd)
+	cmd.Root.AddCommand(probersCmd)
 	probersCmd.AddCommand(listProbersCmd)
 	probersCmd.AddCommand(addProbersCmd)
 	listProbersCmd.Flags().StringP("sort-by", "s", "last_submit_ts", "Sort by column name, can be id or last_submit_ts")

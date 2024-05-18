@@ -1,4 +1,4 @@
-package cmd
+package server
 
 import (
 	"fmt"
@@ -21,17 +21,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var serveCmd = &cobra.Command{
+var ServeCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Serve the WebUI",
 	Long:  `This command will run HTTP server for APIs and WebUI.`,
 	Run: func(_ *cobra.Command, _ []string) {
 		serve()
 	},
-}
-
-func init() {
-	rootCmd.AddCommand(serveCmd)
 }
 
 func serve() {
@@ -105,6 +101,6 @@ func fiberConfig() fiber.Config {
 	return fiber.Config{
 		Prefork:     config.AppCfg().Prefork,
 		ProxyHeader: config.AppCfg().ProxyHeader,
-		AppName:     "ditatompel's XMR Nodes HTTP server " + AppVer,
+		AppName:     "ditatompel's XMR Nodes HTTP server",
 	}
 }

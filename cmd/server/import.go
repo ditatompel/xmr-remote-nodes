@@ -1,4 +1,4 @@
-package cmd
+package server
 
 import (
 	"encoding/json"
@@ -25,7 +25,7 @@ type importData struct {
 	DateEntered int    `json:"date_entered"`
 }
 
-var importCmd = &cobra.Command{
+var ImportCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Import Monero nodes from old API",
 	Long: `Import Monero nodes from old API.
@@ -70,10 +70,6 @@ This command only available during migration process and will be removed in futu
 
 		fmt.Println("Done!")
 	},
-}
-
-func init() {
-	rootCmd.AddCommand(importCmd)
 }
 
 func (i *importClient) processData(node importData) error {

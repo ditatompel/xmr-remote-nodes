@@ -1,4 +1,4 @@
-package cmd
+package client
 
 import (
 	"bytes"
@@ -30,19 +30,15 @@ func newProber(cfg *config.App) *proberClient {
 	return &proberClient{config: cfg}
 }
 
-var probeCmd = &cobra.Command{
+var ProbeCmd = &cobra.Command{
 	Use:   "probe",
-	Short: "Run Monero node prober",
-	Run: func(_ *cobra.Command, _ []string) {
-		runProbe()
+	Short: "Probe remote nodes",
+	Run: func(cmd *cobra.Command, args []string) {
+		RunProbe()
 	},
 }
 
-func init() {
-	rootCmd.AddCommand(probeCmd)
-}
-
-func runProbe() {
+func RunProbe() {
 	cfg := config.AppCfg()
 	if cfg.ServerEndpoint == "" {
 		fmt.Println("Please set SERVER_ENDPOINT in .env")

@@ -1,4 +1,4 @@
-package cmd
+package server
 
 import (
 	"bufio"
@@ -13,7 +13,7 @@ import (
 	"golang.org/x/term"
 )
 
-var adminCmd = &cobra.Command{
+var AdminCmd = &cobra.Command{
 	Use:   "admin",
 	Short: "Create Admin",
 	Long:  `Create an admin account for WebUI access.`,
@@ -35,10 +35,6 @@ var adminCmd = &cobra.Command{
 			os.Exit(0)
 		}
 	},
-}
-
-func init() {
-	rootCmd.AddCommand(adminCmd)
 }
 
 func createAdmin() error {
