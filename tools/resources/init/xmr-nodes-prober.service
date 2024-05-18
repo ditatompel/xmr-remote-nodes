@@ -6,7 +6,7 @@ After=network.target
 Type=oneshot
 User=your_user
 WorkingDirectory=/path/to/project/dir
-ExecStart=/path/to/project/dir/bin/xmr-nodes-static-linux-arm64 probe
+ExecStart=/path/to/project/dir/bin/xmr-nodes-client probe
 TimeoutSec=90
 
 # vim: filetype=systemd

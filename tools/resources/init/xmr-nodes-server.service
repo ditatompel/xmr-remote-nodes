@@ -10,7 +10,7 @@ Type=simple
 User=your_user
 Restart=always
 WorkingDirectory=/path/to/project/dir
-ExecStart=/path/to/project/dir/bin/xmr-nodes-static-linux-arm64 serve
+ExecStart=/path/to/project/dir/bin/xmr-nodes-server serve
 SyslogIdentifier=xmr-node-server
 
 # vim: filetype=systemd

@@ -11,21 +11,21 @@
 
     - name: Upload binary file (AMD64)
       copy:
-        src: ../../bin/xmr-nodes-static-linux-amd64
-        dest: /path/to/remote/xmr-nodes/bin
+        src: ../../bin/xmr-nodes-client-linux-amd64
+        dest: /path/to/remote/xmr-nodes/bin/xmr-nodes-client
         owner: your_user
         group: your_group
         mode: 0755
-      when: inventory_hostname in groups['prober']
+      when: inventory_hostname in groups['prober'] and ansible_facts['architecture'] == 'x86_64'
 
     - name: Upload binary file (ARM64)
       copy:
-        src: ../../bin/xmr-nodes-static-linux-arm64
-        dest: /path/to/remote/xmr-nodes/bin
+        src: ../../bin/xmr-nodes-client-linux-arm64
+        dest: /path/to/remote/xmr-nodes/bin/xmr-nodes-client
         owner: your_user
         group: your_group
         mode: 0755
-      when: inventory_hostname in groups['prober']
+      when: inventory_hostname in groups['prober'] and ansible_facts['architecture'] == 'aarch64'
 
 
     - name: Start systemd timer
