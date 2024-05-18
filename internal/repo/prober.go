@@ -50,7 +50,17 @@ func (repo *ProberRepo) Update(id int, name string) error {
 
 func (repo *ProberRepo) Delete(id int) error {
 	query := `DELETE FROM tbl_prober WHERE id = ?`
-	_, err := repo.db.Exec(query, id)
+	res, err := repo.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	row, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if row == 0 {
+		return fmt.Errorf("no rows affected")
+	}
 	return err
 }
 

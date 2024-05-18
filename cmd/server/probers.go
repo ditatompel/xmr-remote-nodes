@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"os"
+	"strconv"
 	"strings"
 	"text/tabwriter"
 	"time"
@@ -76,9 +77,10 @@ var addProbersCmd = &cobra.Command{
 	Long: `Create new prober identified by [name] (if provided) along with an API key.
 
 This command will display the prober name and API key when successfully executed.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	Run: func(_ *cobra.Command, args []string) {
 		if err := database.ConnectDB(); err != nil {
-			panic(err)
+			fmt.Println(err)
+			return
 		}
 
 		proberName := ""
@@ -96,5 +98,31 @@ This command will display the prober name and API key when successfully executed
 		}
 
 		fmt.Printf("Name: %s\nAPI Key: %s\n", prober.Name, prober.ApiKey)
+	},
+}
+
+var deleteProbersCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "Delete prober",
+	Long:  `Delete prober identified by id.`,
+	Run: func(_ *cobra.Command, _ []string) {
+		if err := database.ConnectDB(); err != nil {
+			fmt.Println(err)
+			return
+		}
+		proberId, err := strconv.Atoi(stringPrompt("Prober ID:"))
+		if err != nil {
+			fmt.Println("Invalid ID:", err)
+			return
+		}
+
+		proberRepo := repo.NewProberRepo(database.GetDB())
+		err = proberRepo.Delete(proberId)
+		if err != nil {
+			fmt.Println("Failed to delete prober:", err)
+			return
+		}
+
+		fmt.Printf("Prober ID %d deleted\n", proberId)
 	},
 }
