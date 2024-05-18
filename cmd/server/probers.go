@@ -73,8 +73,28 @@ xmr-nodes probers list -s last_submit_ts -d asc sin1`,
 var addProbersCmd = &cobra.Command{
 	Use:   "add [name]",
 	Short: "Add new prober",
-	Long:  `Add new prober machine.`,
+	Long: `Create new prober identified by [name] (if provided) along with an API key.
+
+This command will display the prober name and API key when successfully executed.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("TODO: Add new prober")
+		if err := database.ConnectDB(); err != nil {
+			panic(err)
+		}
+
+		proberName := ""
+		if len(args) > 0 {
+			proberName = strings.Join(args, " ")
+		} else {
+			proberName = stringPrompt("Prober Name:")
+		}
+
+		proberRepo := repo.NewProberRepo(database.GetDB())
+		prober, err := proberRepo.Add(proberName)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+
+		fmt.Printf("Name: %s\nAPI Key: %s\n", prober.Name, prober.ApiKey)
 	},
 }

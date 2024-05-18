@@ -10,7 +10,7 @@ import (
 )
 
 type ProberRepository interface {
-	AddProber(name string) error
+	Add(name string) (Prober, error)
 	Update(id int, name string) error
 	Probers(q ProbersQueryParams) ([]Prober, error)
 	CheckApi(key string) (Prober, error)
@@ -32,13 +32,14 @@ func NewProberRepo(db *database.DB) ProberRepository {
 	return &ProberRepo{db}
 }
 
-func (repo *ProberRepo) AddProber(name string) error {
+func (repo *ProberRepo) Add(name string) (Prober, error) {
+	apiKey := uuid.New()
 	query := `INSERT INTO tbl_prober (name, api_key, last_submit_ts) VALUES (?, ?, ?)`
-	_, err := repo.db.Exec(query, name, uuid.New(), 0)
+	_, err := repo.db.Exec(query, name, apiKey, 0)
 	if err != nil {
-		return err
+		return Prober{}, err
 	}
-	return nil
+	return Prober{Name: name, ApiKey: apiKey}, nil
 }
 
 func (repo *ProberRepo) Update(id int, name string) error {
