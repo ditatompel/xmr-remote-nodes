@@ -101,6 +101,33 @@ This command will display the prober name and API key when successfully executed
 	},
 }
 
+var editProbersCmd = &cobra.Command{
+	Use:   "edit",
+	Short: "Edit prober",
+	Long:  `Edit prober name by id.`,
+	Run: func(cmd *cobra.Command, _ []string) {
+		if err := database.ConnectDB(); err != nil {
+			fmt.Println(err)
+			return
+		}
+		proberId, err := strconv.Atoi(stringPrompt("Prober ID:"))
+		if err != nil {
+			fmt.Println("Invalid ID:", err)
+			return
+		}
+
+		proberName := stringPrompt("Prober Name:")
+		proberRepo := repo.NewProberRepo(database.GetDB())
+		err = proberRepo.Edit(proberId, proberName)
+		if err != nil {
+			fmt.Println("Failed to update prober:", err)
+			return
+		}
+
+		fmt.Printf("Prober ID %d updated\n", proberId)
+	},
+}
+
 var deleteProbersCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Delete prober",

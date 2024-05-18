@@ -11,7 +11,7 @@ import (
 
 type ProberRepository interface {
 	Add(name string) (Prober, error)
-	Update(id int, name string) error
+	Edit(id int, name string) error
 	Probers(q ProbersQueryParams) ([]Prober, error)
 	CheckApi(key string) (Prober, error)
 	Delete(id int) error
@@ -42,9 +42,19 @@ func (repo *ProberRepo) Add(name string) (Prober, error) {
 	return Prober{Name: name, ApiKey: apiKey}, nil
 }
 
-func (repo *ProberRepo) Update(id int, name string) error {
+func (repo *ProberRepo) Edit(id int, name string) error {
 	query := `UPDATE tbl_prober SET name = ? WHERE id = ?`
-	_, err := repo.db.Exec(query, name, id)
+	res, err := repo.db.Exec(query, name, id)
+	if err != nil {
+		return err
+	}
+	row, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if row == 0 {
+		return fmt.Errorf("no rows affected")
+	}
 	return err
 }
 
