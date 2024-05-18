@@ -25,7 +25,7 @@ type importData struct {
 	DateEntered int    `json:"date_entered"`
 }
 
-var ImportCmd = &cobra.Command{
+var importCmd = &cobra.Command{
 	Use:   "import",
 	Short: "Import Monero nodes from old API",
 	Long: `Import Monero nodes from old API.

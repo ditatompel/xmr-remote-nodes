@@ -6,7 +6,6 @@ import (
 	"strings"
 	"text/tabwriter"
 	"time"
-	"xmr-remote-nodes/cmd"
 	"xmr-remote-nodes/internal/database"
 	"xmr-remote-nodes/internal/repo"
 
@@ -15,7 +14,7 @@ import (
 
 var probersCmd = &cobra.Command{
 	Use:   "probers",
-	Short: "[server] Add, edit, delete, and show registered probers",
+	Short: "Add, edit, delete, and show registered probers",
 	Long: `Command to administer prober machines.
 
 This command should only be run on the server which directly connect to the MySQL database.
@@ -73,17 +72,9 @@ xmr-nodes probers list -s last_submit_ts -d asc sin1`,
 
 var addProbersCmd = &cobra.Command{
 	Use:   "add [name]",
-	Short: "[server] Add new prober",
+	Short: "Add new prober",
 	Long:  `Add new prober machine.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("TODO: Add new prober")
 	},
-}
-
-func init() {
-	cmd.Root.AddCommand(probersCmd)
-	probersCmd.AddCommand(listProbersCmd)
-	probersCmd.AddCommand(addProbersCmd)
-	listProbersCmd.Flags().StringP("sort-by", "s", "last_submit_ts", "Sort by column name, can be id or last_submit_ts")
-	listProbersCmd.Flags().StringP("sort-dir", "d", "desc", "Sort direction, can be asc or desc")
 }

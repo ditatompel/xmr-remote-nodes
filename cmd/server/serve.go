@@ -21,7 +21,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var ServeCmd = &cobra.Command{
+var serveCmd = &cobra.Command{
 	Use:   "serve",
 	Short: "Serve the WebUI",
 	Long:  `This command will run HTTP server for APIs and WebUI.`,

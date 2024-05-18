@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"syscall"
+	"xmr-remote-nodes/cmd"
 	"xmr-remote-nodes/internal/database"
 	"xmr-remote-nodes/internal/repo"
 
@@ -35,6 +36,16 @@ var AdminCmd = &cobra.Command{
 			os.Exit(0)
 		}
 	},
+}
+
+func init() {
+	cmd.Root.AddCommand(serveCmd)
+	cmd.Root.AddCommand(importCmd)
+	cmd.Root.AddCommand(probersCmd)
+	probersCmd.AddCommand(listProbersCmd)
+	probersCmd.AddCommand(addProbersCmd)
+	listProbersCmd.Flags().StringP("sort-by", "s", "last_submit_ts", "Sort by column name, can be id or last_submit_ts")
+	listProbersCmd.Flags().StringP("sort-dir", "d", "desc", "Sort direction, can be asc or desc")
 }
 
 func createAdmin() error {

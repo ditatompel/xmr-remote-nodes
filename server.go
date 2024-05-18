@@ -9,6 +9,4 @@ import (
 
 func init() {
 	cmd.Root.AddCommand(server.AdminCmd)
-	cmd.Root.AddCommand(server.ServeCmd)
-	cmd.Root.AddCommand(server.ImportCmd)
 }
