@@ -22,9 +22,13 @@
 {/if}
 
 {#if asn !== 0}
-	<br /><a class="asn" href="https://www.ditatompel.com/asn/{asn}">AS{asn}</a> (<span
-		class="asn-name">{asn_name}</span
-	>)
+	<br /><a
+		class="external asn"
+		href="https://www.ditatompel.com/asn/{asn}"
+		target="_blank"
+		rel="noopener">AS{asn}</a
+	>
+	(<span class="asn-name">{asn_name}</span>)
 {/if}
 
 <style lang="postcss">
