@@ -69,24 +69,52 @@ func (repo *CronRepo) RunCronProcess() {
 }
 
 func (repo *CronRepo) Crons() ([]Cron, error) {
-	query := `SELECT id, title, slug, description, run_every, last_run, next_run, run_time, cron_state, is_enabled FROM tbl_cron`
-
 	var tasks []Cron
-	err := repo.db.Select(&tasks, query)
+	err := repo.db.Select(&tasks, `
+		SELECT
+			id,
+			title,
+			slug,
+			description,
+			run_every,
+			last_run,
+			next_run,
+			run_time,
+			cron_state,
+			is_enabled
+		FROM
+			tbl_cron`)
 	return tasks, err
 }
 
 func (repo *CronRepo) queueList() ([]Cron, error) {
 	tasks := []Cron{}
-	query := `SELECT id, run_every, last_run, slug, next_run, cron_state FROM tbl_cron
-    WHERE is_enabled = ? AND next_run <= ?`
+	query := `
+		SELECT
+			id,
+			run_every,
+			last_run,
+			slug,
+			next_run,
+			cron_state
+		FROM
+			tbl_cron
+		WHERE
+			is_enabled = ?
+			AND next_run <= ?`
 	err := repo.db.Select(&tasks, query, 1, time.Now().Unix())
 
 	return tasks, err
 }
 
 func (repo *CronRepo) preRunTask(id int, lastRunTs int64) {
-	query := `UPDATE tbl_cron SET cron_state = ?, last_run = ? WHERE id = ?`
+	query := `
+		UPDATE tbl_cron
+		SET
+			cron_state = ?,
+			last_run = ?
+		WHERE
+			id = ?`
 	row, err := repo.db.Query(query, 1, lastRunTs, id)
 	if err != nil {
 		slog.Error(fmt.Sprintf("[CRON] Failed to update pre cron state: %s", err))
@@ -95,7 +123,14 @@ func (repo *CronRepo) preRunTask(id int, lastRunTs int64) {
 }
 
 func (repo *CronRepo) postRunTask(id int, nextRun int64, runtime float64) {
-	query := `UPDATE tbl_cron SET cron_state = ?, next_run = ?, run_time = ? WHERE id = ?`
+	query := `
+		UPDATE tbl_cron
+		SET
+			cron_state = ?,
+			next_run = ?,
+			run_time = ?
+		WHERE
+			id = ?`
 	row, err := repo.db.Query(query, 0, nextRun, runtime, id)
 	if err != nil {
 		slog.Error(fmt.Sprintf("[CRON] Failed to update post cron state: %s", err))
