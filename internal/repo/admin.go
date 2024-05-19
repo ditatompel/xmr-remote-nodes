@@ -49,9 +49,19 @@ func (repo *AdminRepo) CreateAdmin(admin *Admin) (*Admin, error) {
 	if repo.isUsernameExists(admin.Username) {
 		return nil, errors.New("username already exists")
 	}
-
-	query := `INSERT INTO tbl_admin (username, password, created_ts) VALUES (?, ?, ?)`
-	_, err = repo.db.Exec(query, admin.Username, admin.Password, admin.CreatedTs)
+	_, err = repo.db.Exec(`
+		INSERT INTO tbl_admin (
+			username,
+			password,
+			created_ts
+		) VALUES (
+			?,
+			?,
+			?
+		)`,
+		admin.Username,
+		admin.Password,
+		admin.CreatedTs)
 	if err != nil {
 		return nil, err
 	}
@@ -59,8 +69,16 @@ func (repo *AdminRepo) CreateAdmin(admin *Admin) (*Admin, error) {
 }
 
 func (repo *AdminRepo) Login(username, password string) (*Admin, error) {
-	query := `SELECT id, username, password FROM tbl_admin WHERE username = ? LIMIT 1`
-	row, err := repo.db.Query(query, username)
+	row, err := repo.db.Query(`
+		SELECT
+			id,
+			username,
+			password
+		FROM
+			tbl_admin
+		WHERE
+			username = ?
+		LIMIT 1`, username)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -87,8 +105,10 @@ func (repo *AdminRepo) Login(username, password string) (*Admin, error) {
 		return nil, errors.New("Invalid username or password")
 	}
 
-	update := `UPDATE tbl_admin SET lastactive_ts = ? WHERE id = ?`
-	_, err = repo.db.Exec(update, time.Now().Unix(), admin.Id)
+	_, err = repo.db.Exec(`
+		UPDATE tbl_admin
+		SET lastactive_ts = ?
+		WHERE id = ?`, time.Now().Unix(), admin.Id)
 	if err != nil {
 		fmt.Println(err)
 		return nil, err
@@ -98,8 +118,14 @@ func (repo *AdminRepo) Login(username, password string) (*Admin, error) {
 }
 
 func (repo *AdminRepo) isUsernameExists(username string) bool {
-	query := `SELECT id FROM tbl_admin WHERE username = ? LIMIT 1`
-	row, err := repo.db.Query(query, username)
+	row, err := repo.db.Query(`
+		SELECT
+			id
+		FROM
+			tbl_admin
+		WHERE
+			username = ?
+		LIMIT 1`, username)
 	if err != nil {
 		return false
 	}

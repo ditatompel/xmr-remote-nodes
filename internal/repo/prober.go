@@ -34,7 +34,16 @@ func NewProberRepo(db *database.DB) ProberRepository {
 
 func (repo *ProberRepo) Add(name string) (Prober, error) {
 	apiKey := uuid.New()
-	query := `INSERT INTO tbl_prober (name, api_key, last_submit_ts) VALUES (?, ?, ?)`
+	query := `
+		INSERT INTO tbl_prober (
+			name,
+			api_key,
+			last_submit_ts
+		) VALUES (
+			?,
+			?,
+			?
+		)`
 	_, err := repo.db.Exec(query, name, apiKey, 0)
 	if err != nil {
 		return Prober{}, err
@@ -59,8 +68,7 @@ func (repo *ProberRepo) Edit(id int, name string) error {
 }
 
 func (repo *ProberRepo) Delete(id int) error {
-	query := `DELETE FROM tbl_prober WHERE id = ?`
-	res, err := repo.db.Exec(query, id)
+	res, err := repo.db.Exec(`DELETE FROM tbl_prober WHERE id = ?`, id)
 	if err != nil {
 		return err
 	}
@@ -107,7 +115,16 @@ func (repo *ProberRepo) Probers(q ProbersQueryParams) ([]Prober, error) {
 		sortDirection = "ASC"
 	}
 
-	query := fmt.Sprintf("SELECT id, name, api_key, last_submit_ts FROM tbl_prober %s ORDER BY %s %s", where, sortBy, sortDirection)
+	query := fmt.Sprintf(`
+		SELECT
+			id,
+			name,
+			api_key,
+			last_submit_ts
+		FROM
+			tbl_prober
+		%s -- where clause if any
+		ORDER BY %s %s`, where, sortBy, sortDirection)
 
 	row, err := repo.db.Query(query, queryParams...)
 	if err != nil {
@@ -128,7 +145,17 @@ func (repo *ProberRepo) Probers(q ProbersQueryParams) ([]Prober, error) {
 
 func (repo *ProberRepo) CheckApi(key string) (Prober, error) {
 	prober := Prober{}
-	query := `SELECT id, name, api_key, last_submit_ts FROM tbl_prober WHERE api_key = ? LIMIT 1`
+	query := `
+		SELECT
+			id,
+			name,
+			api_key,
+			last_submit_ts
+		FROM
+			tbl_prober
+		WHERE
+			api_key = ?
+		LIMIT 1`
 	err := repo.db.QueryRow(query, key).Scan(&prober.Id, &prober.Name, &prober.ApiKey, &prober.LastSubmitTs)
 	return prober, err
 }

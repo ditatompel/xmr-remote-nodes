@@ -151,7 +151,12 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 
 	nodes := MoneroNodes{}
 
-	queryTotalRows := fmt.Sprintf("SELECT COUNT(id) AS total_rows FROM tbl_node %s", where)
+	queryTotalRows := fmt.Sprintf(`
+		SELECT
+			COUNT(id) AS total_rows
+		FROM
+			tbl_node
+		%s`, where)
 
 	err := repo.db.QueryRow(queryTotalRows, queryParams...).Scan(&nodes.TotalRows)
 	if err != nil {
@@ -169,7 +174,42 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 		sortDirection = "ASC"
 	}
 
-	query := fmt.Sprintf("SELECT id, protocol, hostname, port, is_tor, is_available, nettype, height, adjusted_time, database_size, difficulty, version, uptime, estimate_fee, ip_addr, asn, asn_name, country, country_name, city, lat, lon, date_entered, last_checked, last_check_status, cors_capable FROM tbl_node %s ORDER BY %s %s LIMIT ? OFFSET ?", where, sortBy, sortDirection)
+	query := fmt.Sprintf(`
+		SELECT
+			id,
+			protocol,
+			hostname,
+			port,
+			is_tor,
+			is_available,
+			nettype,
+			height,
+			adjusted_time,
+			database_size,
+			difficulty,
+			version,
+			uptime,
+			estimate_fee,
+			ip_addr,
+			asn,
+			asn_name,
+			country,
+			country_name,
+			city,
+			lat,
+			lon,
+			date_entered,
+			last_checked,
+			last_check_status,
+			cors_capable
+		FROM
+			tbl_node
+		%s -- where query if any
+		ORDER BY
+			%s
+			%s
+		LIMIT ?
+		OFFSET ?`, where, sortBy, sortDirection)
 
 	row, err := repo.db.Query(query, queryParams...)
 	if err != nil {
@@ -181,7 +221,33 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 
 	for row.Next() {
 		node := MoneroNode{}
-		err = row.Scan(&node.Id, &node.Protocol, &node.Hostname, &node.Port, &node.IsTor, &node.IsAvailable, &node.NetType, &node.Height, &node.AdjustedTime, &node.DatabaseSize, &node.Difficulty, &node.Version, &node.Uptime, &node.EstimateFee, &node.Ip, &node.Asn, &node.AsnName, &node.CountryCode, &node.CountryName, &node.City, &node.Lat, &node.Lon, &node.DateEntered, &node.LastChecked, &node.LastCheckStatus, &node.CorsCapable)
+		err = row.Scan(
+			&node.Id,
+			&node.Protocol,
+			&node.Hostname,
+			&node.Port,
+			&node.IsTor,
+			&node.IsAvailable,
+			&node.NetType,
+			&node.Height,
+			&node.AdjustedTime,
+			&node.DatabaseSize,
+			&node.Difficulty,
+			&node.Version,
+			&node.Uptime,
+			&node.EstimateFee,
+			&node.Ip,
+			&node.Asn,
+			&node.AsnName,
+			&node.CountryCode,
+			&node.CountryName,
+			&node.City,
+			&node.Lat,
+			&node.Lon,
+			&node.DateEntered,
+			&node.LastChecked,
+			&node.LastCheckStatus,
+			&node.CorsCapable)
 		if err != nil {
 			return nodes, err
 		}
@@ -265,7 +331,28 @@ func (repo *MoneroRepo) Logs(q MoneroLogQueryParams) (MoneroNodeFetchLogs, error
 		sortDirection = "ASC"
 	}
 
-	query := fmt.Sprintf("SELECT id, node_id, prober_id, is_available, height, adjusted_time, database_size, difficulty, estimate_fee, date_checked, failed_reason, fetch_runtime FROM tbl_probe_log %s ORDER BY %s %s LIMIT ? OFFSET ?", where, sortBy, sortDirection)
+	query := fmt.Sprintf(`
+		SELECT
+			id,
+			node_id,
+			prober_id,
+			is_available,
+			height,
+			adjusted_time,
+			database_size,
+			difficulty,
+			estimate_fee,
+			date_checked,
+			failed_reason,
+			fetch_runtime
+		FROM
+			tbl_probe_log
+		%s -- where query
+		ORDER BY
+			%s
+			%s
+		LIMIT ?
+		OFFSET ?`, where, sortBy, sortDirection)
 
 	row, err := repo.db.Query(query, queryParams...)
 	if err != nil {
@@ -277,7 +364,19 @@ func (repo *MoneroRepo) Logs(q MoneroLogQueryParams) (MoneroNodeFetchLogs, error
 
 	for row.Next() {
 		probeLog := ProbeLog{}
-		err = row.Scan(&probeLog.Id, &probeLog.NodeId, &probeLog.ProberId, &probeLog.Status, &probeLog.Height, &probeLog.AdjustedTime, &probeLog.DatabaseSize, &probeLog.Difficulty, &probeLog.EstimateFee, &probeLog.DateChecked, &probeLog.FailedReason, &probeLog.FetchRuntime)
+		err = row.Scan(
+			&probeLog.Id,
+			&probeLog.NodeId,
+			&probeLog.ProberId,
+			&probeLog.Status,
+			&probeLog.Height,
+			&probeLog.AdjustedTime,
+			&probeLog.DatabaseSize,
+			&probeLog.Difficulty,
+			&probeLog.EstimateFee,
+			&probeLog.DateChecked,
+			&probeLog.FailedReason,
+			&probeLog.FetchRuntime)
 		if err != nil {
 			return fetchLogs, err
 		}
@@ -323,8 +422,16 @@ func (repo *MoneroRepo) Add(protocol string, hostname string, port uint) error {
 		ip = hostIp.String()
 	}
 
-	check := `SELECT id FROM tbl_node WHERE protocol = ? AND hostname = ? AND port = ? LIMIT 1`
-	row, err := repo.db.Query(check, protocol, hostname, port)
+	row, err := repo.db.Query(`
+		SELECT
+			id
+		FROM
+			tbl_node
+		WHERE
+			protocol = ?
+			AND hostname = ?
+			AND port = ?
+		LIMIT 1`, protocol, hostname, port)
 	if err != nil {
 		return err
 	}
@@ -334,9 +441,43 @@ func (repo *MoneroRepo) Add(protocol string, hostname string, port uint) error {
 		return errors.New("Node already monitored")
 	}
 	statusDb, _ := json.Marshal([5]int{2, 2, 2, 2, 2})
-
-	query := `INSERT INTO tbl_node (protocol, hostname, port, is_tor, nettype, ip_addr, lat, lon, date_entered, last_checked, last_check_status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-	_, err = repo.db.Exec(query, protocol, hostname, port, is_tor, "", ip, 0, 0, time.Now().Unix(), 0, string(statusDb))
+	_, err = repo.db.Exec(`
+		INSERT INTO tbl_node (
+			protocol,
+			hostname,
+			port,
+			is_tor,
+			nettype,
+			ip_addr,
+			lat,
+			lon,
+			date_entered,
+			last_checked,
+			last_check_status
+		) VALUES (
+			?,
+			?,
+			?,
+			?,
+			?,
+			?,
+			?,
+			?,
+			?,
+			?,
+			?
+		)`,
+		protocol,
+		hostname,
+		port,
+		is_tor,
+		"",
+		ip,
+		0,
+		0,
+		time.Now().Unix(),
+		0,
+		string(statusDb))
 	if err != nil {
 		return err
 	}
@@ -371,14 +512,35 @@ func (repo *MoneroRepo) GiveJob(acceptTor int) (MoneroNode, error) {
 
 	node := MoneroNode{}
 
-	query := fmt.Sprintf(`SELECT id, hostname, port, protocol, is_tor, last_check_status FROM tbl_node %s ORDER BY last_checked ASC LIMIT 1`, where)
-	err := repo.db.QueryRow(query, queryParams...).Scan(&node.Id, &node.Hostname, &node.Port, &node.Protocol, &node.IsTor, &node.LastCheckStatus)
+	query := fmt.Sprintf(`
+		SELECT
+			id,
+			hostname,
+			port,
+			protocol,
+			is_tor,
+			last_check_status
+		FROM
+			tbl_node
+		%s -- where query if any
+		ORDER BY
+			last_checked ASC
+		LIMIT 1`, where)
+	err := repo.db.QueryRow(query, queryParams...).Scan(
+		&node.Id,
+		&node.Hostname,
+		&node.Port,
+		&node.Protocol,
+		&node.IsTor,
+		&node.LastCheckStatus)
 	if err != nil {
 		return node, err
 	}
 
-	update := `UPDATE tbl_node SET last_checked = ? WHERE id = ?`
-	_, err = repo.db.Exec(update, time.Now().Unix(), node.Id)
+	_, err = repo.db.Exec(`
+		UPDATE tbl_node
+		SET last_checked = ?
+		WHERE id = ?`, time.Now().Unix(), node.Id)
 	if err != nil {
 		return node, err
 	}
@@ -397,9 +559,44 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 		return errors.New("Invalid node")
 	}
 
-	qInsertLog := `INSERT INTO tbl_probe_log (node_id, prober_id, is_available, height, adjusted_time, database_size, difficulty, estimate_fee, date_checked, failed_reason, fetch_runtime) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-
-	_, err := repo.db.Exec(qInsertLog, report.NodeInfo.Id, proberId, report.NodeInfo.IsAvailable, report.NodeInfo.Height, report.NodeInfo.AdjustedTime, report.NodeInfo.DatabaseSize, report.NodeInfo.Difficulty, report.NodeInfo.EstimateFee, time.Now().Unix(), report.Message, report.TookTime)
+	qInsertLog := `
+		INSERT INTO tbl_probe_log (
+			node_id,
+			prober_id,
+			is_available,
+			height,
+			adjusted_time,
+			database_size,
+			difficulty,
+			estimate_fee,
+			date_checked,
+			failed_reason,
+			fetch_runtime
+		) VALUES (
+			?,
+			?,
+			?,
+			?,
+			?,
+			?,
+			?,
+			?,
+			?,
+			?,
+			?
+		)`
+	_, err := repo.db.Exec(qInsertLog,
+		report.NodeInfo.Id,
+		proberId,
+		report.NodeInfo.IsAvailable,
+		report.NodeInfo.Height,
+		report.NodeInfo.AdjustedTime,
+		report.NodeInfo.DatabaseSize,
+		report.NodeInfo.Difficulty,
+		report.NodeInfo.EstimateFee,
+		time.Now().Unix(),
+		report.Message,
+		report.TookTime)
 	if err != nil {
 		return err
 	}
@@ -413,11 +610,16 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 		TotalFetched uint `db:"total_fetched"`
 	}{}
 
-	qstats := `SELECT
-		SUM(if(is_available='1',1,0)) AS online,
-		SUM(if(is_available='0',1,0)) AS offline,
-		SUM(if(id='0',0,1)) AS total_fetched
-	FROM tbl_probe_log WHERE node_id = ? AND date_checked > ?`
+	qstats := `
+		SELECT
+			SUM(if(is_available='1',1,0)) AS online,
+			SUM(if(is_available='0',1,0)) AS offline,
+			SUM(if(id='0',0,1)) AS total_fetched
+		FROM
+			tbl_probe_log
+		WHERE
+			node_id = ?
+			AND date_checked > ?`
 	repo.db.Get(&nodeStats, qstats, report.NodeInfo.Id, limitTs)
 
 	avgUptime := (float64(nodeStats.OnlineCount) / float64(nodeStats.TotalFetched)) * 100
@@ -458,17 +660,59 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 	}
 
 	if report.NodeInfo.IsAvailable {
-		update := `UPDATE tbl_node SET
-			is_available = ?, nettype = ?, height = ?, adjusted_time = ?,
-			database_size = ?, difficulty = ?, version = ?, uptime = ?,
-			estimate_fee = ?, ip_addr = ?, asn = ?, asn_name = ?, country = ?,
-			country_name = ?, city = ?, last_checked = ?, last_check_status = ?,
+		update := `
+		UPDATE tbl_node
+		SET
+			is_available = ?,
+			nettype = ?,
+			height = ?,
+			adjusted_time = ?,
+			database_size = ?,
+			difficulty = ?,
+			version = ?,
+			uptime = ?,
+			estimate_fee = ?,
+			ip_addr = ?,
+			asn = ?,
+			asn_name = ?,
+			country = ?,
+			country_name = ?,
+			city = ?,
+			last_checked = ?,
+			last_check_status = ?,
 			cors_capable = ?
-		WHERE id = ?`
+		WHERE
+			id = ?`
 		_, err = repo.db.Exec(update,
-			nodeAvailable, report.NodeInfo.NetType, report.NodeInfo.Height, report.NodeInfo.AdjustedTime, report.NodeInfo.DatabaseSize, report.NodeInfo.Difficulty, report.NodeInfo.Version, report.NodeInfo.Uptime, report.NodeInfo.EstimateFee, report.NodeInfo.Ip, report.NodeInfo.Asn, report.NodeInfo.AsnName, report.NodeInfo.CountryCode, report.NodeInfo.CountryName, report.NodeInfo.City, now.Unix(), string(statuesValueToDb), report.NodeInfo.CorsCapable, report.NodeInfo.Id)
+			nodeAvailable,
+			report.NodeInfo.NetType,
+			report.NodeInfo.Height,
+			report.NodeInfo.AdjustedTime,
+			report.NodeInfo.DatabaseSize,
+			report.NodeInfo.Difficulty,
+			report.NodeInfo.Version,
+			report.NodeInfo.Uptime,
+			report.NodeInfo.EstimateFee,
+			report.NodeInfo.Ip,
+			report.NodeInfo.Asn,
+			report.NodeInfo.AsnName,
+			report.NodeInfo.CountryCode,
+			report.NodeInfo.CountryName,
+			report.NodeInfo.City,
+			now.Unix(),
+			string(statuesValueToDb),
+			report.NodeInfo.CorsCapable,
+			report.NodeInfo.Id)
 	} else {
-		update := `UPDATE tbl_node SET is_available = ?,  uptime = ?, last_checked = ?, last_check_status = ? WHERE id = ?`
+		update := `
+		UPDATE tbl_node
+		SET
+			is_available = ?,
+			uptime = ?,
+			last_checked = ?,
+			last_check_status = ?
+		WHERE
+			id = ?`
 		_, err = repo.db.Exec(update, nodeAvailable, report.NodeInfo.Uptime, now.Unix(), string(statuesValueToDb), report.NodeInfo.Id)
 	}
 
@@ -477,7 +721,10 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 		repo.Delete(report.NodeInfo.Id)
 	}
 
-	repo.db.Exec(`UPDATE tbl_prober SET last_submit_ts = ? WHERE id = ?`, now.Unix(), proberId)
+	repo.db.Exec(`
+		UPDATE tbl_prober
+		SET last_submit_ts = ?
+		WHERE id = ?`, now.Unix(), proberId)
 
 	return err
 }
@@ -494,7 +741,20 @@ func (repo *MoneroRepo) NetFee() []NetFee {
 
 	for _, net := range netTypes {
 		fees := NetFee{}
-		err := repo.db.Get(&fees, `SELECT COUNT(id) AS node_count, nettype, estimate_fee FROM tbl_node WHERE nettype = ? GROUP BY estimate_fee ORDER BY node_count DESC LIMIT 1`, net)
+		err := repo.db.Get(&fees, `
+			SELECT
+				COUNT(id) AS node_count,
+				nettype,
+				estimate_fee
+			FROM
+				tbl_node
+			WHERE
+				nettype = ?
+			GROUP BY
+				estimate_fee
+			ORDER BY
+				node_count DESC
+			LIMIT 1`, net)
 		if err != nil {
 			fmt.Println("WARN:", err.Error())
 			continue
@@ -513,7 +773,16 @@ type MoneroCountries struct {
 
 func (repo *MoneroRepo) Countries() ([]MoneroCountries, error) {
 	countries := []MoneroCountries{}
-
-	err := repo.db.Select(&countries, `SELECT COUNT(id) AS total_nodes, country, country_name FROM tbl_node GROUP BY country ORDER BY country ASC`)
+	err := repo.db.Select(&countries, `
+		SELECT
+			COUNT(id) AS total_nodes,
+			country,
+			country_name
+		FROM
+			tbl_node
+		GROUP BY
+			country
+		ORDER BY
+			country ASC`)
 	return countries, err
 }
