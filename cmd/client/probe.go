@@ -21,52 +21,70 @@ import (
 
 const RPCUserAgent = "ditatombot/0.0.1 (Monero RPC Monitoring; https://github.com/ditatompel/xmr-remote-nodes)"
 
-type proberClient struct {
-	config  *config.App
-	message string
+const (
+	errEnvNoEndpoint = errProber("please set SERVER_ENDPOINT in .env")
+	errEnvNoTorSocks = errProber("please set TOR_SOCKS in .env")
+)
+
+type errProber string
+
+func (err errProber) Error() string {
+	return string(err)
 }
 
-func newProber(cfg *config.App) *proberClient {
-	return &proberClient{config: cfg}
+type proberClient struct {
+	config  *config.App
+	message string // message to include when reporting back to server
+}
+
+func newProber() *proberClient {
+	return &proberClient{config: config.AppCfg()}
 }
 
 var ProbeCmd = &cobra.Command{
 	Use:   "probe",
 	Short: "Probe remote nodes",
 	Run: func(cmd *cobra.Command, args []string) {
-		RunProbe()
+		if err := RunProber(); err != nil {
+			slog.Error(fmt.Sprintf("[PROBE] %s", err.Error()))
+			os.Exit(1)
+		}
 	},
 }
 
-func RunProbe() {
-	cfg := config.AppCfg()
-	if cfg.ServerEndpoint == "" {
-		fmt.Println("Please set SERVER_ENDPOINT in .env")
-		os.Exit(1)
+// Fetch a new job from the server, fetches node info, and sends it to the server
+func RunProber() error {
+	if err := validateConfig(); err != nil {
+		return err
 	}
+	prober := newProber()
 
-	if cfg.AcceptTor && cfg.TorSocks == "" {
-		fmt.Println("Please set TOR_SOCKS in .env")
-		os.Exit(1)
-	}
-
-	probe := newProber(cfg)
-
-	node, err := probe.getJob()
+	node, err := prober.fetchJob()
 	if err != nil {
-		slog.Error(fmt.Sprintf("[PROBE] getJob: %s", err.Error()))
-		os.Exit(1)
+		return err
 	}
 
-	fetchNode, err := probe.fetchNode(node)
+	fetchNode, err := prober.fetchNode(node)
 	if err != nil {
-		slog.Error(fmt.Sprintf("[PROBE] fetchNode: %s", err.Error()))
-		os.Exit(1)
+		return err
 	}
 	slog.Debug(fmt.Sprintf("[PROBE] fetchNode: %s", prettyPrint(fetchNode)))
+	return nil
 }
 
-func (p *proberClient) getJob() (monero.Node, error) {
+// checks if all required environment variables are set
+func validateConfig() error {
+	if config.AppCfg().ServerEndpoint == "" {
+		return errEnvNoEndpoint
+	}
+	if config.AppCfg().AcceptTor && config.AppCfg().TorSocks == "" {
+		return errEnvNoTorSocks
+	}
+	return nil
+}
+
+// Get monero node info to fetch from the server
+func (p *proberClient) fetchJob() (monero.Node, error) {
 	queryParams := ""
 	if p.config.AcceptTor {
 		queryParams = "?accept_tor=1"
@@ -74,10 +92,10 @@ func (p *proberClient) getJob() (monero.Node, error) {
 
 	var node monero.Node
 
-	endpoint := fmt.Sprintf("%s/api/v1/job%s", p.config.ServerEndpoint, queryParams)
-	slog.Info(fmt.Sprintf("[PROBE] Getting node from %s", endpoint))
+	uri := fmt.Sprintf("%s/api/v1/job%s", p.config.ServerEndpoint, queryParams)
+	slog.Info(fmt.Sprintf("[PROBE] Getting node from %s", uri))
 
-	req, err := http.NewRequest(http.MethodGet, endpoint, nil)
+	req, err := http.NewRequest(http.MethodGet, uri, nil)
 	if err != nil {
 		return node, err
 	}
