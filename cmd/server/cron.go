@@ -5,8 +5,8 @@ import (
 	"os"
 	"text/tabwriter"
 	"time"
+	"xmr-remote-nodes/internal/cron"
 	"xmr-remote-nodes/internal/database"
-	"xmr-remote-nodes/internal/repo"
 
 	"github.com/spf13/cobra"
 )
@@ -19,8 +19,7 @@ var cronCmd = &cobra.Command{
 		if err := database.ConnectDB(); err != nil {
 			panic(err)
 		}
-		cronRepo := repo.NewCron(database.GetDB())
-		crons, err := cronRepo.Crons()
+		crons, err := cron.New().Crons()
 		if err != nil {
 			fmt.Println(err)
 			return
@@ -32,8 +31,8 @@ var cronCmd = &cobra.Command{
 		w := tabwriter.NewWriter(os.Stdout, 1, 1, 1, ' ', 0)
 		fmt.Fprintf(w, "ID\t| Name\t| Run Every\t| Last Run\t| Took Time\n")
 		for _, cron := range crons {
-			fmt.Fprintf(w, "%d\t| %s\t| %d\t| %s\t| %f\n",
-				cron.Id,
+			fmt.Fprintf(w, "%d\t| %s\t| %ds\t| %s\t| %f\n",
+				cron.ID,
 				cron.Title,
 				cron.RunEvery,
 				time.Unix(cron.LastRun, 0).Format(time.RFC3339),

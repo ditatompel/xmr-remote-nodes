@@ -1,4 +1,4 @@
-package repo
+package cron
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ type CronRepo struct {
 }
 
 type Cron struct {
-	Id          int     `json:"id" db:"id"`
+	ID          int     `json:"id" db:"id"`
 	Title       string  `json:"title" db:"title"`
 	Slug        string  `json:"slug" db:"slug"`
 	Description string  `json:"description" db:"description"`
@@ -32,15 +32,15 @@ type Cron struct {
 
 var rerunTimeout = 300
 
-func NewCron(db *database.DB) CronRepository {
-	return &CronRepo{db}
+func New() CronRepository {
+	return &CronRepo{db: database.GetDB()}
 }
 
-func (repo *CronRepo) RunCronProcess() {
+func (r *CronRepo) RunCronProcess() {
 	for {
 		time.Sleep(60 * time.Second)
 		slog.Info("[CRON] Running cron cycle...")
-		list, err := repo.queueList()
+		list, err := r.queueList()
 		if err != nil {
 			slog.Warn(fmt.Sprintf("[CRON] Error parsing queue list to struct: %s", err))
 			continue
@@ -54,23 +54,23 @@ func (repo *CronRepo) RunCronProcess() {
 				continue
 			}
 
-			repo.preRunTask(task.Id, currentTs)
+			r.preRunTask(task.ID, currentTs)
 
-			repo.execCron(task.Slug)
+			r.execCron(task.Slug)
 
 			runTime := math.Ceil(time.Since(startTime).Seconds()*1000) / 1000
 			slog.Info(fmt.Sprintf("[CRON] Task %s done in %f seconds", task.Slug, runTime))
 			nextRun := currentTs + int64(task.RunEvery)
 
-			repo.postRunTask(task.Id, nextRun, runTime)
+			r.postRunTask(task.ID, nextRun, runTime)
 		}
 		slog.Info("[CRON] Cron cycle done!")
 	}
 }
 
-func (repo *CronRepo) Crons() ([]Cron, error) {
+func (r *CronRepo) Crons() ([]Cron, error) {
 	var tasks []Cron
-	err := repo.db.Select(&tasks, `
+	err := r.db.Select(&tasks, `
 		SELECT
 			id,
 			title,
@@ -87,7 +87,7 @@ func (repo *CronRepo) Crons() ([]Cron, error) {
 	return tasks, err
 }
 
-func (repo *CronRepo) queueList() ([]Cron, error) {
+func (r *CronRepo) queueList() ([]Cron, error) {
 	tasks := []Cron{}
 	query := `
 		SELECT
@@ -102,12 +102,12 @@ func (repo *CronRepo) queueList() ([]Cron, error) {
 		WHERE
 			is_enabled = ?
 			AND next_run <= ?`
-	err := repo.db.Select(&tasks, query, 1, time.Now().Unix())
+	err := r.db.Select(&tasks, query, 1, time.Now().Unix())
 
 	return tasks, err
 }
 
-func (repo *CronRepo) preRunTask(id int, lastRunTs int64) {
+func (r *CronRepo) preRunTask(id int, lastRunTs int64) {
 	query := `
 		UPDATE tbl_cron
 		SET
@@ -115,14 +115,14 @@ func (repo *CronRepo) preRunTask(id int, lastRunTs int64) {
 			last_run = ?
 		WHERE
 			id = ?`
-	row, err := repo.db.Query(query, 1, lastRunTs, id)
+	row, err := r.db.Query(query, 1, lastRunTs, id)
 	if err != nil {
 		slog.Error(fmt.Sprintf("[CRON] Failed to update pre cron state: %s", err))
 	}
 	defer row.Close()
 }
 
-func (repo *CronRepo) postRunTask(id int, nextRun int64, runtime float64) {
+func (r *CronRepo) postRunTask(id int, nextRun int64, runtime float64) {
 	query := `
 		UPDATE tbl_cron
 		SET
@@ -131,27 +131,26 @@ func (repo *CronRepo) postRunTask(id int, nextRun int64, runtime float64) {
 			run_time = ?
 		WHERE
 			id = ?`
-	row, err := repo.db.Query(query, 0, nextRun, runtime, id)
+	row, err := r.db.Query(query, 0, nextRun, runtime, id)
 	if err != nil {
 		slog.Error(fmt.Sprintf("[CRON] Failed to update post cron state: %s", err))
 	}
 	defer row.Close()
 }
 
-func (repo *CronRepo) execCron(slug string) {
+func (r *CronRepo) execCron(slug string) {
 	switch slug {
 	case "delete_old_probe_logs":
 		slog.Info(fmt.Sprintf("[CRON] Start running task: %s", slug))
-		repo.deleteOldProbeLogs()
-		break
+		r.deleteOldProbeLogs()
 	}
 }
 
-func (repo *CronRepo) deleteOldProbeLogs() {
+func (r *CronRepo) deleteOldProbeLogs() {
 	// for now, we only delete stats older than 1 month +2 days
 	startTs := time.Now().AddDate(0, -1, -2).Unix()
 	query := `DELETE FROM tbl_probe_log WHERE date_checked < ?`
-	_, err := repo.db.Exec(query, startTs)
+	_, err := r.db.Exec(query, startTs)
 	if err != nil {
 		slog.Error(fmt.Sprintf("[CRON] Failed to delete old probe logs: %s", err))
 	}

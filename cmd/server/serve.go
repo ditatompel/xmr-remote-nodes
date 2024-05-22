@@ -9,8 +9,8 @@ import (
 	"xmr-remote-nodes/frontend"
 	"xmr-remote-nodes/handler"
 	"xmr-remote-nodes/internal/config"
+	"xmr-remote-nodes/internal/cron"
 	"xmr-remote-nodes/internal/database"
-	"xmr-remote-nodes/internal/repo"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -73,7 +73,7 @@ func serve() {
 
 	// start a cleanup cron-job
 	if !fiber.IsChild() {
-		cronRepo := repo.NewCron(database.GetDB())
+		cronRepo := cron.New()
 		go cronRepo.RunCronProcess()
 	}
 
