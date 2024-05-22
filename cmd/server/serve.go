@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 	"xmr-remote-nodes/frontend"
 	"xmr-remote-nodes/handler"
 	"xmr-remote-nodes/internal/config"
@@ -22,7 +23,7 @@ import (
 
 var serveCmd = &cobra.Command{
 	Use:   "serve",
-	Short: "Serve the WebUI",
+	Short: "Serve the WebUI and APIs",
 	Long:  `This command will run HTTP server for APIs and WebUI.`,
 	Run: func(_ *cobra.Command, _ []string) {
 		serve()
@@ -31,14 +32,26 @@ var serveCmd = &cobra.Command{
 
 func serve() {
 	appCfg := config.AppCfg()
-	// connect to DB
 	if err := database.ConnectDB(); err != nil {
-		panic(err)
+		slog.Error(fmt.Sprintf("[DB] %s", err.Error()))
+		os.Exit(1)
 	}
 
-	// run db migrations
-	if err := database.MigrateDb(database.GetDB()); err != nil {
-		panic(err)
+	// signal channel to capture system calls
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
+
+	stopCron := make(chan struct{})
+	if !fiber.IsChild() {
+		// run db migrations
+		if err := database.MigrateDb(database.GetDB()); err != nil {
+			slog.Error(fmt.Sprintf("[DB] %s", err.Error()))
+			os.Exit(1)
+		}
+
+		// run cron process
+		cronRepo := cron.New()
+		go cronRepo.RunCronProcess(stopCron)
 	}
 
 	// Define Fiber config & app.
@@ -67,28 +80,21 @@ func serve() {
 		// NotFoundFile: "index.html",
 	}))
 
-	// signal channel to capture system calls
-	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, syscall.SIGTERM, syscall.SIGINT, syscall.SIGQUIT)
-
-	// start a cleanup cron-job
-	if !fiber.IsChild() {
-		cronRepo := cron.New()
-		go cronRepo.RunCronProcess()
-	}
-
-	// start shutdown goroutine
+	// go routine to capture system calls
 	go func() {
-		// capture sigterm and other system call here
 		<-sigCh
+		close(stopCron) // stop cron goroutine
 		slog.Info("Shutting down HTTP server...")
 		_ = app.Shutdown()
+
+		// give time for graceful shutdown
+		time.Sleep(1 * time.Second)
 	}()
 
 	// start http server
 	serverAddr := fmt.Sprintf("%s:%d", appCfg.Host, appCfg.Port)
 	if err := app.Listen(serverAddr); err != nil {
-		slog.Error(fmt.Sprintf("Server is not running! error: %v", err))
+		slog.Error(fmt.Sprintf("[HTTP] Server is not running! error: %v", err))
 	}
 }
 

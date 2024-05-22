@@ -9,7 +9,7 @@ import (
 )
 
 type CronRepository interface {
-	RunCronProcess()
+	RunCronProcess(chan struct{})
 	Crons() ([]Cron, error)
 }
 
@@ -36,35 +36,39 @@ func New() CronRepository {
 	return &CronRepo{db: database.GetDB()}
 }
 
-func (r *CronRepo) RunCronProcess() {
+func (r *CronRepo) RunCronProcess(c chan struct{}) {
 	for {
-		time.Sleep(60 * time.Second)
-		slog.Info("[CRON] Running cron cycle...")
-		list, err := r.queueList()
-		if err != nil {
-			slog.Warn(fmt.Sprintf("[CRON] Error parsing queue list to struct: %s", err))
-			continue
-		}
-		for _, task := range list {
-			startTime := time.Now()
-			currentTs := startTime.Unix()
-			delayedTask := currentTs - task.NextRun
-			if task.CronState == 1 && delayedTask <= int64(rerunTimeout) {
-				slog.Debug(fmt.Sprintf("[CRON] Skipping task %s because it is already running", task.Slug))
+		select {
+		case <-time.After(60 * time.Second):
+			slog.Info("[CRON] Running cron cycle...")
+			list, err := r.queueList()
+			if err != nil {
+				slog.Warn(fmt.Sprintf("[CRON] Error parsing queue list to struct: %s", err))
 				continue
 			}
+			for _, task := range list {
+				startTime := time.Now()
+				currentTs := startTime.Unix()
+				delayedTask := currentTs - task.NextRun
+				if task.CronState == 1 && delayedTask <= int64(rerunTimeout) {
+					slog.Debug(fmt.Sprintf("[CRON] Skipping task %s because it is already running", task.Slug))
+					continue
+				}
 
-			r.preRunTask(task.ID, currentTs)
+				r.preRunTask(task.ID, currentTs)
+				r.execCron(task.Slug)
 
-			r.execCron(task.Slug)
+				runTime := math.Ceil(time.Since(startTime).Seconds()*1000) / 1000
+				slog.Info(fmt.Sprintf("[CRON] Task %s done in %f seconds", task.Slug, runTime))
+				nextRun := currentTs + int64(task.RunEvery)
 
-			runTime := math.Ceil(time.Since(startTime).Seconds()*1000) / 1000
-			slog.Info(fmt.Sprintf("[CRON] Task %s done in %f seconds", task.Slug, runTime))
-			nextRun := currentTs + int64(task.RunEvery)
-
-			r.postRunTask(task.ID, nextRun, runTime)
+				r.postRunTask(task.ID, nextRun, runTime)
+			}
+			slog.Info("[CRON] Cron cycle done!")
+		case <-c:
+			slog.Info("[CRON] Shutting down cron...")
+			return
 		}
-		slog.Info("[CRON] Cron cycle done!")
 	}
 }
 
