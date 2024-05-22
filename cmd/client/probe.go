@@ -13,7 +13,7 @@ import (
 	"os"
 	"time"
 	"xmr-remote-nodes/internal/config"
-	"xmr-remote-nodes/internal/repo"
+	"xmr-remote-nodes/internal/monero"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/net/proxy"
@@ -66,13 +66,13 @@ func RunProbe() {
 	slog.Debug(fmt.Sprintf("[PROBE] fetchNode: %s", prettyPrint(fetchNode)))
 }
 
-func (p *proberClient) getJob() (repo.MoneroNode, error) {
+func (p *proberClient) getJob() (monero.Node, error) {
 	queryParams := ""
 	if p.config.AcceptTor {
 		queryParams = "?accept_tor=1"
 	}
 
-	node := repo.MoneroNode{}
+	var node monero.Node
 
 	endpoint := fmt.Sprintf("%s/api/v1/job%s", p.config.ServerEndpoint, queryParams)
 	slog.Info(fmt.Sprintf("[PROBE] Getting node from %s", endpoint))
@@ -96,7 +96,7 @@ func (p *proberClient) getJob() (repo.MoneroNode, error) {
 	}
 
 	response := struct {
-		Data repo.MoneroNode `json:"data"`
+		Data monero.Node `json:"data"`
 	}{}
 
 	err = json.NewDecoder(resp.Body).Decode(&response)
@@ -110,7 +110,7 @@ func (p *proberClient) getJob() (repo.MoneroNode, error) {
 	return node, nil
 }
 
-func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) {
+func (p *proberClient) fetchNode(node monero.Node) (monero.Node, error) {
 	startTime := time.Now()
 	endpoint := fmt.Sprintf("%s://%s:%d/json_rpc", node.Protocol, node.Hostname, node.Port)
 	rpcParam := []byte(`{"jsonrpc": "2.0","id": "0","method": "get_info"}`)
@@ -167,7 +167,7 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 	}
 
 	reportNode := struct {
-		repo.MoneroNode `json:"result"`
+		monero.Node `json:"result"`
 	}{}
 
 	if err := json.Unmarshal(body, &reportNode); err != nil {
@@ -178,7 +178,7 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 	if reportNode.Status == "OK" {
 		node.IsAvailable = true
 	}
-	node.NetType = reportNode.NetType
+	node.Nettype = reportNode.Nettype
 	node.AdjustedTime = reportNode.AdjustedTime
 	node.DatabaseSize = reportNode.DatabaseSize
 	node.Difficulty = reportNode.Difficulty
@@ -186,7 +186,7 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 	node.Version = reportNode.Version
 
 	if resp.Header.Get("Access-Control-Allow-Origin") == "*" || resp.Header.Get("Access-Control-Allow-Origin") == "https://xmr.ditatompel.com" {
-		node.CorsCapable = true
+		node.CORSCapable = true
 	}
 
 	if !node.IsTor {
@@ -194,7 +194,7 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 		if err != nil {
 			fmt.Println("Warning: Could not resolve hostname: " + node.Hostname)
 		} else {
-			node.Ip = hostIp[0].String()
+			node.IP = hostIp[0].String()
 		}
 	}
 
@@ -245,8 +245,8 @@ func (p *proberClient) fetchNode(node repo.MoneroNode) (repo.MoneroNode, error) 
 	return node, nil
 }
 
-func (p *proberClient) reportResult(node repo.MoneroNode, tookTime float64) error {
-	jsonData, err := json.Marshal(repo.ProbeReport{
+func (p *proberClient) reportResult(node monero.Node, tookTime float64) error {
+	jsonData, err := json.Marshal(monero.ProbeReport{
 		TookTime: tookTime,
 		Message:  p.message,
 		NodeInfo: node,

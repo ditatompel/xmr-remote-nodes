@@ -3,7 +3,7 @@ package handler
 import (
 	"strconv"
 	"xmr-remote-nodes/internal/database"
-	"xmr-remote-nodes/internal/repo"
+	"xmr-remote-nodes/internal/monero"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -26,7 +26,7 @@ func MoneroNode(c *fiber.Ctx) error {
 		})
 	}
 
-	moneroRepo := repo.NewMoneroRepo(database.GetDB())
+	moneroRepo := monero.NewMoneroRepo(database.GetDB())
 	node, err := moneroRepo.Node(nodeId)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -44,18 +44,18 @@ func MoneroNode(c *fiber.Ctx) error {
 }
 
 func MoneroNodes(c *fiber.Ctx) error {
-	moneroRepo := repo.NewMoneroRepo(database.GetDB())
-	query := repo.MoneroQueryParams{
+	moneroRepo := monero.NewMoneroRepo(database.GetDB())
+	query := monero.MoneroQueryParams{
 		RowsPerPage:   c.QueryInt("limit", 10),
 		Page:          c.QueryInt("page", 1),
 		SortBy:        c.Query("sort_by", "id"),
 		SortDirection: c.Query("sort_direction", "desc"),
 		Host:          c.Query("host"),
-		NetType:       c.Query("nettype", "any"),
+		Nettype:       c.Query("nettype", "any"),
 		Protocol:      c.Query("protocol", "any"),
 		CC:            c.Query("cc", "any"),
 		Status:        c.QueryInt("status", -1),
-		Cors:          c.QueryInt("cors", -1),
+		CORS:          c.QueryInt("cors", -1),
 	}
 
 	nodes, err := moneroRepo.Nodes(query)
@@ -75,13 +75,13 @@ func MoneroNodes(c *fiber.Ctx) error {
 }
 
 func ProbeLogs(c *fiber.Ctx) error {
-	moneroRepo := repo.NewMoneroRepo(database.GetDB())
-	query := repo.MoneroLogQueryParams{
+	moneroRepo := monero.NewMoneroRepo(database.GetDB())
+	query := monero.MoneroLogQueryParams{
 		RowsPerPage:   c.QueryInt("limit", 10),
 		Page:          c.QueryInt("page", 1),
 		SortBy:        c.Query("sort_by", "id"),
 		SortDirection: c.Query("sort_direction", "desc"),
-		NodeId:        c.QueryInt("node_id", 0),
+		NodeID:        c.QueryInt("node_id", 0),
 		Status:        c.QueryInt("status", -1),
 		FailedReason:  c.Query("failed_reason"),
 	}
@@ -116,7 +116,7 @@ func AddNode(c *fiber.Ctx) error {
 	protocol := c.FormValue("protocol")
 	hostname := c.FormValue("hostname")
 
-	moneroRepo := repo.NewMoneroRepo(database.GetDB())
+	moneroRepo := monero.NewMoneroRepo(database.GetDB())
 	if err := moneroRepo.Add(protocol, hostname, uint(port)); err != nil {
 		return c.JSON(fiber.Map{
 			"status":  "error",
@@ -133,7 +133,7 @@ func AddNode(c *fiber.Ctx) error {
 }
 
 func NetFee(c *fiber.Ctx) error {
-	moneroRepo := repo.NewMoneroRepo(database.GetDB())
+	moneroRepo := monero.NewMoneroRepo(database.GetDB())
 	return c.JSON(fiber.Map{
 		"status":  "ok",
 		"message": "Success",
@@ -142,7 +142,7 @@ func NetFee(c *fiber.Ctx) error {
 }
 
 func Countries(c *fiber.Ctx) error {
-	moneroRepo := repo.NewMoneroRepo(database.GetDB())
+	moneroRepo := monero.NewMoneroRepo(database.GetDB())
 	countries, err := moneroRepo.Countries()
 	if err != nil {
 		return c.JSON(fiber.Map{
@@ -161,7 +161,7 @@ func Countries(c *fiber.Ctx) error {
 func GiveJob(c *fiber.Ctx) error {
 	acceptTor := c.QueryInt("accept_tor", 0)
 
-	moneroRepo := repo.NewMoneroRepo(database.GetDB())
+	moneroRepo := monero.NewMoneroRepo(database.GetDB())
 	node, err := moneroRepo.GiveJob(acceptTor)
 	if err != nil {
 		return c.JSON(fiber.Map{
@@ -179,8 +179,8 @@ func GiveJob(c *fiber.Ctx) error {
 }
 
 func ProcessJob(c *fiber.Ctx) error {
-	moneroRepo := repo.NewMoneroRepo(database.GetDB())
-	report := repo.ProbeReport{}
+	moneroRepo := monero.NewMoneroRepo(database.GetDB())
+	report := monero.ProbeReport{}
 
 	if err := c.BodyParser(&report); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{

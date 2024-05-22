@@ -1,4 +1,4 @@
-package repo
+package monero
 
 import (
 	"database/sql"
@@ -11,18 +11,19 @@ import (
 	"strings"
 	"time"
 	"xmr-remote-nodes/internal/database"
+	"xmr-remote-nodes/internal/geo"
 
 	"github.com/jmoiron/sqlx/types"
 )
 
 type MoneroRepository interface {
-	Node(id int) (MoneroNode, error)
+	Node(id int) (Node, error)
 	Add(protocol string, host string, port uint) error
-	Nodes(q MoneroQueryParams) (MoneroNodes, error)
-	GiveJob(acceptTor int) (MoneroNode, error)
+	Nodes(q MoneroQueryParams) (Nodes, error)
+	GiveJob(acceptTor int) (Node, error)
 	ProcessJob(report ProbeReport, proberId int64) error
 	NetFee() []NetFee
-	Countries() ([]MoneroCountries, error)
+	Countries() ([]Countries, error)
 	Logs(q MoneroLogQueryParams) (MoneroNodeFetchLogs, error)
 }
 
@@ -34,15 +35,15 @@ func NewMoneroRepo(db *database.DB) MoneroRepository {
 	return &MoneroRepo{db}
 }
 
-type MoneroNode struct {
-	Id              uint           `json:"id,omitempty" db:"id"`
+type Node struct {
+	ID              uint           `json:"id,omitempty" db:"id"`
 	Hostname        string         `json:"hostname" db:"hostname"`
-	Ip              string         `json:"ip" db:"ip_addr"`
+	IP              string         `json:"ip" db:"ip_addr"`
 	Port            uint           `json:"port" db:"port"`
 	Protocol        string         `json:"protocol" db:"protocol"`
 	IsTor           bool           `json:"is_tor" db:"is_tor"`
 	IsAvailable     bool           `json:"is_available" db:"is_available"`
-	NetType         string         `json:"nettype" db:"nettype"`
+	Nettype         string         `json:"nettype" db:"nettype"`
 	Height          uint           `json:"height" db:"height"`
 	AdjustedTime    uint           `json:"adjusted_time" db:"adjusted_time"`
 	DatabaseSize    uint           `json:"database_size" db:"database_size"`
@@ -51,22 +52,22 @@ type MoneroNode struct {
 	Status          string         `json:"status,omitempty"`
 	Uptime          float64        `json:"uptime" db:"uptime"`
 	EstimateFee     uint           `json:"estimate_fee" db:"estimate_fee"`
-	Asn             uint           `json:"asn" db:"asn"`
-	AsnName         string         `json:"asn_name" db:"asn_name"`
+	ASN             uint           `json:"asn" db:"asn"`
+	ASNName         string         `json:"asn_name" db:"asn_name"`
 	CountryCode     string         `json:"cc" db:"country"`
 	CountryName     string         `json:"country_name" db:"country_name"`
 	City            string         `json:"city" db:"city"`
-	Lat             float64        `json:"latitude" db:"lat"`
-	Lon             float64        `json:"longitude" db:"lon"`
+	Latitude        float64        `json:"latitude" db:"lat"`
+	Longitude       float64        `json:"longitude" db:"lon"`
 	DateEntered     uint           `json:"date_entered,omitempty" db:"date_entered"`
 	LastChecked     uint           `json:"last_checked" db:"last_checked"`
 	FailedCount     uint           `json:"failed_count,omitempty" db:"failed_count"`
 	LastCheckStatus types.JSONText `json:"last_check_statuses" db:"last_check_status"`
-	CorsCapable     bool           `json:"cors" db:"cors_capable"`
+	CORSCapable     bool           `json:"cors" db:"cors_capable"`
 }
 
-func (repo *MoneroRepo) Node(id int) (MoneroNode, error) {
-	node := MoneroNode{}
+func (repo *MoneroRepo) Node(id int) (Node, error) {
+	var node Node
 	err := repo.db.Get(&node, `SELECT * FROM tbl_node WHERE id = ?`, id)
 	if err != nil && err != sql.ErrNoRows {
 		fmt.Println("WARN:", err)
@@ -78,26 +79,26 @@ func (repo *MoneroRepo) Node(id int) (MoneroNode, error) {
 	return node, err
 }
 
-type MoneroNodes struct {
-	TotalRows   int           `json:"total_rows"`
-	RowsPerPage int           `json:"rows_per_page"`
-	Items       []*MoneroNode `json:"items"`
+type Nodes struct {
+	TotalRows   int     `json:"total_rows"`
+	RowsPerPage int     `json:"rows_per_page"`
+	Items       []*Node `json:"items"`
 }
 
 type MoneroQueryParams struct {
 	Host          string
-	NetType       string
+	Nettype       string
 	Protocol      string
 	CC            string // 2 letter country code
 	Status        int
-	Cors          int
+	CORS          int
 	RowsPerPage   int
 	Page          int
 	SortBy        string
 	SortDirection string
 }
 
-func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
+func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (Nodes, error) {
 	queryParams := []interface{}{}
 	whereQueries := []string{}
 	where := ""
@@ -107,17 +108,17 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 		queryParams = append(queryParams, "%"+q.Host+"%")
 		queryParams = append(queryParams, "%"+q.Host+"%")
 	}
-	if q.NetType != "any" {
-		if q.NetType != "mainnet" && q.NetType != "stagenet" && q.NetType != "testnet" {
-			return MoneroNodes{}, errors.New("Invalid nettype, must be one of 'mainnet', 'stagenet', 'testnet' or 'any'")
+	if q.Nettype != "any" {
+		if q.Nettype != "mainnet" && q.Nettype != "stagenet" && q.Nettype != "testnet" {
+			return Nodes{}, errors.New("Invalid nettype, must be one of 'mainnet', 'stagenet', 'testnet' or 'any'")
 		}
 		whereQueries = append(whereQueries, "nettype = ?")
-		queryParams = append(queryParams, q.NetType)
+		queryParams = append(queryParams, q.Nettype)
 	}
 	if q.Protocol != "any" {
 		allowedProtocols := []string{"tor", "http", "https"}
 		if !slices.Contains(allowedProtocols, q.Protocol) {
-			return MoneroNodes{}, errors.New("Invalid protocol, must be one of '" + strings.Join(allowedProtocols, "', '") + "' or 'any'")
+			return Nodes{}, errors.New("Invalid protocol, must be one of '" + strings.Join(allowedProtocols, "', '") + "' or 'any'")
 		}
 		if q.Protocol == "tor" {
 			whereQueries = append(whereQueries, "is_tor = ?")
@@ -140,7 +141,7 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 		whereQueries = append(whereQueries, "is_available = ?")
 		queryParams = append(queryParams, q.Status)
 	}
-	if q.Cors != -1 {
+	if q.CORS != -1 {
 		whereQueries = append(whereQueries, "cors_capable = ?")
 		queryParams = append(queryParams, 1)
 	}
@@ -149,7 +150,7 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 		where = "WHERE " + strings.Join(whereQueries, " AND ")
 	}
 
-	nodes := MoneroNodes{}
+	nodes := Nodes{}
 
 	queryTotalRows := fmt.Sprintf(`
 		SELECT
@@ -220,15 +221,15 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 	nodes.RowsPerPage = q.RowsPerPage
 
 	for row.Next() {
-		node := MoneroNode{}
+		var node Node
 		err = row.Scan(
-			&node.Id,
+			&node.ID,
 			&node.Protocol,
 			&node.Hostname,
 			&node.Port,
 			&node.IsTor,
 			&node.IsAvailable,
-			&node.NetType,
+			&node.Nettype,
 			&node.Height,
 			&node.AdjustedTime,
 			&node.DatabaseSize,
@@ -236,18 +237,18 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 			&node.Version,
 			&node.Uptime,
 			&node.EstimateFee,
-			&node.Ip,
-			&node.Asn,
-			&node.AsnName,
+			&node.IP,
+			&node.ASN,
+			&node.ASNName,
 			&node.CountryCode,
 			&node.CountryName,
 			&node.City,
-			&node.Lat,
-			&node.Lon,
+			&node.Latitude,
+			&node.Longitude,
 			&node.DateEntered,
 			&node.LastChecked,
 			&node.LastCheckStatus,
-			&node.CorsCapable)
+			&node.CORSCapable)
 		if err != nil {
 			return nodes, err
 		}
@@ -258,8 +259,8 @@ func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (MoneroNodes, error) {
 }
 
 type MoneroLogQueryParams struct {
-	NodeId       int    // 0 fpr all, >0 for specific node
-	WorkerId     int    // 0 for all, >0 for specific worker
+	NodeID       int    // 0 fpr all, >0 for specific node
+	WorkerID     int    // 0 for all, >0 for specific worker
 	Status       int    // -1 for all, 0 for failed, 1 for success
 	FailedReason string // empty for all, if not empty, will be used as search from failed_reaso
 
@@ -270,9 +271,9 @@ type MoneroLogQueryParams struct {
 }
 
 type ProbeLog struct {
-	Id           int     `db:"id" json:"id,omitempty"`
-	NodeId       int     `db:"node_id" json:"node_id"`
-	ProberId     int     `db:"prober_id" json:"prober_id"`
+	ID           int     `db:"id" json:"id,omitempty"`
+	NodeID       int     `db:"node_id" json:"node_id"`
+	ProberID     int     `db:"prober_id" json:"prober_id"`
 	Status       int     `db:"is_available" json:"status"`
 	Height       int     `db:"height" json:"height"`
 	AdjustedTime int     `db:"adjusted_time" json:"adjusted_time"`
@@ -295,9 +296,9 @@ func (repo *MoneroRepo) Logs(q MoneroLogQueryParams) (MoneroNodeFetchLogs, error
 	whereQueries := []string{}
 	where := ""
 
-	if q.NodeId != 0 {
+	if q.NodeID != 0 {
 		whereQueries = append(whereQueries, "node_id = ?")
-		queryParams = append(queryParams, q.NodeId)
+		queryParams = append(queryParams, q.NodeID)
 	}
 	if q.Status != -1 {
 		whereQueries = append(whereQueries, "is_available = ?")
@@ -365,9 +366,9 @@ func (repo *MoneroRepo) Logs(q MoneroLogQueryParams) (MoneroNodeFetchLogs, error
 	for row.Next() {
 		probeLog := ProbeLog{}
 		err = row.Scan(
-			&probeLog.Id,
-			&probeLog.NodeId,
-			&probeLog.ProberId,
+			&probeLog.ID,
+			&probeLog.NodeID,
+			&probeLog.ProberID,
 			&probeLog.Status,
 			&probeLog.Height,
 			&probeLog.AdjustedTime,
@@ -496,7 +497,7 @@ func (repo *MoneroRepo) Delete(id uint) error {
 	return nil
 }
 
-func (repo *MoneroRepo) GiveJob(acceptTor int) (MoneroNode, error) {
+func (repo *MoneroRepo) GiveJob(acceptTor int) (Node, error) {
 	queryParams := []interface{}{}
 	whereQueries := []string{}
 	where := ""
@@ -510,7 +511,7 @@ func (repo *MoneroRepo) GiveJob(acceptTor int) (MoneroNode, error) {
 		where = "WHERE " + strings.Join(whereQueries, " AND ")
 	}
 
-	node := MoneroNode{}
+	var node Node
 
 	query := fmt.Sprintf(`
 		SELECT
@@ -527,7 +528,7 @@ func (repo *MoneroRepo) GiveJob(acceptTor int) (MoneroNode, error) {
 			last_checked ASC
 		LIMIT 1`, where)
 	err := repo.db.QueryRow(query, queryParams...).Scan(
-		&node.Id,
+		&node.ID,
 		&node.Hostname,
 		&node.Port,
 		&node.Protocol,
@@ -540,7 +541,7 @@ func (repo *MoneroRepo) GiveJob(acceptTor int) (MoneroNode, error) {
 	_, err = repo.db.Exec(`
 		UPDATE tbl_node
 		SET last_checked = ?
-		WHERE id = ?`, time.Now().Unix(), node.Id)
+		WHERE id = ?`, time.Now().Unix(), node.ID)
 	if err != nil {
 		return node, err
 	}
@@ -549,13 +550,13 @@ func (repo *MoneroRepo) GiveJob(acceptTor int) (MoneroNode, error) {
 }
 
 type ProbeReport struct {
-	TookTime float64    `json:"took_time"`
-	Message  string     `json:"message"`
-	NodeInfo MoneroNode `json:"node_info"`
+	TookTime float64 `json:"took_time"`
+	Message  string  `json:"message"`
+	NodeInfo Node    `json:"node_info"`
 }
 
 func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
-	if report.NodeInfo.Id == 0 {
+	if report.NodeInfo.ID == 0 {
 		return errors.New("Invalid node")
 	}
 
@@ -586,7 +587,7 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			?
 		)`
 	_, err := repo.db.Exec(qInsertLog,
-		report.NodeInfo.Id,
+		report.NodeInfo.ID,
 		proberId,
 		report.NodeInfo.IsAvailable,
 		report.NodeInfo.Height,
@@ -620,7 +621,7 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 		WHERE
 			node_id = ?
 			AND date_checked > ?`
-	repo.db.Get(&nodeStats, qstats, report.NodeInfo.Id, limitTs)
+	repo.db.Get(&nodeStats, qstats, report.NodeInfo.ID, limitTs)
 
 	avgUptime := (float64(nodeStats.OnlineCount) / float64(nodeStats.TotalFetched)) * 100
 	report.NodeInfo.Uptime = math.Ceil(avgUptime*100) / 100
@@ -645,17 +646,17 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 	}
 
 	// recheck IP
-	if report.NodeInfo.Ip != "" {
-		if ipInfo, errGeoIp := GetGeoIpInfo(report.NodeInfo.Ip); errGeoIp != nil {
+	if report.NodeInfo.IP != "" {
+		if ipInfo, errGeoIp := geo.IpInfo(report.NodeInfo.IP); errGeoIp != nil {
 			fmt.Println("WARN:", errGeoIp.Error())
 		} else {
-			report.NodeInfo.Asn = ipInfo.Asn
-			report.NodeInfo.AsnName = ipInfo.AsnOrg
+			report.NodeInfo.ASN = ipInfo.Asn
+			report.NodeInfo.ASNName = ipInfo.AsnOrg
 			report.NodeInfo.CountryCode = ipInfo.CountryCode
 			report.NodeInfo.CountryName = ipInfo.CountryName
 			report.NodeInfo.City = ipInfo.City
-			report.NodeInfo.Lon = ipInfo.Longitude
-			report.NodeInfo.Lat = ipInfo.Latitude
+			report.NodeInfo.Longitude = ipInfo.Longitude
+			report.NodeInfo.Latitude = ipInfo.Latitude
 		}
 	}
 
@@ -685,7 +686,7 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			id = ?`
 		_, err = repo.db.Exec(update,
 			nodeAvailable,
-			report.NodeInfo.NetType,
+			report.NodeInfo.Nettype,
 			report.NodeInfo.Height,
 			report.NodeInfo.AdjustedTime,
 			report.NodeInfo.DatabaseSize,
@@ -693,16 +694,16 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			report.NodeInfo.Version,
 			report.NodeInfo.Uptime,
 			report.NodeInfo.EstimateFee,
-			report.NodeInfo.Ip,
-			report.NodeInfo.Asn,
-			report.NodeInfo.AsnName,
+			report.NodeInfo.IP,
+			report.NodeInfo.ASN,
+			report.NodeInfo.ASNName,
 			report.NodeInfo.CountryCode,
 			report.NodeInfo.CountryName,
 			report.NodeInfo.City,
 			now.Unix(),
 			string(statuesValueToDb),
-			report.NodeInfo.CorsCapable,
-			report.NodeInfo.Id)
+			report.NodeInfo.CORSCapable,
+			report.NodeInfo.ID)
 	} else {
 		update := `
 		UPDATE tbl_node
@@ -713,12 +714,12 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			last_check_status = ?
 		WHERE
 			id = ?`
-		_, err = repo.db.Exec(update, nodeAvailable, report.NodeInfo.Uptime, now.Unix(), string(statuesValueToDb), report.NodeInfo.Id)
+		_, err = repo.db.Exec(update, nodeAvailable, report.NodeInfo.Uptime, now.Unix(), string(statuesValueToDb), report.NodeInfo.ID)
 	}
 
 	if avgUptime <= 0 && nodeStats.TotalFetched > 300 {
 		fmt.Println("Deleting Monero node (0% uptime from > 300 records)")
-		repo.Delete(report.NodeInfo.Id)
+		repo.Delete(report.NodeInfo.ID)
 	}
 
 	repo.db.Exec(`
@@ -765,14 +766,14 @@ func (repo *MoneroRepo) NetFee() []NetFee {
 	return netFees
 }
 
-type MoneroCountries struct {
+type Countries struct {
 	TotalNodes int    `json:"total_nodes" db:"total_nodes"`
-	Cc         string `json:"cc" db:"country"`
+	CC         string `json:"cc" db:"country"` // country code
 	Name       string `json:"name" db:"country_name"`
 }
 
-func (repo *MoneroRepo) Countries() ([]MoneroCountries, error) {
-	countries := []MoneroCountries{}
+func (repo *MoneroRepo) Countries() ([]Countries, error) {
+	countries := []Countries{}
 	err := repo.db.Select(&countries, `
 		SELECT
 			COUNT(id) AS total_nodes,

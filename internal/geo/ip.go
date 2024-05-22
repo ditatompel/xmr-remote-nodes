@@ -1,4 +1,4 @@
-package repo
+package geo
 
 import (
 	"errors"
@@ -7,7 +7,7 @@ import (
 	"github.com/oschwald/geoip2-golang"
 )
 
-type GeoIpInfo struct {
+type IPInfo struct {
 	Ip                  string  `json:"ip"`
 	IsAnonymousProxy    bool    `json:"is_anonymous_proxy"`
 	IsSatelliteProvider bool    `json:"is_satellite_provider"`
@@ -25,7 +25,7 @@ type GeoIpInfo struct {
 	Asn                 uint    `json:"asn"`
 }
 
-func GetGeoIpInfo(ipAddr string) (*GeoIpInfo, error) {
+func IpInfo(ipAddr string) (*IPInfo, error) {
 	ip := net.ParseIP(ipAddr)
 	if ip == nil {
 		return nil, errors.New("Invalid IP address")
@@ -52,7 +52,7 @@ func GetGeoIpInfo(ipAddr string) (*GeoIpInfo, error) {
 		return nil, errors.New("Cannot read GeoIP ASN database")
 	}
 
-	qip := GeoIpInfo{
+	qip := IPInfo{
 		Ip:                  ipAddr,
 		IsAnonymousProxy:    cityRecord.Traits.IsAnonymousProxy,
 		IsSatelliteProvider: cityRecord.Traits.IsSatelliteProvider,

@@ -2,7 +2,7 @@ package handler
 
 import (
 	"xmr-remote-nodes/internal/database"
-	"xmr-remote-nodes/internal/repo"
+	"xmr-remote-nodes/internal/monero"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -17,7 +17,7 @@ func CheckProber(c *fiber.Ctx) error {
 		})
 	}
 
-	proberRepo := repo.NewProberRepo(database.GetDB())
+	proberRepo := monero.NewProberRepo(database.GetDB())
 
 	prober, err := proberRepo.CheckApi(key)
 	if err != nil {
