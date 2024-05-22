@@ -9,13 +9,14 @@ import (
 type App struct {
 	// general config
 	LogLevel string
+
 	// configuration for server
 	Prefork     bool
 	Host        string
 	Port        int
 	ProxyHeader string
 	AllowOrigin string
-	SecretKey   string
+
 	// configuration for prober (client)
 	ServerEndpoint string
 	ApiKey         string
@@ -50,7 +51,6 @@ func LoadApp() {
 	app.Prefork, _ = strconv.ParseBool(os.Getenv("APP_PREFORK"))
 	app.ProxyHeader = os.Getenv("APP_PROXY_HEADER")
 	app.AllowOrigin = os.Getenv("APP_ALLOW_ORIGIN")
-	app.SecretKey = os.Getenv("SECRET_KEY")
 
 	// prober configuration
 	app.ServerEndpoint = os.Getenv("SERVER_ENDPOINT")
