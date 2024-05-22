@@ -12,13 +12,13 @@ Source code of [https://xmr.ditatompel.com](https://xmr.ditatompel.com), a websi
 ### Server requirements
 
 - MySQL/MariaDB
-- [GeoIP Database](https://dev.maxmind.com/geoip/geoip2/geolite2/) (optional). Place it to `./assets/geoip`, see [./internal/repo/geoip.go](./internal/repo/geoip.go).
+- [GeoIP Database](https://dev.maxmind.com/geoip/geoip2/geolite2/) (optional). Place it to `./assets/geoip`, see [./internal/geo/ip.go](./internal/geo/ip.go).
 
 ## Installation
 
 ### For initial server setup:
 
-1. Download [GeoIP Database](https://dev.maxmind.com/geoip/geoip2/geolite2/) and place it to `./assets/geoip`. (see [./internal/repo/geoip.go](./internal/geo/ip.go)).
+1. Download [GeoIP Database](https://dev.maxmind.com/geoip/geoip2/geolite2/) and place it to `./assets/geoip`. (see [./internal/geo/ip.go](./internal/geo/ip.go)).
 2. Copy `.env.example` to `.env` and edit it to match with server environment.
 3. Build the binary with `make build`.
 4. Run the service with `./bin/xmr-nodes-server-linux-<YOUR_CPU_ARCH> serve`.

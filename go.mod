@@ -3,7 +3,6 @@ module xmr-remote-nodes
 go 1.22.2
 
 require (
-	github.com/alexedwards/argon2id v1.0.0
 	github.com/go-sql-driver/mysql v1.8.1
 	github.com/gofiber/fiber/v2 v2.52.4
 	github.com/google/uuid v1.6.0
@@ -12,7 +11,6 @@ require (
 	github.com/oschwald/geoip2-golang v1.9.0
 	github.com/spf13/cobra v1.8.0
 	golang.org/x/net v0.21.0
-	golang.org/x/term v0.19.0
 )
 
 require (
@@ -29,6 +27,5 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
 )

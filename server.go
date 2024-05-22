@@ -2,11 +2,4 @@
 
 package main
 
-import (
-	"xmr-remote-nodes/cmd"
-	"xmr-remote-nodes/cmd/server"
-)
-
-func init() {
-	cmd.Root.AddCommand(server.AdminCmd)
-}
+import _ "xmr-remote-nodes/cmd/server"

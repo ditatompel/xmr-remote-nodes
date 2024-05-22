@@ -67,29 +67,10 @@ func setSchemaVersion(db *DB, version int) error {
 
 func v1(db *DB) error {
 	slog.Debug("[DB] Migrating database schema version 1")
-	// table: tbl_admin
-	slog.Debug("[DB] Creating table: tbl_admin")
-	_, err := db.Exec(`
-		CREATE TABLE tbl_admin (
-			id INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
-			username VARCHAR(255) NOT NULL,
-			password VARCHAR(255) NOT NULL,
-			lastactive_ts INT(11) UNSIGNED NOT NULL DEFAULT 0,
-			created_ts INT(11) UNSIGNED NOT NULL DEFAULT 0,
-			PRIMARY KEY (id)
-		)`)
-	if err != nil {
-		return err
-	}
-	slog.Debug("[DB] Adding unique key to table: tbl_admin")
-	_, err = db.Exec(`ALTER TABLE tbl_admin ADD UNIQUE KEY (username)`)
-	if err != nil {
-		return err
-	}
 
 	// table: tbl_cron
 	slog.Debug("[DB] Creating table: tbl_cron")
-	_, err = db.Exec(`
+	_, err := db.Exec(`
 		CREATE TABLE tbl_cron (
 			id INT(8) UNSIGNED NOT NULL AUTO_INCREMENT,
 			title VARCHAR(255) NOT NULL DEFAULT '',

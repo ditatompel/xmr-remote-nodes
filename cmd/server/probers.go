@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strconv"
@@ -69,6 +70,19 @@ xmr-nodes probers list -s last_submit_ts -d asc sin1`,
 		}
 		w.Flush()
 	},
+}
+
+func stringPrompt(label string) string {
+	var s string
+	r := bufio.NewReader(os.Stdin)
+	for {
+		fmt.Fprint(os.Stderr, label+" ")
+		s, _ = r.ReadString('\n')
+		if s != "" {
+			break
+		}
+	}
+	return strings.TrimSpace(s)
 }
 
 var addProbersCmd = &cobra.Command{
