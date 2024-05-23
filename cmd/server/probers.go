@@ -3,6 +3,7 @@ package server
 import (
 	"bufio"
 	"fmt"
+	"log/slog"
 	"os"
 	"strconv"
 	"strings"
@@ -22,7 +23,10 @@ var probersCmd = &cobra.Command{
 This command should only be run on the server which directly connect to the MySQL database.
 	`,
 	Run: func(cmd *cobra.Command, _ []string) {
-		cmd.Help()
+		if err := cmd.Help(); err != nil {
+			slog.Error(err.Error())
+			os.Exit(1)
+		}
 	},
 }
 

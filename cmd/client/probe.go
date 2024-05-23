@@ -166,21 +166,27 @@ func (p *proberClient) fetchNode(node monero.Node) (monero.Node, error) {
 	resp, err := client.Do(req)
 	if err != nil {
 		p.message = err.Error()
-		p.reportResult(node, time.Since(startTime).Seconds())
+		if err := p.reportResult(node, time.Since(startTime).Seconds()); err != nil {
+			return node, err
+		}
 		return node, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
 		p.message = fmt.Sprintf("status code: %d", resp.StatusCode)
-		p.reportResult(node, time.Since(startTime).Seconds())
+		if err := p.reportResult(node, time.Since(startTime).Seconds()); err != nil {
+			return node, err
+		}
 		return node, errors.New(p.message)
 	}
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		p.message = err.Error()
-		p.reportResult(node, time.Since(startTime).Seconds())
+		if err := p.reportResult(node, time.Since(startTime).Seconds()); err != nil {
+			return node, err
+		}
 		return node, err
 	}
 
@@ -190,8 +196,9 @@ func (p *proberClient) fetchNode(node monero.Node) (monero.Node, error) {
 
 	if err := json.Unmarshal(body, &reportNode); err != nil {
 		p.message = err.Error()
-		p.reportResult(node, time.Since(startTime).Seconds())
-		return node, err
+		if err := p.reportResult(node, time.Since(startTime).Seconds()); err != nil {
+			return node, err
+		}
 	}
 	if reportNode.Status == "OK" {
 		node.IsAvailable = true

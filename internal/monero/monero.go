@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"math"
 	"net"
 	"slices"
@@ -621,7 +622,9 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 		WHERE
 			node_id = ?
 			AND date_checked > ?`
-	repo.db.Get(&nodeStats, qstats, report.NodeInfo.ID, limitTs)
+	if err := repo.db.Get(&nodeStats, qstats, report.NodeInfo.ID, limitTs); err != nil {
+		slog.Warn(err.Error())
+	}
 
 	avgUptime := (float64(nodeStats.OnlineCount) / float64(nodeStats.TotalFetched)) * 100
 	report.NodeInfo.Uptime = math.Ceil(avgUptime*100) / 100
@@ -684,7 +687,7 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			cors_capable = ?
 		WHERE
 			id = ?`
-		_, err = repo.db.Exec(update,
+		_, err := repo.db.Exec(update,
 			nodeAvailable,
 			report.NodeInfo.Nettype,
 			report.NodeInfo.Height,
@@ -704,8 +707,11 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			string(statuesValueToDb),
 			report.NodeInfo.CORSCapable,
 			report.NodeInfo.ID)
+		if err != nil {
+			slog.Warn(err.Error())
+		}
 	} else {
-		update := `
+		u := `
 		UPDATE tbl_node
 		SET
 			is_available = ?,
@@ -714,15 +720,19 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			last_check_status = ?
 		WHERE
 			id = ?`
-		_, err = repo.db.Exec(update, nodeAvailable, report.NodeInfo.Uptime, now.Unix(), string(statuesValueToDb), report.NodeInfo.ID)
+		if _, err := repo.db.Exec(u, nodeAvailable, report.NodeInfo.Uptime, now.Unix(), string(statuesValueToDb), report.NodeInfo.ID); err != nil {
+			slog.Warn(err.Error())
+		}
 	}
 
 	if avgUptime <= 0 && nodeStats.TotalFetched > 300 {
 		fmt.Println("Deleting Monero node (0% uptime from > 300 records)")
-		repo.Delete(report.NodeInfo.ID)
+		if err := repo.Delete(report.NodeInfo.ID); err != nil {
+			slog.Warn(err.Error())
+		}
 	}
 
-	repo.db.Exec(`
+	_, err = repo.db.Exec(`
 		UPDATE tbl_prober
 		SET last_submit_ts = ?
 		WHERE id = ?`, now.Unix(), proberId)

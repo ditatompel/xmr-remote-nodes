@@ -29,7 +29,9 @@ func MigrateDb(db *DB) error {
 		slog.Info(fmt.Sprintf("[DB] Migrating database schema version %d", version+1))
 
 		if err := migrateFn(db); err != nil {
-			tx.Rollback()
+			if err := tx.Rollback(); err != nil {
+				return err
+			}
 			return err
 		}
 		if err := setSchemaVersion(db, version+1); err != nil {
@@ -52,7 +54,9 @@ func getSchemaVersion(db *DB) int {
 		return -1
 	}
 	version := 0
-	db.Get(&version, `SELECT version FROM tbl_schema_ver`)
+	if err := db.Get(&version, `SELECT version FROM tbl_schema_ver`); err != nil {
+		return -1
+	}
 	return version
 }
 
