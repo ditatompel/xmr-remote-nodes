@@ -9,7 +9,7 @@ import (
 
 //go:generate npm i
 //go:generate npm run build
-//go:embed all:build/*
+//go:embed build/*
 var f embed.FS
 
 func SvelteKitHandler() http.FileSystem {
