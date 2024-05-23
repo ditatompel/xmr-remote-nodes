@@ -1,0 +1,23 @@
+version: 2
+updates:
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: weekly
+      time: "05:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - ditatompel
+    assignees:
+      - ditatompel
+
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: weekly
+      time: "05:00"
+    open-pull-requests-limit: 5
+    reviewers:
+      - ditatompel
+    assignees:
+      - ditatompel
