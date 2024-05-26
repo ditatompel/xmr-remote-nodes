@@ -32,8 +32,8 @@ type MoneroRepo struct {
 	db *database.DB
 }
 
-func NewMoneroRepo(db *database.DB) MoneroRepository {
-	return &MoneroRepo{db}
+func New() MoneroRepository {
+	return &MoneroRepo{db: database.GetDB()}
 }
 
 // Node represents a single remote node
