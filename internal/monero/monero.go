@@ -25,7 +25,7 @@ type MoneroRepository interface {
 	ProcessJob(report ProbeReport, proberId int64) error
 	NetFee() []NetFee
 	Countries() ([]Countries, error)
-	Logs(q MoneroLogQueryParams) (MoneroNodeFetchLogs, error)
+	Logs(QueryLogs) (FetchLogs, error)
 }
 
 type MoneroRepo struct {
@@ -89,6 +89,7 @@ type Nodes struct {
 	Items       []*Node `json:"items"`
 }
 
+// QueryNodes represents database query parameters
 type QueryNodes struct {
 	Host     string
 	Nettype  string
@@ -104,6 +105,7 @@ type QueryNodes struct {
 	SortDirection string
 }
 
+// Get nodes from database
 func (repo *MoneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 	queryParams := []interface{}{}
 	whereQueries := []string{}
@@ -264,7 +266,7 @@ func (repo *MoneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 	return nodes, nil
 }
 
-type MoneroLogQueryParams struct {
+type QueryLogs struct {
 	NodeID       int    // 0 fpr all, >0 for specific node
 	WorkerID     int    // 0 for all, >0 for specific worker
 	Status       int    // -1 for all, 0 for failed, 1 for success
@@ -276,7 +278,7 @@ type MoneroLogQueryParams struct {
 	SortDirection string
 }
 
-type ProbeLog struct {
+type FetchLog struct {
 	ID           int     `db:"id" json:"id,omitempty"`
 	NodeID       int     `db:"node_id" json:"node_id"`
 	ProberID     int     `db:"prober_id" json:"prober_id"`
@@ -291,13 +293,14 @@ type ProbeLog struct {
 	FetchRuntime float64 `db:"fetch_runtime" json:"fetch_runtime"`
 }
 
-type MoneroNodeFetchLogs struct {
+type FetchLogs struct {
 	TotalRows   int         `json:"total_rows"`
 	RowsPerPage int         `json:"rows_per_page"`
-	Items       []*ProbeLog `json:"items"`
+	Items       []*FetchLog `json:"items"`
 }
 
-func (repo *MoneroRepo) Logs(q MoneroLogQueryParams) (MoneroNodeFetchLogs, error) {
+// Logs returns list of fetched log result for given query
+func (repo *MoneroRepo) Logs(q QueryLogs) (FetchLogs, error) {
 	queryParams := []interface{}{}
 	whereQueries := []string{}
 	where := ""
@@ -319,7 +322,7 @@ func (repo *MoneroRepo) Logs(q MoneroLogQueryParams) (MoneroNodeFetchLogs, error
 		where = "WHERE " + strings.Join(whereQueries, " AND ")
 	}
 
-	fetchLogs := MoneroNodeFetchLogs{}
+	var fetchLogs FetchLogs
 
 	queryTotalRows := fmt.Sprintf("SELECT COUNT(id) FROM tbl_probe_log %s", where)
 	err := repo.db.QueryRow(queryTotalRows, queryParams...).Scan(&fetchLogs.TotalRows)
@@ -370,25 +373,25 @@ func (repo *MoneroRepo) Logs(q MoneroLogQueryParams) (MoneroNodeFetchLogs, error
 	fetchLogs.RowsPerPage = q.RowsPerPage
 
 	for row.Next() {
-		probeLog := ProbeLog{}
+		var fl FetchLog
 		err = row.Scan(
-			&probeLog.ID,
-			&probeLog.NodeID,
-			&probeLog.ProberID,
-			&probeLog.Status,
-			&probeLog.Height,
-			&probeLog.AdjustedTime,
-			&probeLog.DatabaseSize,
-			&probeLog.Difficulty,
-			&probeLog.EstimateFee,
-			&probeLog.DateChecked,
-			&probeLog.FailedReason,
-			&probeLog.FetchRuntime)
+			&fl.ID,
+			&fl.NodeID,
+			&fl.ProberID,
+			&fl.Status,
+			&fl.Height,
+			&fl.AdjustedTime,
+			&fl.DatabaseSize,
+			&fl.Difficulty,
+			&fl.EstimateFee,
+			&fl.DateChecked,
+			&fl.FailedReason,
+			&fl.FetchRuntime)
 		if err != nil {
 			return fetchLogs, err
 		}
 
-		fetchLogs.Items = append(fetchLogs.Items, &probeLog)
+		fetchLogs.Items = append(fetchLogs.Items, &fl)
 	}
 
 	return fetchLogs, nil
