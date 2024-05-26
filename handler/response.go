@@ -45,7 +45,7 @@ func MoneroNode(c *fiber.Ctx) error {
 
 func MoneroNodes(c *fiber.Ctx) error {
 	moneroRepo := monero.NewMoneroRepo(database.GetDB())
-	query := monero.MoneroQueryParams{
+	query := monero.QueryNodes{
 		RowsPerPage:   c.QueryInt("limit", 10),
 		Page:          c.QueryInt("page", 1),
 		SortBy:        c.Query("sort_by", "id"),

@@ -20,7 +20,7 @@ import (
 type MoneroRepository interface {
 	Node(id int) (Node, error)
 	Add(protocol string, host string, port uint) error
-	Nodes(q MoneroQueryParams) (Nodes, error)
+	Nodes(QueryNodes) (Nodes, error)
 	GiveJob(acceptTor int) (Node, error)
 	ProcessJob(report ProbeReport, proberId int64) error
 	NetFee() []NetFee
@@ -36,6 +36,7 @@ func NewMoneroRepo(db *database.DB) MoneroRepository {
 	return &MoneroRepo{db}
 }
 
+// Node represents a single remote node
 type Node struct {
 	ID              uint           `json:"id,omitempty" db:"id"`
 	Hostname        string         `json:"hostname" db:"hostname"`
@@ -67,6 +68,7 @@ type Node struct {
 	CORSCapable     bool           `json:"cors" db:"cors_capable"`
 }
 
+// Get node from database by id
 func (repo *MoneroRepo) Node(id int) (Node, error) {
 	var node Node
 	err := repo.db.Get(&node, `SELECT * FROM tbl_node WHERE id = ?`, id)
@@ -80,26 +82,29 @@ func (repo *MoneroRepo) Node(id int) (Node, error) {
 	return node, err
 }
 
+// Nodes represents a list of nodes
 type Nodes struct {
 	TotalRows   int     `json:"total_rows"`
 	RowsPerPage int     `json:"rows_per_page"`
 	Items       []*Node `json:"items"`
 }
 
-type MoneroQueryParams struct {
-	Host          string
-	Nettype       string
-	Protocol      string
-	CC            string // 2 letter country code
-	Status        int
-	CORS          int
+type QueryNodes struct {
+	Host     string
+	Nettype  string
+	Protocol string
+	CC       string // 2 letter country code
+	Status   int
+	CORS     int
+
+	// pagination
 	RowsPerPage   int
 	Page          int
 	SortBy        string
 	SortDirection string
 }
 
-func (repo *MoneroRepo) Nodes(q MoneroQueryParams) (Nodes, error) {
+func (repo *MoneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 	queryParams := []interface{}{}
 	whereQueries := []string{}
 	where := ""
