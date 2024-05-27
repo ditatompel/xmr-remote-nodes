@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"xmr-remote-nodes/internal/database"
 	"xmr-remote-nodes/internal/monero"
 
 	"github.com/gofiber/fiber/v2"
@@ -17,9 +16,7 @@ func CheckProber(c *fiber.Ctx) error {
 		})
 	}
 
-	proberRepo := monero.NewProberRepo(database.GetDB())
-
-	prober, err := proberRepo.CheckApi(key)
+	prober, err := monero.NewProber().CheckApi(key)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"status":  "error",

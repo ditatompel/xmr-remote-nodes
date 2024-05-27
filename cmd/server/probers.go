@@ -48,8 +48,8 @@ xmr-nodes probers list -s last_submit_ts -d asc sin1`,
 		sortBy, _ := cmd.Flags().GetString("sort-by")
 		sortDir, _ := cmd.Flags().GetString("sort-dir")
 
-		probersRepo := monero.NewProberRepo(database.GetDB())
-		probers, err := probersRepo.Probers(monero.ProbersQueryParams{
+		probersRepo := monero.NewProber()
+		probers, err := probersRepo.Probers(monero.QueryProbers{
 			Search:        strings.Join(args, " "),
 			SortBy:        sortBy,
 			SortDirection: sortDir,
@@ -108,7 +108,7 @@ This command will display the prober name and API key when successfully executed
 			proberName = stringPrompt("Prober Name:")
 		}
 
-		proberRepo := monero.NewProberRepo(database.GetDB())
+		proberRepo := monero.NewProber()
 		prober, err := proberRepo.Add(proberName)
 		if err != nil {
 			fmt.Println(err)
@@ -135,7 +135,7 @@ var editProbersCmd = &cobra.Command{
 		}
 
 		proberName := stringPrompt("Prober Name:")
-		proberRepo := monero.NewProberRepo(database.GetDB())
+		proberRepo := monero.NewProber()
 		err = proberRepo.Edit(proberId, proberName)
 		if err != nil {
 			fmt.Println("Failed to update prober:", err)
@@ -161,7 +161,7 @@ var deleteProbersCmd = &cobra.Command{
 			return
 		}
 
-		proberRepo := monero.NewProberRepo(database.GetDB())
+		proberRepo := monero.NewProber()
 		err = proberRepo.Delete(proberId)
 		if err != nil {
 			fmt.Println("Failed to delete prober:", err)

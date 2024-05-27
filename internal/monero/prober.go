@@ -12,7 +12,7 @@ import (
 type ProberRepository interface {
 	Add(name string) (Prober, error)
 	Edit(id int, name string) error
-	Probers(q ProbersQueryParams) ([]Prober, error)
+	Probers(q QueryProbers) ([]Prober, error)
 	CheckApi(key string) (Prober, error)
 	Delete(id int) error
 }
@@ -28,10 +28,14 @@ type Prober struct {
 	LastSubmitTs int64     `json:"last_submit_ts" db:"last_submit_ts"`
 }
 
-func NewProberRepo(db *database.DB) ProberRepository {
-	return &ProberRepo{db}
+// Initializes a new ProberRepository
+//
+// NOTE: This "prober" is different with "probe" which is used to fetch a new job
+func NewProber() ProberRepository {
+	return &ProberRepo{db: database.GetDB()}
 }
 
+// Add a new prober machine
 func (repo *ProberRepo) Add(name string) (Prober, error) {
 	apiKey := uuid.New()
 	query := `
@@ -51,6 +55,7 @@ func (repo *ProberRepo) Add(name string) (Prober, error) {
 	return Prober{Name: name, ApiKey: apiKey}, nil
 }
 
+// Edit an existing prober
 func (repo *ProberRepo) Edit(id int, name string) error {
 	query := `UPDATE tbl_prober SET name = ? WHERE id = ?`
 	res, err := repo.db.Exec(query, name, id)
@@ -67,6 +72,7 @@ func (repo *ProberRepo) Edit(id int, name string) error {
 	return err
 }
 
+// Delete an existing prober
 func (repo *ProberRepo) Delete(id int) error {
 	res, err := repo.db.Exec(`DELETE FROM tbl_prober WHERE id = ?`, id)
 	if err != nil {
@@ -82,13 +88,13 @@ func (repo *ProberRepo) Delete(id int) error {
 	return err
 }
 
-type ProbersQueryParams struct {
+type QueryProbers struct {
 	Search        string
 	SortBy        string
 	SortDirection string
 }
 
-func (repo *ProberRepo) Probers(q ProbersQueryParams) ([]Prober, error) {
+func (repo *ProberRepo) Probers(q QueryProbers) ([]Prober, error) {
 	queryParams := []interface{}{}
 	whereQueries := []string{}
 	where := ""
@@ -103,7 +109,7 @@ func (repo *ProberRepo) Probers(q ProbersQueryParams) ([]Prober, error) {
 		where = "WHERE " + strings.Join(whereQueries, " AND ")
 	}
 
-	probers := []Prober{}
+	var probers []Prober
 
 	allowedSort := []string{"id", "last_submit_ts"}
 	sortBy := "last_submit_ts"
@@ -133,18 +139,18 @@ func (repo *ProberRepo) Probers(q ProbersQueryParams) ([]Prober, error) {
 	defer row.Close()
 
 	for row.Next() {
-		prober := Prober{}
-		err = row.Scan(&prober.Id, &prober.Name, &prober.ApiKey, &prober.LastSubmitTs)
+		var p Prober
+		err = row.Scan(&p.Id, &p.Name, &p.ApiKey, &p.LastSubmitTs)
 		if err != nil {
 			return probers, err
 		}
-		probers = append(probers, prober)
+		probers = append(probers, p)
 	}
 	return probers, nil
 }
 
 func (repo *ProberRepo) CheckApi(key string) (Prober, error) {
-	prober := Prober{}
+	var p Prober
 	query := `
 		SELECT
 			id,
@@ -156,6 +162,6 @@ func (repo *ProberRepo) CheckApi(key string) (Prober, error) {
 		WHERE
 			api_key = ?
 		LIMIT 1`
-	err := repo.db.QueryRow(query, key).Scan(&prober.Id, &prober.Name, &prober.ApiKey, &prober.LastSubmitTs)
-	return prober, err
+	err := repo.db.QueryRow(query, key).Scan(&p.Id, &p.Name, &p.ApiKey, &p.LastSubmitTs)
+	return p, err
 }
