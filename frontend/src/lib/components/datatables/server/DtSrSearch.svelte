@@ -16,7 +16,7 @@
 <input
 	class="input-variant-secondary input w-36 sm:w-64"
 	type="search"
-  name="tableGlobalSearch"
+	name="tableGlobalSearch"
 	placeholder="Search..."
 	bind:value
 	on:input={search}

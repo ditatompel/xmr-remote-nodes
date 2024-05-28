@@ -4,7 +4,7 @@ import forms from '@tailwindcss/forms';
 
 /** @type {import('tailwindcss').Config} */
 export default {
-  darkMode: 'class',
+	darkMode: 'class',
 	content: [
 		'./src/**/*.{html,js,svelte,ts}',
 		join(require.resolve('@skeletonlabs/skeleton'), '../**/*.{html,js,svelte,ts}')
@@ -13,7 +13,7 @@ export default {
 		extend: {}
 	},
 	plugins: [
-    forms,
+		forms,
 		skeleton({
 			themes: {
 				preset: ['skeleton']
