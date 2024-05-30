@@ -73,7 +73,7 @@ func (r *MoneroRepo) Node(id int) (Node, error) {
 	var node Node
 	err := r.db.Get(&node, `SELECT * FROM tbl_node WHERE id = ?`, id)
 	if err != nil && err != sql.ErrNoRows {
-		slog.Error("WARN:", err)
+		slog.Error(err.Error())
 		return node, errors.New("Can't get node information")
 	}
 	if err == sql.ErrNoRows {
