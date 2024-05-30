@@ -4,7 +4,6 @@ import "xmr-remote-nodes/cmd"
 
 func init() {
 	cmd.Root.AddCommand(serveCmd)
-	cmd.Root.AddCommand(importCmd)
 	cmd.Root.AddCommand(cronCmd)
 	cmd.Root.AddCommand(probersCmd)
 	probersCmd.AddCommand(listProbersCmd)
