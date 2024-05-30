@@ -85,7 +85,6 @@ func TestQueryNodes_toSQL(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			gotArgs, gotWhere, gotSortBy, gotSortDirection := tt.query.toSQL()
-
 			if !equalArgs(gotArgs, tt.wantArgs) {
 				t.Errorf("QueryNodes.toSQL() gotArgs = %v, want %v", gotArgs, tt.wantArgs)
 			}

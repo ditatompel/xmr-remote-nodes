@@ -38,7 +38,7 @@ func NewProber() ProberRepository {
 }
 
 // Add a new prober machine
-func (repo *ProberRepo) Add(name string) (Prober, error) {
+func (r *ProberRepo) Add(name string) (Prober, error) {
 	apiKey := uuid.New()
 	query := `
 		INSERT INTO tbl_prober (
@@ -50,7 +50,7 @@ func (repo *ProberRepo) Add(name string) (Prober, error) {
 			?,
 			?
 		)`
-	_, err := repo.db.Exec(query, name, apiKey, 0)
+	_, err := r.db.Exec(query, name, apiKey, 0)
 	if err != nil {
 		return Prober{}, err
 	}
@@ -58,9 +58,9 @@ func (repo *ProberRepo) Add(name string) (Prober, error) {
 }
 
 // Edit an existing prober
-func (repo *ProberRepo) Edit(id int, name string) error {
+func (r *ProberRepo) Edit(id int, name string) error {
 	query := `UPDATE tbl_prober SET name = ? WHERE id = ?`
-	res, err := repo.db.Exec(query, name, id)
+	res, err := r.db.Exec(query, name, id)
 	if err != nil {
 		return err
 	}
@@ -75,8 +75,8 @@ func (repo *ProberRepo) Edit(id int, name string) error {
 }
 
 // Delete an existing prober
-func (repo *ProberRepo) Delete(id int) error {
-	res, err := repo.db.Exec(`DELETE FROM tbl_prober WHERE id = ?`, id)
+func (r *ProberRepo) Delete(id int) error {
+	res, err := r.db.Exec(`DELETE FROM tbl_prober WHERE id = ?`, id)
 	if err != nil {
 		return err
 	}
@@ -96,32 +96,33 @@ type QueryProbers struct {
 	SortDirection string
 }
 
-func (repo *ProberRepo) Probers(q QueryProbers) ([]Prober, error) {
-	queryParams := []interface{}{}
-	whereQueries := []string{}
-	where := ""
-
+func (q QueryProbers) toSQL() (args []interface{}, where, sortBy, sortDirection string) {
+	wq := []string{}
 	if q.Search != "" {
-		whereQueries = append(whereQueries, "(name LIKE ? OR api_key LIKE ?)")
-		queryParams = append(queryParams, "%"+q.Search+"%")
-		queryParams = append(queryParams, "%"+q.Search+"%")
+		wq = append(wq, "(name LIKE ? OR api_key LIKE ?)")
+		args = append(args, "%"+q.Search+"%", "%"+q.Search+"%")
+	}
+	if len(wq) > 0 {
+		where = "WHERE " + strings.Join(wq, " AND ")
 	}
 
-	if len(whereQueries) > 0 {
-		where = "WHERE " + strings.Join(whereQueries, " AND ")
-	}
-
-	var probers []Prober
-
-	allowedSort := []string{"id", "last_submit_ts"}
-	sortBy := "last_submit_ts"
-	if slices.Contains(allowedSort, q.SortBy) {
+	as := []string{"id", "last_submit_ts"}
+	sortBy = "last_submit_ts"
+	if slices.Contains(as, q.SortBy) {
 		sortBy = q.SortBy
 	}
-	sortDirection := "DESC"
+	sortDirection = "DESC"
 	if q.SortDirection == "asc" {
 		sortDirection = "ASC"
 	}
+
+	return args, where, sortBy, sortDirection
+}
+
+func (r *ProberRepo) Probers(q QueryProbers) ([]Prober, error) {
+	args, where, sortBy, sortDirection := q.toSQL()
+
+	var probers []Prober
 
 	query := fmt.Sprintf(`
 		SELECT
@@ -134,7 +135,7 @@ func (repo *ProberRepo) Probers(q QueryProbers) ([]Prober, error) {
 		%s -- where clause if any
 		ORDER BY %s %s`, where, sortBy, sortDirection)
 
-	row, err := repo.db.Query(query, queryParams...)
+	row, err := r.db.Query(query, args...)
 	if err != nil {
 		return probers, err
 	}
@@ -151,7 +152,7 @@ func (repo *ProberRepo) Probers(q QueryProbers) ([]Prober, error) {
 	return probers, nil
 }
 
-func (repo *ProberRepo) CheckApi(key string) (Prober, error) {
+func (r *ProberRepo) CheckApi(key string) (Prober, error) {
 	var p Prober
 	query := `
 		SELECT
@@ -164,6 +165,6 @@ func (repo *ProberRepo) CheckApi(key string) (Prober, error) {
 		WHERE
 			api_key = ?
 		LIMIT 1`
-	err := repo.db.QueryRow(query, key).Scan(&p.ID, &p.Name, &p.ApiKey, &p.LastSubmitTs)
+	err := r.db.QueryRow(query, key).Scan(&p.ID, &p.Name, &p.ApiKey, &p.LastSubmitTs)
 	return p, err
 }
