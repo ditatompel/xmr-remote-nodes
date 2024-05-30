@@ -9,6 +9,8 @@ import (
 	"github.com/google/uuid"
 )
 
+const ProberAPIKey = "X-Prober-Api-Key" // HTTP header key
+
 type ProberRepository interface {
 	Add(name string) (Prober, error)
 	Edit(id int, name string) error

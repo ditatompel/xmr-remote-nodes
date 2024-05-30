@@ -7,7 +7,7 @@ import (
 )
 
 func CheckProber(c *fiber.Ctx) error {
-	key := c.Get("X-Prober-Api-Key")
+	key := c.Get(monero.ProberAPIKey)
 	if key == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"status":  "error",

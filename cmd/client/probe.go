@@ -99,7 +99,7 @@ func (p *proberClient) fetchJob() (monero.Node, error) {
 	if err != nil {
 		return node, err
 	}
-	req.Header.Add("X-Prober-Api-Key", p.config.ApiKey)
+	req.Header.Add(monero.ProberAPIKey, p.config.ApiKey)
 	req.Header.Set("User-Agent", RPCUserAgent)
 
 	client := &http.Client{}
@@ -285,7 +285,7 @@ func (p *proberClient) reportResult(node monero.Node, tookTime float64) error {
 	if err != nil {
 		return err
 	}
-	req.Header.Add("X-Prober-Api-Key", p.config.ApiKey)
+	req.Header.Add(monero.ProberAPIKey, p.config.ApiKey)
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
 	req.Header.Set("User-Agent", RPCUserAgent)
 
