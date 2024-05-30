@@ -2,3 +2,6 @@ issues:
   exclude-rules:
     - path: frontend/embed.go
       text: "pattern build/\\*: no matching files found"
+    - path: _test.go
+      linters:
+        - errcheck
