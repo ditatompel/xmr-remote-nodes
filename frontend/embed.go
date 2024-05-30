@@ -7,7 +7,7 @@ import (
 	"net/http"
 )
 
-//go:generate npm i
+//go:generate npm ci
 //go:generate npm run build
 //go:embed build/*
 var f embed.FS
