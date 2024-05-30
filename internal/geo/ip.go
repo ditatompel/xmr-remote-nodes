@@ -7,8 +7,9 @@ import (
 	"github.com/oschwald/geoip2-golang"
 )
 
+// IPInfo represents IP address information from Maxmind's GeoLite2 database
 type IPInfo struct {
-	Ip                  string  `json:"ip"`
+	IP                  string  `json:"ip"`
 	IsAnonymousProxy    bool    `json:"is_anonymous_proxy"`
 	IsSatelliteProvider bool    `json:"is_satellite_provider"`
 	City                string  `json:"city"`
@@ -21,11 +22,12 @@ type IPInfo struct {
 	Latitude            float64 `json:"latitude"`
 	Longitude           float64 `json:"longitude"`
 	AccuracyRadius      uint16  `json:"accuracy_radius"`
-	AsnOrg              string  `json:"asn_org"`
-	Asn                 uint    `json:"asn"`
+	ASNOrg              string  `json:"asn_org"`
+	ASN                 uint    `json:"asn"`
 }
 
-func IpInfo(ipAddr string) (*IPInfo, error) {
+// Info returns GeoIP information from given IP address
+func Info(ipAddr string) (*IPInfo, error) {
 	ip := net.ParseIP(ipAddr)
 	if ip == nil {
 		return nil, errors.New("Invalid IP address")
@@ -42,32 +44,32 @@ func IpInfo(ipAddr string) (*IPInfo, error) {
 	}
 	defer dbAsn.Close()
 
-	cityRecord, err := dbCity.City(ip)
+	city, err := dbCity.City(ip)
 	if err != nil {
 		return nil, errors.New("Cannot read GeoIP City database")
 	}
 
-	asnRecord, err := dbAsn.ASN(ip)
+	asn, err := dbAsn.ASN(ip)
 	if err != nil {
 		return nil, errors.New("Cannot read GeoIP ASN database")
 	}
 
 	qip := IPInfo{
-		Ip:                  ipAddr,
-		IsAnonymousProxy:    cityRecord.Traits.IsAnonymousProxy,
-		IsSatelliteProvider: cityRecord.Traits.IsSatelliteProvider,
-		City:                cityRecord.City.Names["en"],
-		ContinentName:       cityRecord.Continent.Names["en"],
-		ContinentCode:       cityRecord.Continent.Code,
-		IsInEuropeanUnion:   cityRecord.Country.IsInEuropeanUnion,
-		CountryName:         cityRecord.Country.Names["en"],
-		CountryCode:         cityRecord.Country.IsoCode,
-		TimeZone:            cityRecord.Location.TimeZone,
-		Latitude:            cityRecord.Location.Latitude,
-		Longitude:           cityRecord.Location.Longitude,
-		AccuracyRadius:      cityRecord.Location.AccuracyRadius,
-		AsnOrg:              asnRecord.AutonomousSystemOrganization,
-		Asn:                 asnRecord.AutonomousSystemNumber,
+		IP:                  ipAddr,
+		IsAnonymousProxy:    city.Traits.IsAnonymousProxy,
+		IsSatelliteProvider: city.Traits.IsSatelliteProvider,
+		City:                city.City.Names["en"],
+		ContinentName:       city.Continent.Names["en"],
+		ContinentCode:       city.Continent.Code,
+		IsInEuropeanUnion:   city.Country.IsInEuropeanUnion,
+		CountryName:         city.Country.Names["en"],
+		CountryCode:         city.Country.IsoCode,
+		TimeZone:            city.Location.TimeZone,
+		Latitude:            city.Location.Latitude,
+		Longitude:           city.Location.Longitude,
+		AccuracyRadius:      city.Location.AccuracyRadius,
+		ASNOrg:              asn.AutonomousSystemOrganization,
+		ASN:                 asn.AutonomousSystemNumber,
 	}
 
 	return &qip, nil

@@ -66,7 +66,7 @@ xmr-nodes probers list -s last_submit_ts -d asc sin1`,
 		fmt.Fprintf(w, "ID\t| Name\t| Last Submit\t| API Key\n")
 		for _, prober := range probers {
 			fmt.Fprintf(w, "%d\t| %s\t| %s\t| %s\n",
-				prober.Id,
+				prober.ID,
 				prober.Name,
 				time.Unix(prober.LastSubmitTs, 0).Format(time.RFC3339),
 				prober.ApiKey,

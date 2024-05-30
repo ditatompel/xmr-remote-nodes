@@ -12,7 +12,7 @@ import (
 type ProberRepository interface {
 	Add(name string) (Prober, error)
 	Edit(id int, name string) error
-	Probers(q QueryProbers) ([]Prober, error)
+	Probers(QueryProbers) ([]Prober, error)
 	CheckApi(key string) (Prober, error)
 	Delete(id int) error
 }
@@ -22,7 +22,7 @@ type ProberRepo struct {
 }
 
 type Prober struct {
-	Id           int64     `json:"id" db:"id"`
+	ID           int64     `json:"id" db:"id"`
 	Name         string    `json:"name" db:"name"`
 	ApiKey       uuid.UUID `json:"api_key" db:"api_key"`
 	LastSubmitTs int64     `json:"last_submit_ts" db:"last_submit_ts"`
@@ -140,7 +140,7 @@ func (repo *ProberRepo) Probers(q QueryProbers) ([]Prober, error) {
 
 	for row.Next() {
 		var p Prober
-		err = row.Scan(&p.Id, &p.Name, &p.ApiKey, &p.LastSubmitTs)
+		err = row.Scan(&p.ID, &p.Name, &p.ApiKey, &p.LastSubmitTs)
 		if err != nil {
 			return probers, err
 		}
@@ -162,6 +162,6 @@ func (repo *ProberRepo) CheckApi(key string) (Prober, error) {
 		WHERE
 			api_key = ?
 		LIMIT 1`
-	err := repo.db.QueryRow(query, key).Scan(&p.Id, &p.Name, &p.ApiKey, &p.LastSubmitTs)
+	err := repo.db.QueryRow(query, key).Scan(&p.ID, &p.Name, &p.ApiKey, &p.LastSubmitTs)
 	return p, err
 }

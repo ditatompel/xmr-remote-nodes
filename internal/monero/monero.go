@@ -658,11 +658,11 @@ func (repo *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 
 	// recheck IP
 	if report.NodeInfo.IP != "" {
-		if ipInfo, errGeoIp := geo.IpInfo(report.NodeInfo.IP); errGeoIp != nil {
+		if ipInfo, errGeoIp := geo.Info(report.NodeInfo.IP); errGeoIp != nil {
 			fmt.Println("WARN:", errGeoIp.Error())
 		} else {
-			report.NodeInfo.ASN = ipInfo.Asn
-			report.NodeInfo.ASNName = ipInfo.AsnOrg
+			report.NodeInfo.ASN = ipInfo.ASN
+			report.NodeInfo.ASNName = ipInfo.ASNOrg
 			report.NodeInfo.CountryCode = ipInfo.CountryCode
 			report.NodeInfo.CountryName = ipInfo.CountryName
 			report.NodeInfo.City = ipInfo.City
