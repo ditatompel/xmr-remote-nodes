@@ -7,7 +7,7 @@ Source code of [https://xmr.ditatompel.com](https://xmr.ditatompel.com), a websi
 ### Server & Prober requirements
 
 -   Go >= 1.22
--   Linux Machine (AMD64 or ARM64)
+-   Linux Machines (AMD64 or ARM64)
 
 ### Server requirements
 
@@ -23,7 +23,7 @@ Source code of [https://xmr.ditatompel.com](https://xmr.ditatompel.com), a websi
 3. Build the binary with `make build`.
 4. Run the service with `./bin/xmr-nodes-server-linux-<YOUR_CPU_ARCH> serve`.
 
-Systemd example: [./tools/resources/init/xmr-nodes-server.service](./tools/resources/init/xmr-nodes-server.service).
+Systemd example: [./deployment/init/xmr-nodes-server.service](./deployment/init/xmr-nodes-server.service).
 
 ### For initial prober setup:
 
@@ -32,4 +32,4 @@ Systemd example: [./tools/resources/init/xmr-nodes-server.service](./tools/resou
 3. Build the binary with `make build`.
 4. Run the service with `./bin/xmr-nodes-client-linux-<YOUR_CPU_ARCH> probe`.
 
-Systemd example: [xmr-nodes-prober.service](./tools/resources/init/xmr-nodes-prober.service) and [xmr-nodes-prober.timer](./tools/resources/init/xmr-nodes-prober.timer).
+Systemd example: [xmr-nodes-prober.service](./deployment/init/xmr-nodes-prober.service) and [xmr-nodes-prober.timer](./deployment/init/xmr-nodes-prober.timer).
