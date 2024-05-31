@@ -16,6 +16,13 @@ export const formatBytes = (bytes, decimals = 2) => {
 };
 
 /**
+ * Returns a number with a maximum precision.
+ *
+ * This function was copied from jtgrassie/monero-pool project.
+ * Source: https://github.com/jtgrassie/monero-pool/blob/master/src/webui-embed.html
+ *
+ * Copyright (c) 2018, The Monero Project
+ *
  * @param {number} n
  * @param {number} p
  */
@@ -24,6 +31,13 @@ const maxPrecision = (n, p) => {
 };
 
 /**
+ * Formats a hash value (h) into human readable format.
+ *
+ * This function was copied from jtgrassie/monero-pool project.
+ * Source: https://github.com/jtgrassie/monero-pool/blob/master/src/webui-embed.html
+ *
+ * Copyright (c) 2018, The Monero Project
+ *
  * @param {number} h
  */
 export const formatHashes = (h) => {
