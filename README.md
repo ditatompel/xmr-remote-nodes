@@ -2,6 +2,14 @@
 
 Source code of [https://xmr.ditatompel.com](https://xmr.ditatompel.com), a website that helps you monitor your favourite Monero remote nodes.
 
+## How does it work?
+
+Apart from CPU architecture type, you can build two types of binaries from this project: a **server** and a **client**.
+
+The **clients** is used to fetch node information given by the server. First, it will ask the server which node to fetch. Then, it will fetch the information and report back to the server.
+
+The **server** serves an embedded Svelte static site for the Web UI. It also serves the `/api` endpoint that is used by the clients and the Web UI itself.
+
 ## Requirements
 
 ### Server & Prober requirements
@@ -33,3 +41,7 @@ Systemd example: [./deployment/init/xmr-nodes-server.service](./deployment/init/
 4. Run the service with `./bin/xmr-nodes-client-linux-<YOUR_CPU_ARCH> probe`.
 
 Systemd example: [xmr-nodes-prober.service](./deployment/init/xmr-nodes-prober.service) and [xmr-nodes-prober.timer](./deployment/init/xmr-nodes-prober.timer).
+
+## Development and Deployment
+
+See the [Makefile](./Makefile).
