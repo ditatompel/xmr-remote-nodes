@@ -1,7 +1,7 @@
 <script>
 	import { DataHandler } from '@vincjo/datatables/remote';
 	import { format, formatDistance } from 'date-fns';
-	import { loadData, loadCountries } from './api-handler';
+	import { loadData, loadFees, loadCountries } from './api-handler';
 	import { onMount } from 'svelte';
 	import {
 		DtSrRowsPerPage,
@@ -30,28 +30,34 @@
 
 	/** @type {{total_nodes: number, cc: string, name: string}[]} */
 	let countries = [];
+	let fees = [];
 
 	const handler = new DataHandler([], { rowsPerPage: 10, totalRows: 0 });
 	let rows = handler.getRows();
 
 	/** @type {Object.<string, number>} */
-	let majorityFee = data.netFees.reduce(
-		/**
-		 * @param {Object.<string, number>} o
-		 * @param {{ nettype: string, estimate_fee: number }} key
-		 * @returns {Object.<string, number>}
-		 */
-		(o, key) => ({
-			...o,
-			[key.nettype]: key.estimate_fee
-		}),
-		{}
-	);
+	let majorityFee;
 
 	onMount(() => {
+		loadFees().then((data) => {
+			fees = data;
+			majorityFee = fees.reduce(
+				/**
+				 * @param {Object.<string, number>} o
+				 * @param {{ nettype: string, estimate_fee: number }} key
+				 * @returns {Object.<string, number>}
+				 */
+				(o, key) => ({
+					...o,
+					[key.nettype]: key.estimate_fee
+				}),
+				{}
+			);
+		});
 		loadCountries().then((data) => {
 			countries = data;
 		});
+
 		handler.onChange((state) => loadData(state));
 		handler.invalidate();
 	});

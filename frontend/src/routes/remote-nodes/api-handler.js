@@ -1,6 +1,9 @@
 import { apiUri } from '$lib/utils/common';
 
-/** @param {import('@vincjo/datatables/remote/state')} state */
+/**
+ * @typedef {import('@vincjo/datatables/remote').State} State
+ * @param {State} state - The state object from the data table.
+ */
 export const loadData = async (state) => {
 	const response = await fetch(apiUri(`/api/v1/nodes?${getParams(state)}`));
 	const json = await response.json();
@@ -14,6 +17,13 @@ export const loadCountries = async () => {
 	return json.data ?? [];
 };
 
+export const loadFees = async () => {
+	const response = await fetch(apiUri('/api/v1/fees'));
+	const json = await response.json();
+	return json.data ?? [];
+};
+
+/** @param {State} state - The state object from the data table. */
 const getParams = ({ pageNumber, rowsPerPage, sort, filters }) => {
 	let params = `page=${pageNumber}&limit=${rowsPerPage}`;
 

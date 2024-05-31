@@ -147,6 +147,9 @@ func (r *CronRepo) execCron(slug string) {
 	case "delete_old_probe_logs":
 		slog.Info(fmt.Sprintf("[CRON] Start running task: %s", slug))
 		r.deleteOldProbeLogs()
+	case "calculate_majority_fee":
+		slog.Info(fmt.Sprintf("[CRON] Start running task: %s", slug))
+		r.calculateMajorityFee()
 	}
 }
 
@@ -157,5 +160,50 @@ func (r *CronRepo) deleteOldProbeLogs() {
 	_, err := r.db.Exec(query, startTs)
 	if err != nil {
 		slog.Error(fmt.Sprintf("[CRON] Failed to delete old probe logs: %s", err))
+	}
+}
+
+func (r *CronRepo) calculateMajorityFee() {
+	netTypes := [3]string{"mainnet", "stagenet", "testnet"}
+	for _, net := range netTypes {
+		row, err := r.db.Query(`
+			SELECT
+				COUNT(id) AS node_count,
+				nettype,
+				estimate_fee
+			FROM
+				tbl_node
+			WHERE
+				nettype = ?
+			GROUP BY
+				estimate_fee
+			ORDER BY
+				node_count DESC
+			LIMIT 1`, net)
+		if err != nil {
+			slog.Error(fmt.Sprintf("[CRON] Failed to calculate majority fee: %s", err))
+		}
+		defer row.Close()
+
+		var (
+			nettype     string
+			estimateFee int
+			nodeCount   int
+		)
+
+		for row.Next() {
+			err = row.Scan(&nodeCount, &nettype, &estimateFee)
+			if err != nil {
+				slog.Error(fmt.Sprintf("[CRON] Failed to calculate majority fee: %s", err))
+				continue
+			}
+
+			query := `UPDATE tbl_fee SET estimate_fee = ?, node_count = ? WHERE nettype = ?`
+			_, err = r.db.Exec(query, estimateFee, nodeCount, nettype)
+			if err != nil {
+				slog.Error(fmt.Sprintf("[CRON] Failed to update majority fee: %s", err))
+				continue
+			}
+		}
 	}
 }

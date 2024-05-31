@@ -7,7 +7,7 @@ import (
 
 type migrateFn func(*DB) error
 
-var dbMigrate = [...]migrateFn{v1}
+var dbMigrate = [...]migrateFn{v1, v2}
 
 func MigrateDb(db *DB) error {
 	version := getSchemaVersion(db)
@@ -187,6 +187,64 @@ func v1(db *DB) error {
 	}
 	slog.Debug("[DB] Adding key to table: tbl_probe_log")
 	_, err = db.Exec(`ALTER TABLE tbl_probe_log ADD KEY (node_id)`)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func v2(db *DB) error {
+	slog.Debug("[DB] Migrating database schema version 2")
+
+	// table: tbl_fee
+	slog.Debug("[DB] Creating table: tbl_fee")
+	_, err := db.Exec(`
+		CREATE TABLE tbl_fee (
+			nettype VARCHAR(100) NOT NULL DEFAULT '',
+			estimate_fee INT(9) UNSIGNED NOT NULL DEFAULT 0,
+			node_count INT(9) UNSIGNED NOT NULL DEFAULT 0,
+			PRIMARY KEY (nettype)
+		)`)
+	if err != nil {
+		return err
+	}
+	slog.Debug("[DB] Adding default fee to table: tbl_fee")
+	_, err = db.Exec(`
+		INSERT INTO tbl_fee (
+			nettype,
+			estimate_fee,
+			node_count
+		) VALUES (
+			'mainnet',
+			0,
+			0
+		), (
+			'stagenet',
+			0,
+			0
+		), (
+			'testnet',
+			0,
+			0
+		);`)
+	if err != nil {
+		return err
+	}
+
+	slog.Debug("[DB] Adding majority fee cron jobs to table: tbl_cron")
+	_, err = db.Exec(`
+		INSERT INTO tbl_cron (
+			title,
+			slug,
+			description,
+			run_every
+		) VALUES (
+			'Calculate majority fee',
+			'calculate_majority_fee',
+			'Calculate majority Monero fee',
+			300
+		);`)
 	if err != nil {
 		return err
 	}

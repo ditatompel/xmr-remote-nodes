@@ -19,7 +19,7 @@ type MoneroRepository interface {
 	Node(id int) (Node, error)
 	Add(protocol string, host string, port uint) error
 	Nodes(QueryNodes) (Nodes, error)
-	NetFees() []NetFee
+	NetFees() []*NetFee
 	Countries() ([]Countries, error)
 	GiveJob(acceptTor int) (Node, error)
 	ProcessJob(report ProbeReport, proberId int64) error
@@ -78,13 +78,6 @@ func (r *MoneroRepo) Node(id int) (Node, error) {
 		return node, errors.New("Node not found")
 	}
 	return node, err
-}
-
-// Nodes represents a list of nodes
-type Nodes struct {
-	TotalRows   int     `json:"total_rows"`
-	RowsPerPage int     `json:"rows_per_page"`
-	Items       []*Node `json:"items"`
 }
 
 // QueryNodes represents database query parameters
@@ -158,6 +151,13 @@ func (q QueryNodes) toSQL() (args []interface{}, where, sortBy, sortDirection st
 	}
 
 	return args, where, sortBy, sortDirection
+}
+
+// Nodes represents a list of nodes
+type Nodes struct {
+	TotalRows   int     `json:"total_rows"`
+	RowsPerPage int     `json:"rows_per_page"`
+	Items       []*Node `json:"items"`
 }
 
 // Get nodes from database
@@ -310,35 +310,20 @@ type NetFee struct {
 	NodeCount   int    `json:"node_count" db:"node_count"`
 }
 
-// Get majority net fee from database
-func (r *MoneroRepo) NetFees() []NetFee {
-	// TODO: Create in-memory cache for this
-	netTypes := [3]string{"mainnet", "stagenet", "testnet"}
-	netFees := []NetFee{}
-
-	for _, net := range netTypes {
-		fees := NetFee{}
-		err := r.db.Get(&fees, `
-			SELECT
-				COUNT(id) AS node_count,
-				nettype,
-				estimate_fee
-			FROM
-				tbl_node
-			WHERE
-				nettype = ?
-			GROUP BY
-				estimate_fee
-			ORDER BY
-				node_count DESC
-			LIMIT 1`, net)
-		if err != nil {
-			fmt.Println("WARN:", err.Error())
-			continue
-		}
-		netFees = append(netFees, fees)
+// Get majority net fee from table tbl_fee
+func (r *MoneroRepo) NetFees() []*NetFee {
+	var netFees []*NetFee
+	err := r.db.Select(&netFees, `
+		SELECT
+			nettype,
+			estimate_fee,
+			node_count
+		FROM
+			tbl_fee
+		`)
+	if err != nil {
+		slog.Error(fmt.Sprintf("[MONERO] Failed to get net fees: %s", err))
 	}
-
 	return netFees
 }
 
