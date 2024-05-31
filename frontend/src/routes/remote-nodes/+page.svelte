@@ -53,13 +53,12 @@
 				}),
 				{}
 			);
+			handler.onChange((state) => loadData(state));
+			handler.invalidate();
 		});
 		loadCountries().then((data) => {
 			countries = data;
 		});
-
-		handler.onChange((state) => loadData(state));
-		handler.invalidate();
 	});
 </script>
 
