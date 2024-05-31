@@ -131,12 +131,12 @@ func AddNode(c *fiber.Ctx) error {
 	})
 }
 
-func NetFee(c *fiber.Ctx) error {
+func NetFees(c *fiber.Ctx) error {
 	moneroRepo := monero.New()
 	return c.JSON(fiber.Map{
 		"status":  "ok",
 		"message": "Success",
-		"data":    moneroRepo.NetFee(),
+		"data":    moneroRepo.NetFees(),
 	})
 }
 

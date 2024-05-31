@@ -19,7 +19,7 @@ type MoneroRepository interface {
 	Node(id int) (Node, error)
 	Add(protocol string, host string, port uint) error
 	Nodes(QueryNodes) (Nodes, error)
-	NetFee() []NetFee
+	NetFees() []NetFee
 	Countries() ([]Countries, error)
 	GiveJob(acceptTor int) (Node, error)
 	ProcessJob(report ProbeReport, proberId int64) error
@@ -310,7 +310,9 @@ type NetFee struct {
 	NodeCount   int    `json:"node_count" db:"node_count"`
 }
 
-func (r *MoneroRepo) NetFee() []NetFee {
+// Get majority net fee from database
+func (r *MoneroRepo) NetFees() []NetFee {
+	// TODO: Create in-memory cache for this
 	netTypes := [3]string{"mainnet", "stagenet", "testnet"}
 	netFees := []NetFee{}
 

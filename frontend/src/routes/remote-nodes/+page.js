@@ -1,5 +1,5 @@
 /** @type {import('./$types').PageLoad} */
-export async function load({ data }) {
+export async function load() {
 	return {
 		// prettier-ignore
 		meta: {
@@ -20,7 +20,7 @@ export async function load({ data }) {
 			},
 			{
 				nettype: 'stagenet',
-				estimate_fee: 57000
+				estimate_fee: 56000
 			},
 			{
 				nettype: 'testnet',
