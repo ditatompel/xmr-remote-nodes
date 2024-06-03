@@ -7,7 +7,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func MoneroNode(c *fiber.Ctx) error {
+// Returns a single node information based on `id` query param
+func Node(c *fiber.Ctx) error {
 	nodeId, err := c.ParamsInt("id", 0)
 	if err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
@@ -42,7 +43,8 @@ func MoneroNode(c *fiber.Ctx) error {
 	})
 }
 
-func MoneroNodes(c *fiber.Ctx) error {
+// Returns a list of nodes
+func Nodes(c *fiber.Ctx) error {
 	moneroRepo := monero.New()
 	query := monero.QueryNodes{
 		RowsPerPage:   c.QueryInt("limit", 10),
