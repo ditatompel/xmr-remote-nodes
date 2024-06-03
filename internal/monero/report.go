@@ -13,7 +13,7 @@ import (
 )
 
 type QueryLogs struct {
-	NodeID       int    // 0 fpr all, >0 for specific node
+	NodeID       int    // 0 for all, >0 for specific node
 	Status       int    // -1 for all, 0 for failed, 1 for success
 	FailedReason string // empty for all, if not empty, will be used as search from failed_reaso
 
@@ -162,11 +162,41 @@ func (r *MoneroRepo) GiveJob(acceptTor int) (Node, error) {
 type ProbeReport struct {
 	TookTime float64 `json:"took_time"`
 	Message  string  `json:"message"`
-	NodeInfo Node    `json:"node_info"`
+	Node     Node    `json:"node"`
 }
 
+type nodeStats struct {
+	Online       uint `db:"online"`  // total count online
+	Offline      uint `db:"offline"` // total count offline
+	TotalFetched uint `db:"total_fetched"`
+}
+
+// Create new status indicator based from LastCheckStatus and recent IsAvailable status
+func (p *ProbeReport) parseStatuses() string {
+	var s [5]int
+	if err := p.Node.LastCheckStatus.Unmarshal(&s); err != nil {
+		slog.Warn(err.Error())
+		s = [5]int{2, 2, 2, 2, 2}
+	}
+
+	si := 0 // set default "status indicator" to offline
+	if p.Node.IsAvailable {
+		si = 1
+	}
+
+	ns := s[1:]
+	ns = append(ns, si)
+	j, err := json.Marshal(ns)
+	if err != nil {
+		slog.Warn(err.Error())
+	}
+
+	return string(j)
+}
+
+// Process report data from probers
 func (r *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
-	if report.NodeInfo.ID == 0 {
+	if report.Node.ID == 0 {
 		return errors.New("Invalid node")
 	}
 
@@ -199,14 +229,14 @@ func (r *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			?
 		)`
 	_, err := r.db.Exec(qInsertLog,
-		report.NodeInfo.ID,
+		report.Node.ID,
 		proberId,
-		report.NodeInfo.IsAvailable,
-		report.NodeInfo.Height,
-		report.NodeInfo.AdjustedTime,
-		report.NodeInfo.DatabaseSize,
-		report.NodeInfo.Difficulty,
-		report.NodeInfo.EstimateFee,
+		report.Node.IsAvailable,
+		report.Node.Height,
+		report.Node.AdjustedTime,
+		report.Node.DatabaseSize,
+		report.Node.Difficulty,
+		report.Node.EstimateFee,
 		now.Unix(),
 		report.Message,
 		report.TookTime)
@@ -216,11 +246,7 @@ func (r *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 
 	limitTs := now.AddDate(0, -1, 0).Unix()
 
-	nodeStats := struct {
-		OnlineCount  uint `db:"online"`
-		OfflineCount uint `db:"offline"`
-		TotalFetched uint `db:"total_fetched"`
-	}{}
+	var stats nodeStats
 
 	qstats := `
 		SELECT
@@ -232,48 +258,31 @@ func (r *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 		WHERE
 			node_id = ?
 			AND date_checked > ?`
-	if err := r.db.Get(&nodeStats, qstats, report.NodeInfo.ID, limitTs); err != nil {
+	if err := r.db.Get(&stats, qstats, report.Node.ID, limitTs); err != nil {
 		slog.Warn(err.Error())
 	}
 
-	avgUptime := (float64(nodeStats.OnlineCount) / float64(nodeStats.TotalFetched)) * 100
-	report.NodeInfo.Uptime = math.Ceil(avgUptime*100) / 100
+	avgUptime := (float64(stats.Online) / float64(stats.TotalFetched)) * 100
+	report.Node.Uptime = math.Ceil(avgUptime*100) / 100
 
-	var statuses [5]int
-	errUnmarshal := report.NodeInfo.LastCheckStatus.Unmarshal(&statuses)
-	if errUnmarshal != nil {
-		fmt.Println("Warning", errUnmarshal.Error())
-		statuses = [5]int{2, 2, 2, 2, 2}
-	}
-
-	nodeAvailable := 0
-
-	if report.NodeInfo.IsAvailable {
-		nodeAvailable = 1
-	}
-	newStatuses := statuses[1:]
-	newStatuses = append(newStatuses, nodeAvailable)
-	statuesValueToDb, errMarshalStatus := json.Marshal(newStatuses)
-	if errMarshalStatus != nil {
-		fmt.Println("WARN", errMarshalStatus.Error())
-	}
+	statuses := report.parseStatuses()
 
 	// recheck IP
-	if report.NodeInfo.IP != "" {
-		if ipInfo, errGeoIp := geo.Info(report.NodeInfo.IP); errGeoIp != nil {
+	if report.Node.IP != "" {
+		if ipInfo, errGeoIp := geo.Info(report.Node.IP); errGeoIp != nil {
 			fmt.Println("WARN:", errGeoIp.Error())
 		} else {
-			report.NodeInfo.ASN = ipInfo.ASN
-			report.NodeInfo.ASNName = ipInfo.ASNOrg
-			report.NodeInfo.CountryCode = ipInfo.CountryCode
-			report.NodeInfo.CountryName = ipInfo.CountryName
-			report.NodeInfo.City = ipInfo.City
-			report.NodeInfo.Longitude = ipInfo.Longitude
-			report.NodeInfo.Latitude = ipInfo.Latitude
+			report.Node.ASN = ipInfo.ASN
+			report.Node.ASNName = ipInfo.ASNOrg
+			report.Node.CountryCode = ipInfo.CountryCode
+			report.Node.CountryName = ipInfo.CountryName
+			report.Node.City = ipInfo.City
+			report.Node.Longitude = ipInfo.Longitude
+			report.Node.Latitude = ipInfo.Latitude
 		}
 	}
 
-	if report.NodeInfo.IsAvailable {
+	if report.Node.IsAvailable {
 		update := `
 		UPDATE tbl_node
 		SET
@@ -298,25 +307,25 @@ func (r *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 		WHERE
 			id = ?`
 		_, err := r.db.Exec(update,
-			nodeAvailable,
-			report.NodeInfo.Nettype,
-			report.NodeInfo.Height,
-			report.NodeInfo.AdjustedTime,
-			report.NodeInfo.DatabaseSize,
-			report.NodeInfo.Difficulty,
-			report.NodeInfo.Version,
-			report.NodeInfo.Uptime,
-			report.NodeInfo.EstimateFee,
-			report.NodeInfo.IP,
-			report.NodeInfo.ASN,
-			report.NodeInfo.ASNName,
-			report.NodeInfo.CountryCode,
-			report.NodeInfo.CountryName,
-			report.NodeInfo.City,
+			1,
+			report.Node.Nettype,
+			report.Node.Height,
+			report.Node.AdjustedTime,
+			report.Node.DatabaseSize,
+			report.Node.Difficulty,
+			report.Node.Version,
+			report.Node.Uptime,
+			report.Node.EstimateFee,
+			report.Node.IP,
+			report.Node.ASN,
+			report.Node.ASNName,
+			report.Node.CountryCode,
+			report.Node.CountryName,
+			report.Node.City,
 			now.Unix(),
-			string(statuesValueToDb),
-			report.NodeInfo.CORSCapable,
-			report.NodeInfo.ID)
+			statuses,
+			report.Node.CORSCapable,
+			report.Node.ID)
 		if err != nil {
 			slog.Warn(err.Error())
 		}
@@ -330,14 +339,14 @@ func (r *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			last_check_status = ?
 		WHERE
 			id = ?`
-		if _, err := r.db.Exec(u, nodeAvailable, report.NodeInfo.Uptime, now.Unix(), string(statuesValueToDb), report.NodeInfo.ID); err != nil {
+		if _, err := r.db.Exec(u, 0, report.Node.Uptime, now.Unix(), statuses, report.Node.ID); err != nil {
 			slog.Warn(err.Error())
 		}
 	}
 
-	if avgUptime <= 0 && nodeStats.TotalFetched > 300 {
+	if avgUptime <= 0 && stats.TotalFetched > 300 {
 		fmt.Println("Deleting Monero node (0% uptime from > 300 records)")
-		if err := r.Delete(report.NodeInfo.ID); err != nil {
+		if err := r.Delete(report.Node.ID); err != nil {
 			slog.Warn(err.Error())
 		}
 	}
