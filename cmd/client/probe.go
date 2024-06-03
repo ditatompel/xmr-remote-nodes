@@ -227,47 +227,57 @@ func (p *proberClient) fetchNode(node monero.Node) (monero.Node, error) {
 	// time.Sleep(1 * time.Second)
 
 	// check fee
-	rpcCheckFeeParam := []byte(`{"jsonrpc": "2.0","id": "0","method": "get_fee_estimate"}`)
-	reqCheckFee, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(rpcCheckFeeParam))
+	fee, err := p.fetchFee(client, endpoint)
 	if err != nil {
 		return node, err
 	}
-	reqCheckFee.Header.Set("Content-Type", "application/json; charset=UTF-8")
-	reqCheckFee.Header.Set("User-Agent", RPCUserAgent)
-
-	checkFee, err := client.Do(reqCheckFee)
-	if err != nil {
-		return node, err
-	}
-	defer checkFee.Body.Close()
-
-	if checkFee.StatusCode != 200 {
-		return node, fmt.Errorf("status code: %d", checkFee.StatusCode)
-	}
-
-	bodyCheckFee, err := io.ReadAll(checkFee.Body)
-	if err != nil {
-		return node, err
-	}
-
-	feeEstimate := struct {
-		Result struct {
-			Fee uint `json:"fee"`
-		} `json:"result"`
-	}{}
-
-	if err := json.Unmarshal(bodyCheckFee, &feeEstimate); err != nil {
-		return node, err
-	}
+	node.EstimateFee = fee
 
 	tookTime := time.Since(startTime).Seconds()
-	node.EstimateFee = feeEstimate.Result.Fee
 
 	slog.Info(fmt.Sprintf("[PROBE] Took %f seconds", tookTime))
 	if err := p.reportResult(node, tookTime); err != nil {
 		return node, err
 	}
 	return node, nil
+}
+
+// get estimate fee from remote node
+func (p *proberClient) fetchFee(client http.Client, endpoint string) (uint, error) {
+	rpcParam := []byte(`{"jsonrpc": "2.0","id": "0","method": "get_fee_estimate"}`)
+	req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(rpcParam))
+	if err != nil {
+		return 0, err
+	}
+	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
+	req.Header.Set("User-Agent", RPCUserAgent)
+
+	res, err := client.Do(req)
+	if err != nil {
+		return 0, err
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode != 200 {
+		return 0, fmt.Errorf("status code: %d", res.StatusCode)
+	}
+
+	body, err := io.ReadAll(res.Body)
+	if err != nil {
+		return 0, err
+	}
+
+	f := struct {
+		Result struct {
+			Fee uint `json:"fee"`
+		} `json:"result"`
+	}{}
+
+	if err := json.Unmarshal(body, &f); err != nil {
+		return 0, err
+	}
+
+	return f.Result.Fee, nil
 }
 
 func (p *proberClient) reportResult(node monero.Node, tookTime float64) error {
