@@ -75,6 +75,9 @@ func Nodes(c *fiber.Ctx) error {
 	})
 }
 
+// Returns probe logs reported by nodes
+//
+// The embadded web UI use `node_id` query param to filter logs
 func ProbeLogs(c *fiber.Ctx) error {
 	moneroRepo := monero.New()
 	query := monero.QueryLogs{
@@ -103,6 +106,7 @@ func ProbeLogs(c *fiber.Ctx) error {
 	})
 }
 
+// Handles `POST /nodes` request to add a new node
 func AddNode(c *fiber.Ctx) error {
 	formPort := c.FormValue("port")
 	port, err := strconv.Atoi(formPort)
@@ -133,6 +137,7 @@ func AddNode(c *fiber.Ctx) error {
 	})
 }
 
+// Returns majority network fees
 func NetFees(c *fiber.Ctx) error {
 	moneroRepo := monero.New()
 	return c.JSON(fiber.Map{
@@ -142,6 +147,7 @@ func NetFees(c *fiber.Ctx) error {
 	})
 }
 
+// Returns list of countries (count by nodes)
 func Countries(c *fiber.Ctx) error {
 	moneroRepo := monero.New()
 	countries, err := moneroRepo.Countries()
@@ -159,6 +165,9 @@ func Countries(c *fiber.Ctx) error {
 	})
 }
 
+// Returns node to be probed by the client (prober)
+//
+// This handler should protected by `CheckProber` middleware.
 func GiveJob(c *fiber.Ctx) error {
 	acceptTor := c.QueryInt("accept_tor", 0)
 
@@ -179,9 +188,11 @@ func GiveJob(c *fiber.Ctx) error {
 	})
 }
 
+// Handles probe report submission by the prober
+//
+// This handler should protected by `CheckProber` middleware.
 func ProcessJob(c *fiber.Ctx) error {
-	moneroRepo := monero.New()
-	report := monero.ProbeReport{}
+	var report monero.ProbeReport
 
 	if err := c.BodyParser(&report); err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
@@ -190,6 +201,8 @@ func ProcessJob(c *fiber.Ctx) error {
 			"data":    nil,
 		})
 	}
+
+	moneroRepo := monero.New()
 
 	if err := moneroRepo.ProcessJob(report, c.Locals("prober_id").(int64)); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
