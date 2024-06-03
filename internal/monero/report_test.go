@@ -2,7 +2,55 @@ package monero
 
 import (
 	"testing"
+
+	"github.com/jmoiron/sqlx/types"
 )
+
+func TestNode_parseStatuses(t *testing.T) {
+	tests := []struct {
+		name   string
+		report Node
+		want   string
+	}{
+		{
+			name: "Invalid initial LastCheckStatus type",
+			report: Node{
+				IsAvailable:     true,
+				LastCheckStatus: types.JSONText("-invalid source-"),
+			},
+			want: "[2,2,2,2,1]",
+		},
+		{
+			name: "Node goes online",
+			report: Node{
+				IsAvailable:     true,
+				LastCheckStatus: types.JSONText("[0,1,0,0,0]"),
+			},
+			want: "[1,0,0,0,1]",
+		},
+		{
+			name: "Node goes offline",
+			report: Node{
+				IsAvailable:     false,
+				LastCheckStatus: types.JSONText("[0,1,0,1,1]"),
+			},
+			want: "[1,0,1,1,0]",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			n := &ProbeReport{
+				Node: Node{
+					IsAvailable:     tt.report.IsAvailable,
+					LastCheckStatus: tt.report.LastCheckStatus,
+				},
+			}
+			if got := n.parseStatuses(); got != tt.want {
+				t.Errorf("Node.parseStatuses() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 
 func TestQueryLogs_toSQL(t *testing.T) {
 	tests := []struct {
@@ -13,7 +61,6 @@ func TestQueryLogs_toSQL(t *testing.T) {
 		wantSortBy        string
 		wantSortDirection string
 	}{
-		// TODO: Add test cases.
 		{
 			name: "Default query",
 			fields: QueryLogs{
