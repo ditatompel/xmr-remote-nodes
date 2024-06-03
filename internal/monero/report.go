@@ -170,6 +170,8 @@ func (r *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 		return errors.New("Invalid node")
 	}
 
+	now := time.Now()
+
 	qInsertLog := `
 		INSERT INTO tbl_probe_log (
 			node_id,
@@ -205,14 +207,13 @@ func (r *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 		report.NodeInfo.DatabaseSize,
 		report.NodeInfo.Difficulty,
 		report.NodeInfo.EstimateFee,
-		time.Now().Unix(),
+		now.Unix(),
 		report.Message,
 		report.TookTime)
 	if err != nil {
 		return err
 	}
 
-	now := time.Now()
 	limitTs := now.AddDate(0, -1, 0).Unix()
 
 	nodeStats := struct {
