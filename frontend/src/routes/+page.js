@@ -1,5 +1,5 @@
 /** @type {import('./$types').PageLoad} */
-export async function load({ data }) {
+export async function load() {
 	return {
 		meta: {
 			title: 'Monero Remote Node',
