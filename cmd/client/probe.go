@@ -284,7 +284,7 @@ func (p *proberClient) reportResult(node monero.Node, tookTime float64) error {
 	jsonData, err := json.Marshal(monero.ProbeReport{
 		TookTime: tookTime,
 		Message:  p.message,
-		NodeInfo: node,
+		Node:     node,
 	})
 	if err != nil {
 		return err
