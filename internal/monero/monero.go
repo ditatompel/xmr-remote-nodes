@@ -166,6 +166,8 @@ func (r *MoneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 
 	var nodes Nodes
 
+	nodes.RowsPerPage = q.RowsPerPage
+
 	qTotal := fmt.Sprintf(`
 		SELECT
 			COUNT(id) AS total_rows
