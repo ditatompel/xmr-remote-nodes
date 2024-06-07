@@ -329,15 +329,17 @@ func (r *MoneroRepo) NetFees() []NetFee {
 	return netFees
 }
 
+// Countries represents list of countries
 type Countries struct {
 	TotalNodes int    `json:"total_nodes" db:"total_nodes"`
 	CC         string `json:"cc" db:"country"` // country code
 	Name       string `json:"name" db:"country_name"`
 }
 
+// Get list of countries (count by nodes)
 func (r *MoneroRepo) Countries() ([]Countries, error) {
-	countries := []Countries{}
-	err := r.db.Select(&countries, `
+	var c []Countries
+	err := r.db.Select(&c, `
 		SELECT
 			COUNT(id) AS total_nodes,
 			country,
@@ -348,5 +350,5 @@ func (r *MoneroRepo) Countries() ([]Countries, error) {
 			country
 		ORDER BY
 			country ASC`)
-	return countries, err
+	return c, err
 }
