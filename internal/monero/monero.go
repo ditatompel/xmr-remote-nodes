@@ -19,7 +19,7 @@ type MoneroRepository interface {
 	Node(id int) (Node, error)
 	Add(protocol string, host string, port uint) error
 	Nodes(QueryNodes) (Nodes, error)
-	NetFees() []*NetFee
+	NetFees() []NetFee
 	Countries() ([]Countries, error)
 	GiveJob(acceptTor int) (Node, error)
 	ProcessJob(report ProbeReport, proberId int64) error
@@ -313,8 +313,8 @@ type NetFee struct {
 }
 
 // Get majority net fee from table tbl_fee
-func (r *MoneroRepo) NetFees() []*NetFee {
-	var netFees []*NetFee
+func (r *MoneroRepo) NetFees() []NetFee {
+	var netFees []NetFee
 	err := r.db.Select(&netFees, `
 		SELECT
 			nettype,
