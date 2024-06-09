@@ -101,7 +101,7 @@ func TestQueryProbers_toSQL(t *testing.T) {
 
 // TODO: Add database test table and then clean it up
 
-func TestProberRepo_CheckApi(t *testing.T) {
+func TestProberRepo_CheckAPI(t *testing.T) {
 	if !testMySQL {
 		t.Skip("Skip integration test, not connected to database")
 	}
@@ -137,7 +137,7 @@ func TestProberRepo_CheckApi(t *testing.T) {
 	}
 }
 
-func BenchmarkProberRepo_CheckApi(b *testing.B) {
+func BenchmarkProberRepo_CheckAPI(b *testing.B) {
 	if !testMySQL {
 		b.Skip("Skip bench, not connected to database")
 	}
