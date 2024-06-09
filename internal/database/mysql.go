@@ -16,6 +16,10 @@ var defaultDB = &DB{}
 
 // connect sets the db client of database using configuration
 func (db *DB) connect(cfg *config.DB) (err error) {
+	if defaultDB.DB != nil {
+		return nil // reuse existing connection if available
+	}
+
 	dbURI := fmt.Sprintf("%s:%s@(%s:%d)/%s",
 		cfg.User,
 		cfg.Password,
