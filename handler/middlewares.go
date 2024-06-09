@@ -16,7 +16,7 @@ func CheckProber(c *fiber.Ctx) error {
 		})
 	}
 
-	prober, err := monero.NewProber().CheckApi(key)
+	prober, err := monero.NewProber().CheckAPI(key)
 	if err != nil {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"status":  "error",

@@ -68,8 +68,8 @@ xmr-nodes probers list -s last_submit_ts -d asc sin1`,
 			fmt.Fprintf(w, "%d\t| %s\t| %s\t| %s\n",
 				prober.ID,
 				prober.Name,
-				time.Unix(prober.LastSubmitTs, 0).Format(time.RFC3339),
-				prober.ApiKey,
+				time.Unix(prober.LastSubmitTS, 0).Format(time.RFC3339),
+				prober.APIKey,
 			)
 		}
 		w.Flush()
@@ -115,7 +115,7 @@ This command will display the prober name and API key when successfully executed
 			return
 		}
 
-		fmt.Printf("Name: %s\nAPI Key: %s\n", prober.Name, prober.ApiKey)
+		fmt.Printf("Name: %s\nAPI Key: %s\n", prober.Name, prober.APIKey)
 	},
 }
 

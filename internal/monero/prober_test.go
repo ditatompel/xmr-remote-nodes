@@ -128,7 +128,7 @@ func TestProberRepo_CheckApi(t *testing.T) {
 	repo := NewProber()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := repo.CheckApi(tt.apiKey)
+			_, err := repo.CheckAPI(tt.apiKey)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProberRepo.CheckApi() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -143,6 +143,6 @@ func BenchmarkProberRepo_CheckApi(b *testing.B) {
 	}
 	repo := NewProber()
 	for i := 0; i < b.N; i++ {
-		repo.CheckApi("")
+		repo.CheckAPI("")
 	}
 }

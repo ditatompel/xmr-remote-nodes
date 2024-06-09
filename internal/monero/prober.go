@@ -15,7 +15,7 @@ type ProberRepository interface {
 	Add(name string) (Prober, error)
 	Edit(id int, name string) error
 	Probers(QueryProbers) ([]Prober, error)
-	CheckApi(key string) (Prober, error)
+	CheckAPI(key string) (Prober, error)
 	Delete(id int) error
 }
 
@@ -26,8 +26,8 @@ type ProberRepo struct {
 type Prober struct {
 	ID           int64     `json:"id" db:"id"`
 	Name         string    `json:"name" db:"name"`
-	ApiKey       uuid.UUID `json:"api_key" db:"api_key"`
-	LastSubmitTs int64     `json:"last_submit_ts" db:"last_submit_ts"`
+	APIKey       uuid.UUID `json:"api_key" db:"api_key"`
+	LastSubmitTS int64     `json:"last_submit_ts" db:"last_submit_ts"`
 }
 
 // Initializes a new ProberRepository
@@ -54,7 +54,7 @@ func (r *ProberRepo) Add(name string) (Prober, error) {
 	if err != nil {
 		return Prober{}, err
 	}
-	return Prober{Name: name, ApiKey: apiKey}, nil
+	return Prober{Name: name, APIKey: apiKey}, nil
 }
 
 // Edit an existing prober
@@ -143,7 +143,7 @@ func (r *ProberRepo) Probers(q QueryProbers) ([]Prober, error) {
 
 	for row.Next() {
 		var p Prober
-		err = row.Scan(&p.ID, &p.Name, &p.ApiKey, &p.LastSubmitTs)
+		err = row.Scan(&p.ID, &p.Name, &p.APIKey, &p.LastSubmitTS)
 		if err != nil {
 			return probers, err
 		}
@@ -152,7 +152,7 @@ func (r *ProberRepo) Probers(q QueryProbers) ([]Prober, error) {
 	return probers, nil
 }
 
-func (r *ProberRepo) CheckApi(key string) (Prober, error) {
+func (r *ProberRepo) CheckAPI(key string) (Prober, error) {
 	var p Prober
 	query := `
 		SELECT
@@ -165,6 +165,6 @@ func (r *ProberRepo) CheckApi(key string) (Prober, error) {
 		WHERE
 			api_key = ?
 		LIMIT 1`
-	err := r.db.QueryRow(query, key).Scan(&p.ID, &p.Name, &p.ApiKey, &p.LastSubmitTs)
+	err := r.db.QueryRow(query, key).Scan(&p.ID, &p.Name, &p.APIKey, &p.LastSubmitTS)
 	return p, err
 }
