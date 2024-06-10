@@ -1,0 +1,59 @@
+name: "Release Binaries"
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build_binaries:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        goos: [linux]
+        goarch: [amd64, arm64]
+
+    steps:
+      - name: Check out source code
+        uses: actions/checkout@v4
+
+      - name: setup NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: 1.22.x
+
+      # Need to build the UI here before build the server binary with go-release-action
+      - name: Build UI
+        run: make ui
+
+      - name: Build server binary
+        uses: wangyoucao577/go-release-action@v1
+        with:
+          github_token: ${{ secrets.ACTION_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          overwrite: true
+          pre_command: export CGO_ENABLED=0
+          ldflags: -s -w
+          build_flags: -tags server
+          project_path: .
+          binary_name: server
+          extra_files: LICENSE README.md
+
+      - name: Build client binary
+        uses: wangyoucao577/go-release-action@v1
+        with:
+          github_token: ${{ secrets.ACTION_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          overwrite: true
+          pre_command: export CGO_ENABLED=0
+          ldflags: -s -w
+          binary_name: client
+          project_path: .
+          extra_files: LICENSE README.md
