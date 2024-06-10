@@ -21,7 +21,7 @@
 		"@sveltejs/vite-plugin-svelte": "^3.1.1",
 		"@tailwindcss/forms": "^0.5.7",
 		"@types/eslint": "^8.56.0",
-		"@vincjo/datatables": "^1.14.5",
+		"@vincjo/datatables": "^1.14.10",
 		"autoprefixer": "^10.4.19",
 		"date-fns": "^3.3.1",
 		"eslint": "^9.4.0",
