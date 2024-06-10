@@ -50,3 +50,8 @@ Systemd example: [xmr-nodes-prober.service](./deployment/init/xmr-nodes-prober.s
 ## Development and Deployment
 
 See the [Makefile](./Makefile).
+
+## Similar Projects
+
+-   [lalanza808/monero.fail](https://github.com/lalanza808/monero.fail)
+-   [cake-tech/upptime-monerocom](https://github.com/cake-tech/upptime-monerocom)
