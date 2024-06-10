@@ -1,6 +1,7 @@
 # XMR Remote Nodes
 
 [![Lint](https://github.com/ditatompel/xmr-remote-nodes/actions/workflows/lint.yml/badge.svg)](https://github.com/ditatompel/xmr-remote-nodes/actions/workflows/lint.yml)
+[![BUild](https://github.com/ditatompel/xmr-remote-nodes/actions/workflows/build.yml/badge.svg)](https://github.com/ditatompel/xmr-remote-nodes/actions/workflows/build.yml)
 
 Source code of [https://xmr.ditatompel.com](https://xmr.ditatompel.com), a website that helps you monitor your favourite Monero remote nodes.
 
