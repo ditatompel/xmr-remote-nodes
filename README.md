@@ -1,6 +1,11 @@
 # XMR Remote Nodes
 
+[![Lint](https://github.com/ditatompel/xmr-remote-nodes/actions/workflows/lint.yml/badge.svg)](https://github.com/ditatompel/xmr-remote-nodes/actions/workflows/lint.yml)
+
 Source code of [https://xmr.ditatompel.com](https://xmr.ditatompel.com), a website that helps you monitor your favourite Monero remote nodes.
+
+> :warning: :construction: This project is still freaking 0.x.x :construction:,
+> If you want to use it on your server, please use it with caution.
 
 ## How does it work?
 
@@ -55,3 +60,7 @@ See the [Makefile](./Makefile).
 
 -   [lalanza808/monero.fail](https://github.com/lalanza808/monero.fail)
 -   [cake-tech/upptime-monerocom](https://github.com/cake-tech/upptime-monerocom)
+
+## License
+
+This project is licensed under [GLWTPL](./LICENSE).
