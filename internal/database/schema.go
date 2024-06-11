@@ -144,6 +144,11 @@ func v1(db *DB) error {
 		return err
 	}
 
+	// NOTE: If you need list of public nodes (for example to seed `tbl_node`
+	// data for integration test), you can use `public_nodes` command from
+	// `monero-wallet-cli` app. Eg testnet public nodes:
+	// echo "public_nodes" | monero-wallet-cli --testnet --wallet-file=wallet --daemon-address=testnet.xmr.ditatompel.com:443 --password-file=pass_file
+
 	// table: tbl_prober
 	slog.Debug("[DB] Creating table: tbl_prober")
 	_, err = db.Exec(`
