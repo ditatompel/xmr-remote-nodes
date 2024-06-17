@@ -13,12 +13,7 @@
 		{city},
 	{/if}
 	{country_name}
-	<img
-		class="inline-block"
-		src="https://edge.ditatompel.com/assets/img/cf/svg/{lowerCc}.svg"
-		alt="{cc} Flag"
-		width="22px"
-	/>
+	<img class="inline-block" src="/img/cf/{lowerCc}.svg" alt="{cc} Flag" width="22px" />
 {/if}
 
 {#if asn !== 0}
