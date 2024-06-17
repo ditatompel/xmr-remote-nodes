@@ -273,9 +273,8 @@
 				</li>
 				<li>
 					Malicious actors who running remote nodes <a
-						class="external"
-						href="https://w3-s3-jkt1.ditatompel.com/pub/assets/img/site-contents/monero-tx-fee-node.jpg"
-						target="_blank"
+						class="link"
+						href="/img/node-tx-fee.jpg"
 						rel="noopener">still can return high fee only if you about to create a transactions</a
 					>.
 				</li>
