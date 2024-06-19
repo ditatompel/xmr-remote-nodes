@@ -22,8 +22,10 @@ import (
 const RPCUserAgent = "ditatombot/0.0.1 (Monero RPC Monitoring; https://github.com/ditatompel/xmr-remote-nodes)"
 
 const (
-	errEnvNoEndpoint = errProber("please set SERVER_ENDPOINT in .env")
-	errEnvNoTorSocks = errProber("please set TOR_SOCKS in .env")
+	errNoEndpoint         = errProber("no SERVER_ENDPOINT was provided")
+	errNoTorSocks         = errProber("no TOR_SOCKS was provided")
+	errNoAPIKey           = errProber("no API_KEY was provided")
+	errInvalidCredentials = errProber("invalid API_KEY credentials")
 )
 
 type errProber string
@@ -63,8 +65,13 @@ var ProbeCmd = &cobra.Command{
 		}
 
 		if err := prober.Run(); err != nil {
-			slog.Error(fmt.Sprintf("[PROBE] %s", err.Error()))
-			os.Exit(1)
+			switch err.(type) {
+			case errProber:
+				slog.Error(fmt.Sprintf("[PROBE] %s", err.Error()))
+				os.Exit(1)
+			default:
+				slog.Warn(fmt.Sprintf("[PROBE] %s", err.Error()))
+			}
 		}
 	},
 }
@@ -99,11 +106,15 @@ func (p *proberClient) Run() error {
 // checks if all required environment variables are set
 func (p *proberClient) validateConfig() error {
 	if p.endpoint == "" {
-		return errEnvNoEndpoint
+		return errNoEndpoint
+	}
+	if p.apiKey == "" {
+		return errNoAPIKey
 	}
 	if p.acceptTor && p.torSOCKS == "" {
-		return errEnvNoTorSocks
+		return errNoTorSocks
 	}
+
 	return nil
 }
 
@@ -133,7 +144,12 @@ func (p *proberClient) fetchJob() (monero.Node, error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
+	switch resp.StatusCode {
+	case 200:
+		break
+	case 401:
+		return node, errInvalidCredentials
+	default:
 		return node, fmt.Errorf("status code: %d", resp.StatusCode)
 	}
 
