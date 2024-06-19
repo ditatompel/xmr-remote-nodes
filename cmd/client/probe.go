@@ -33,38 +33,62 @@ func (err errProber) Error() string {
 }
 
 type proberClient struct {
-	config  *config.App
-	message string // message to include when reporting back to server
+	endpoint  string // server endpoint
+	apiKey    string // prober api key
+	acceptTor bool   // accept tor
+	torSOCKS  string // IP:Port of tor socks
+	message   string // message to include when reporting back to server
 }
 
 func newProber() *proberClient {
-	return &proberClient{config: config.AppCfg()}
+	cfg := config.AppCfg()
+	return &proberClient{
+		endpoint:  cfg.ServerEndpoint,
+		apiKey:    cfg.APIKey,
+		acceptTor: cfg.AcceptTor,
+		torSOCKS:  cfg.TorSOCKS,
+	}
 }
 
 var ProbeCmd = &cobra.Command{
 	Use:   "probe",
 	Short: "Probe remote nodes",
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := RunProber(); err != nil {
+		prober := newProber()
+		if e, _ := cmd.Flags().GetString("endpoint"); e != "" {
+			prober.SetEndpoint(e)
+		}
+		if t, _ := cmd.Flags().GetBool("no-tor"); t {
+			prober.SetAcceptTor(false)
+		}
+
+		if err := prober.Run(); err != nil {
 			slog.Error(fmt.Sprintf("[PROBE] %s", err.Error()))
 			os.Exit(1)
 		}
 	},
 }
 
+func (p *proberClient) SetEndpoint(endpoint string) {
+	p.endpoint = endpoint
+}
+
+func (p *proberClient) SetAcceptTor(acceptTor bool) {
+	p.acceptTor = acceptTor
+}
+
 // Fetch a new job from the server, fetches node info, and sends it to the server
-func RunProber() error {
-	if err := validateConfig(); err != nil {
+func (p *proberClient) Run() error {
+	if err := p.validateConfig(); err != nil {
 		return err
 	}
-	prober := newProber()
 
-	node, err := prober.fetchJob()
+	node, err := p.fetchJob()
 	if err != nil {
 		return err
 	}
 
-	fetchNode, err := prober.fetchNode(node)
+	fetchNode, err := p.fetchNode(node)
 	if err != nil {
 		return err
 	}
@@ -73,11 +97,11 @@ func RunProber() error {
 }
 
 // checks if all required environment variables are set
-func validateConfig() error {
-	if config.AppCfg().ServerEndpoint == "" {
+func (p *proberClient) validateConfig() error {
+	if p.endpoint == "" {
 		return errEnvNoEndpoint
 	}
-	if config.AppCfg().AcceptTor && config.AppCfg().TorSocks == "" {
+	if p.acceptTor && p.torSOCKS == "" {
 		return errEnvNoTorSocks
 	}
 	return nil
@@ -86,20 +110,20 @@ func validateConfig() error {
 // Get monero node info to fetch from the server
 func (p *proberClient) fetchJob() (monero.Node, error) {
 	queryParams := ""
-	if p.config.AcceptTor {
+	if p.acceptTor {
 		queryParams = "?accept_tor=1"
 	}
 
 	var node monero.Node
 
-	uri := fmt.Sprintf("%s/api/v1/job%s", p.config.ServerEndpoint, queryParams)
+	uri := fmt.Sprintf("%s/api/v1/job%s", p.endpoint, queryParams)
 	slog.Info(fmt.Sprintf("[PROBE] Getting node from %s", uri))
 
 	req, err := http.NewRequest(http.MethodGet, uri, nil)
 	if err != nil {
 		return node, err
 	}
-	req.Header.Add(monero.ProberAPIKey, p.config.ApiKey)
+	req.Header.Add(monero.ProberAPIKey, p.apiKey)
 	req.Header.Set("User-Agent", RPCUserAgent)
 
 	client := &http.Client{}
@@ -144,8 +168,8 @@ func (p *proberClient) fetchNode(node monero.Node) (monero.Node, error) {
 	req.Header.Set("Origin", "https://xmr.ditatompel.com")
 
 	var client http.Client
-	if p.config.AcceptTor && node.IsTor {
-		dialer, err := proxy.SOCKS5("tcp", p.config.TorSocks, nil, proxy.Direct)
+	if p.acceptTor && node.IsTor {
+		dialer, err := proxy.SOCKS5("tcp", p.torSOCKS, nil, proxy.Direct)
 		if err != nil {
 			return node, err
 		}
@@ -290,12 +314,12 @@ func (p *proberClient) reportResult(node monero.Node, tookTime float64) error {
 		return err
 	}
 
-	endpoint := fmt.Sprintf("%s/api/v1/job", p.config.ServerEndpoint)
+	endpoint := fmt.Sprintf("%s/api/v1/job", p.endpoint)
 	req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(jsonData))
 	if err != nil {
 		return err
 	}
-	req.Header.Add(monero.ProberAPIKey, p.config.ApiKey)
+	req.Header.Add(monero.ProberAPIKey, p.apiKey)
 	req.Header.Set("Content-Type", "application/json; charset=UTF-8")
 	req.Header.Set("User-Agent", RPCUserAgent)
 

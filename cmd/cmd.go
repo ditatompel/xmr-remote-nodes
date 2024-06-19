@@ -29,6 +29,8 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	Root.PersistentFlags().StringVarP(&configFile, "config-file", "c", "", "Default to .env")
 	Root.AddCommand(client.ProbeCmd)
+	client.ProbeCmd.Flags().StringP("endpoint", "e", "", "Server endpoint")
+	client.ProbeCmd.Flags().Bool("no-tor", false, "Only probe clearnet nodes")
 }
 
 func initConfig() {
