@@ -19,9 +19,9 @@ type App struct {
 
 	// configuration for prober (client)
 	ServerEndpoint string
-	ApiKey         string
+	APIKey         string
 	AcceptTor      bool
-	TorSocks       string
+	TorSOCKS       string
 }
 
 var app = &App{}
@@ -54,7 +54,7 @@ func LoadApp() {
 
 	// prober configuration
 	app.ServerEndpoint = os.Getenv("SERVER_ENDPOINT")
-	app.ApiKey = os.Getenv("API_KEY")
+	app.APIKey = os.Getenv("API_KEY")
 	app.AcceptTor, _ = strconv.ParseBool(os.Getenv("ACCEPT_TOR"))
-	app.TorSocks = os.Getenv("TOR_SOCKS")
+	app.TorSOCKS = os.Getenv("TOR_SOCKS")
 }
