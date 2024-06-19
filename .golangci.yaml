@@ -1,3 +1,7 @@
+linters-settings:
+  errcheck:
+    ignore: ""
+
 issues:
   exclude-rules:
     - path: frontend/embed.go
