@@ -1,2 +1,2 @@
-/tools/resources/nginx/**.conf linguist-language=Nginx
-/tools/resources/nginx/**.conf linguist-detectable=true
+/deployment/nginx/**.conf linguist-language=Nginx
+/deployment/nginx/**.conf linguist-detectable=true
