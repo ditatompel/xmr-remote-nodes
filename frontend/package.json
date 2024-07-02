@@ -25,7 +25,7 @@
 		"date-fns": "^3.3.1",
 		"eslint": "^9.4.0",
 		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-svelte": "^2.39.5",
+		"eslint-plugin-svelte": "^2.41.0",
 		"postcss": "^8.4.39",
 		"prettier": "^3.3.2",
 		"prettier-plugin-svelte": "^3.2.5",
