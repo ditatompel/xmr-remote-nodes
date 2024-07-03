@@ -17,7 +17,7 @@ endif
 VERSION_SUFFIX := -beta.$(shell git rev-list --count HEAD).$(shell git show --no-patch --no-notes --pretty='%h' HEAD)
 TAG_BRANCH := .$(BRANCH)
 # If building HEAD or master then unset TAG_BRANCH
-ifeq ($(subst HEAD,,$(subst master,,$(BRANCH))),)
+ifeq ($(subst HEAD,,$(subst main,,$(BRANCH))),)
 	TAG_BRANCH :=
 endif
 # TAG is current version + commit number + commit + branch

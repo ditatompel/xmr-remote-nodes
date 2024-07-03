@@ -36,7 +36,6 @@ if (BRANCH === 'HEAD' || BRANCH === 'main') {
 let TAG = `${VERSION}${VERSION_SUFFIX}${TAG_BRANCH}`;
 if (RELEASE_TAG) {
 	TAG = RELEASE_TAG;
-	TAG_BRANCH = 'main';
 }
 
 console.log('Building with tag', TAG);
