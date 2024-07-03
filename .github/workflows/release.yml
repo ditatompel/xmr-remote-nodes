@@ -39,7 +39,7 @@ jobs:
           goarch: ${{ matrix.goarch }}
           overwrite: true
           pre_command: export CGO_ENABLED=0
-          ldflags: -s -w
+          ldflags: -s -w -X xmr-remote-nodes/internal/config.Version=${{github.ref_name}}
           build_flags: -tags server
           project_path: .
           binary_name: server
@@ -53,7 +53,7 @@ jobs:
           goarch: ${{ matrix.goarch }}
           overwrite: true
           pre_command: export CGO_ENABLED=0
-          ldflags: -s -w
+          ldflags: -s -w -X xmr-remote-nodes/internal/config.Version=${{github.ref_name}}
           binary_name: client
           project_path: .
           extra_files: LICENSE README.md

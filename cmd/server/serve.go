@@ -55,7 +55,11 @@ func serve() {
 	}
 
 	// Define Fiber config & app.
-	app := fiber.New(fiberConfig())
+	app := fiber.New(fiber.Config{
+		Prefork:     appCfg.Prefork,
+		ProxyHeader: appCfg.ProxyHeader,
+		AppName:     "ditatompel's XMR Nodes HTTP server",
+	})
 
 	// recover
 	app.Use(recover.New(recover.Config{EnableStackTrace: true}))
@@ -95,13 +99,5 @@ func serve() {
 	serverAddr := fmt.Sprintf("%s:%d", appCfg.Host, appCfg.Port)
 	if err := app.Listen(serverAddr); err != nil {
 		slog.Error(fmt.Sprintf("[HTTP] Server is not running! error: %v", err))
-	}
-}
-
-func fiberConfig() fiber.Config {
-	return fiber.Config{
-		Prefork:     config.AppCfg().Prefork,
-		ProxyHeader: config.AppCfg().ProxyHeader,
-		AppName:     "ditatompel's XMR Nodes HTTP server",
 	}
 }

@@ -8,14 +8,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-const AppVer = "0.0.1"
-
 var configFile string
 
 var Root = &cobra.Command{
 	Use:     "xmr-nodes",
 	Short:   "XMR Nodes",
-	Version: AppVer,
+	Version: config.Version,
 }
 
 func Execute() {

@@ -6,6 +6,8 @@ import (
 	"strconv"
 )
 
+var Version string
+
 type App struct {
 	// general config
 	LogLevel string
@@ -22,6 +24,12 @@ type App struct {
 	APIKey         string
 	AcceptTor      bool
 	TorSOCKS       string
+}
+
+func init() {
+	if Version == "" {
+		Version = "v0.0.0-alpha.0.000000.dev"
+	}
 }
 
 var app = &App{}
