@@ -9,10 +9,10 @@ import (
 	"time"
 
 	"github.com/ditatompel/xmr-remote-nodes/frontend"
-	"github.com/ditatompel/xmr-remote-nodes/handler"
 	"github.com/ditatompel/xmr-remote-nodes/internal/config"
 	"github.com/ditatompel/xmr-remote-nodes/internal/cron"
 	"github.com/ditatompel/xmr-remote-nodes/internal/database"
+	"github.com/ditatompel/xmr-remote-nodes/internal/handler"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
