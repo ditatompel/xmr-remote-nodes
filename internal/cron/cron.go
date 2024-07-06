@@ -9,12 +9,7 @@ import (
 	"github.com/ditatompel/xmr-remote-nodes/internal/database"
 )
 
-type CronRepository interface {
-	RunCronProcess(chan struct{})
-	Crons() ([]Cron, error)
-}
-
-type CronRepo struct {
+type cronRepo struct {
 	db *database.DB
 }
 
@@ -33,11 +28,11 @@ type Cron struct {
 
 var rerunTimeout = 300
 
-func New() CronRepository {
-	return &CronRepo{db: database.GetDB()}
+func New() *cronRepo {
+	return &cronRepo{db: database.GetDB()}
 }
 
-func (r *CronRepo) RunCronProcess(c chan struct{}) {
+func (r *cronRepo) RunCronProcess(c chan struct{}) {
 	for {
 		select {
 		case <-time.After(60 * time.Second):
@@ -73,7 +68,7 @@ func (r *CronRepo) RunCronProcess(c chan struct{}) {
 	}
 }
 
-func (r *CronRepo) Crons() ([]Cron, error) {
+func (r *cronRepo) Crons() ([]Cron, error) {
 	var tasks []Cron
 	err := r.db.Select(&tasks, `
 		SELECT
@@ -92,7 +87,7 @@ func (r *CronRepo) Crons() ([]Cron, error) {
 	return tasks, err
 }
 
-func (r *CronRepo) queueList() ([]Cron, error) {
+func (r *cronRepo) queueList() ([]Cron, error) {
 	tasks := []Cron{}
 	query := `
 		SELECT
@@ -112,7 +107,7 @@ func (r *CronRepo) queueList() ([]Cron, error) {
 	return tasks, err
 }
 
-func (r *CronRepo) preRunTask(id int, lastRunTs int64) {
+func (r *cronRepo) preRunTask(id int, lastRunTs int64) {
 	query := `
 		UPDATE tbl_cron
 		SET
@@ -127,7 +122,7 @@ func (r *CronRepo) preRunTask(id int, lastRunTs int64) {
 	defer row.Close()
 }
 
-func (r *CronRepo) postRunTask(id int, nextRun int64, runtime float64) {
+func (r *cronRepo) postRunTask(id int, nextRun int64, runtime float64) {
 	query := `
 		UPDATE tbl_cron
 		SET
@@ -143,7 +138,7 @@ func (r *CronRepo) postRunTask(id int, nextRun int64, runtime float64) {
 	defer row.Close()
 }
 
-func (r *CronRepo) execCron(slug string) {
+func (r *cronRepo) execCron(slug string) {
 	switch slug {
 	case "delete_old_probe_logs":
 		slog.Info(fmt.Sprintf("[CRON] Start running task: %s", slug))
@@ -154,7 +149,7 @@ func (r *CronRepo) execCron(slug string) {
 	}
 }
 
-func (r *CronRepo) deleteOldProbeLogs() {
+func (r *cronRepo) deleteOldProbeLogs() {
 	// for now, we only delete stats older than 1 month +2 days
 	startTs := time.Now().AddDate(0, -1, -2).Unix()
 	query := `DELETE FROM tbl_probe_log WHERE date_checked < ?`
@@ -164,7 +159,7 @@ func (r *CronRepo) deleteOldProbeLogs() {
 	}
 }
 
-func (r *CronRepo) calculateMajorityFee() {
+func (r *cronRepo) calculateMajorityFee() {
 	netTypes := [3]string{"mainnet", "stagenet", "testnet"}
 	for _, net := range netTypes {
 		row, err := r.db.Query(`
