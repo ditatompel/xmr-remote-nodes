@@ -65,6 +65,18 @@ clean:
 	rm -rfv ./bin
 	rm -rf ./frontend/build
 
+.PHONY: lint
+lint:
+	golangci-lint run ./...
+
+.PHONY: test
+test:
+	go test -race -cover ./...
+
+.PHONY: bench
+bench:
+	go test ./... -bench=. -benchmem -run=^#
+
 # Deploying new binary file to server and probers host
 # The deploy-* command doesn't build the binary file, so you need to run `make build` first.
 # And make sure the inventory and deploy-*.yml file is properly configured.

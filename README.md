@@ -1,6 +1,6 @@
 # XMR Remote Nodes
 
-[![Lint](https://github.com/ditatompel/xmr-remote-nodes/actions/workflows/lint.yml/badge.svg)](https://github.com/ditatompel/xmr-remote-nodes/actions/workflows/lint.yml)
+[![Test](https://github.com/ditatompel/xmr-remote-nodes/actions/workflows/test.yml/badge.svg)](https://github.com/ditatompel/xmr-remote-nodes/actions/workflows/test.yml)
 [![BUild](https://github.com/ditatompel/xmr-remote-nodes/actions/workflows/build.yml/badge.svg)](https://github.com/ditatompel/xmr-remote-nodes/actions/workflows/build.yml)
 [![Release Binaries](https://github.com/ditatompel/xmr-remote-nodes/actions/workflows/release.yml/badge.svg)](https://github.com/ditatompel/xmr-remote-nodes/actions/workflows/release.yml)
 
