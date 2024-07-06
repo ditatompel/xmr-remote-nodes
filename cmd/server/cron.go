@@ -5,8 +5,9 @@ import (
 	"os"
 	"text/tabwriter"
 	"time"
-	"xmr-remote-nodes/internal/cron"
-	"xmr-remote-nodes/internal/database"
+
+	"github.com/ditatompel/xmr-remote-nodes/internal/cron"
+	"github.com/ditatompel/xmr-remote-nodes/internal/database"
 
 	"github.com/spf13/cobra"
 )

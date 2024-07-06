@@ -9,7 +9,8 @@ import (
 	"slices"
 	"strings"
 	"time"
-	"xmr-remote-nodes/internal/geo"
+
+	"github.com/ditatompel/xmr-remote-nodes/internal/geo"
 )
 
 type QueryLogs struct {

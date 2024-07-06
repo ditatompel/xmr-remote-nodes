@@ -2,4 +2,4 @@
 
 package main
 
-import _ "xmr-remote-nodes/cmd/server"
+import _ "github.com/ditatompel/xmr-remote-nodes/cmd/server"

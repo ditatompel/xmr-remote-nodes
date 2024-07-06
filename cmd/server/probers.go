@@ -9,8 +9,9 @@ import (
 	"strings"
 	"text/tabwriter"
 	"time"
-	"xmr-remote-nodes/internal/database"
-	"xmr-remote-nodes/internal/monero"
+
+	"github.com/ditatompel/xmr-remote-nodes/internal/database"
+	"github.com/ditatompel/xmr-remote-nodes/internal/monero"
 
 	"github.com/spf13/cobra"
 )

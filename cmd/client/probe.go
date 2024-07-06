@@ -12,8 +12,9 @@ import (
 	"net/http"
 	"os"
 	"time"
-	"xmr-remote-nodes/internal/config"
-	"xmr-remote-nodes/internal/monero"
+
+	"github.com/ditatompel/xmr-remote-nodes/internal/config"
+	"github.com/ditatompel/xmr-remote-nodes/internal/monero"
 
 	"github.com/spf13/cobra"
 	"golang.org/x/net/proxy"

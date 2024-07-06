@@ -27,7 +27,7 @@ ifdef RELEASE_TAG
 endif
 # end modified rclone's Makefile
 
-BUILD_LDFLAGS := -s -w -X xmr-remote-nodes/internal/config.Version=$(TAG)
+BUILD_LDFLAGS := -s -w -X github.com/ditatompel/xmr-remote-nodes/internal/config.Version=$(TAG)
 
 # This called from air cmd (see .air.toml)
 .PHONY: dev

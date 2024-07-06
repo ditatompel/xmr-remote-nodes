@@ -5,8 +5,9 @@ import (
 	"reflect"
 	"strconv"
 	"testing"
-	"xmr-remote-nodes/internal/config"
-	"xmr-remote-nodes/internal/database"
+
+	"github.com/ditatompel/xmr-remote-nodes/internal/config"
+	"github.com/ditatompel/xmr-remote-nodes/internal/database"
 )
 
 var testMySQL = true

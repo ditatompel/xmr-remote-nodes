@@ -10,7 +10,8 @@ import (
 	"slices"
 	"strings"
 	"time"
-	"xmr-remote-nodes/internal/database"
+
+	"github.com/ditatompel/xmr-remote-nodes/internal/database"
 
 	"github.com/jmoiron/sqlx/types"
 )

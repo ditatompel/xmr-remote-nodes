@@ -1,6 +1,6 @@
 package server
 
-import "xmr-remote-nodes/cmd"
+import "github.com/ditatompel/xmr-remote-nodes/cmd"
 
 func init() {
 	cmd.Root.AddCommand(serveCmd)

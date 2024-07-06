@@ -2,7 +2,8 @@ package database
 
 import (
 	"fmt"
-	"xmr-remote-nodes/internal/config"
+
+	"github.com/ditatompel/xmr-remote-nodes/internal/config"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"

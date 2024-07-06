@@ -5,7 +5,8 @@ import (
 	"log/slog"
 	"math"
 	"time"
-	"xmr-remote-nodes/internal/database"
+
+	"github.com/ditatompel/xmr-remote-nodes/internal/database"
 )
 
 type CronRepository interface {

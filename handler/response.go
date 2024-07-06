@@ -2,7 +2,8 @@ package handler
 
 import (
 	"strconv"
-	"xmr-remote-nodes/internal/monero"
+
+	"github.com/ditatompel/xmr-remote-nodes/internal/monero"
 
 	"github.com/gofiber/fiber/v2"
 )

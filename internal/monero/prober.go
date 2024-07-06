@@ -4,7 +4,8 @@ import (
 	"fmt"
 	"slices"
 	"strings"
-	"xmr-remote-nodes/internal/database"
+
+	"github.com/ditatompel/xmr-remote-nodes/internal/database"
 
 	"github.com/google/uuid"
 )

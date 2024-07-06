@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"xmr-remote-nodes/internal/monero"
+	"github.com/ditatompel/xmr-remote-nodes/internal/monero"
 
 	"github.com/gofiber/fiber/v2"
 )
