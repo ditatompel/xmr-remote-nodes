@@ -12,15 +12,7 @@ import (
 
 const ProberAPIKey = "X-Prober-Api-Key" // HTTP header key
 
-type ProberRepository interface {
-	Add(name string) (Prober, error)
-	Edit(id int, name string) error
-	Probers(QueryProbers) ([]Prober, error)
-	CheckAPI(key string) (Prober, error)
-	Delete(id int) error
-}
-
-type ProberRepo struct {
+type proberRepo struct {
 	db *database.DB
 }
 
@@ -34,12 +26,12 @@ type Prober struct {
 // Initializes a new ProberRepository
 //
 // NOTE: This "prober" is different with "probe" which is used to fetch a new job
-func NewProber() ProberRepository {
-	return &ProberRepo{db: database.GetDB()}
+func NewProber() *proberRepo {
+	return &proberRepo{db: database.GetDB()}
 }
 
 // Add a new prober machine
-func (r *ProberRepo) Add(name string) (Prober, error) {
+func (r *proberRepo) Add(name string) (Prober, error) {
 	apiKey := uuid.New()
 	query := `
 		INSERT INTO tbl_prober (
@@ -59,7 +51,7 @@ func (r *ProberRepo) Add(name string) (Prober, error) {
 }
 
 // Edit an existing prober
-func (r *ProberRepo) Edit(id int, name string) error {
+func (r *proberRepo) Edit(id int, name string) error {
 	query := `UPDATE tbl_prober SET name = ? WHERE id = ?`
 	res, err := r.db.Exec(query, name, id)
 	if err != nil {
@@ -76,7 +68,7 @@ func (r *ProberRepo) Edit(id int, name string) error {
 }
 
 // Delete an existing prober
-func (r *ProberRepo) Delete(id int) error {
+func (r *proberRepo) Delete(id int) error {
 	res, err := r.db.Exec(`DELETE FROM tbl_prober WHERE id = ?`, id)
 	if err != nil {
 		return err
@@ -120,7 +112,7 @@ func (q QueryProbers) toSQL() (args []interface{}, where, sortBy, sortDirection 
 	return args, where, sortBy, sortDirection
 }
 
-func (r *ProberRepo) Probers(q QueryProbers) ([]Prober, error) {
+func (r *proberRepo) Probers(q QueryProbers) ([]Prober, error) {
 	args, where, sortBy, sortDirection := q.toSQL()
 
 	var probers []Prober
@@ -153,7 +145,7 @@ func (r *ProberRepo) Probers(q QueryProbers) ([]Prober, error) {
 	return probers, nil
 }
 
-func (r *ProberRepo) CheckAPI(key string) (Prober, error) {
+func (r *proberRepo) CheckAPI(key string) (Prober, error) {
 	var p Prober
 	query := `
 		SELECT
