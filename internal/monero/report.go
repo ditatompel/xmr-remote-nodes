@@ -78,7 +78,7 @@ type FetchLogs struct {
 }
 
 // Logs returns list of fetched log result for given query
-func (r *MoneroRepo) Logs(q QueryLogs) (FetchLogs, error) {
+func (r *moneroRepo) Logs(q QueryLogs) (FetchLogs, error) {
 	args, where, sortBy, sortDirection := q.toSQL()
 
 	var fetchLogs FetchLogs
@@ -108,7 +108,7 @@ func (r *MoneroRepo) Logs(q QueryLogs) (FetchLogs, error) {
 }
 
 // GiveJob returns node that should be probed for the next time
-func (r *MoneroRepo) GiveJob(acceptTor int) (Node, error) {
+func (r *moneroRepo) GiveJob(acceptTor int) (Node, error) {
 	args := []interface{}{}
 	wq := []string{}
 	where := ""
@@ -196,7 +196,7 @@ func (p *ProbeReport) parseStatuses() string {
 }
 
 // Process report data from probers
-func (r *MoneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
+func (r *moneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 	if report.Node.ID == 0 {
 		return errors.New("Invalid node")
 	}

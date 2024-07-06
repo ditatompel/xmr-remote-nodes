@@ -16,23 +16,12 @@ import (
 	"github.com/jmoiron/sqlx/types"
 )
 
-type MoneroRepository interface {
-	Node(id int) (Node, error)
-	Add(protocol string, host string, port uint) error
-	Nodes(QueryNodes) (Nodes, error)
-	NetFees() []NetFee
-	Countries() ([]Countries, error)
-	GiveJob(acceptTor int) (Node, error)
-	ProcessJob(report ProbeReport, proberId int64) error
-	Logs(QueryLogs) (FetchLogs, error)
-}
-
-type MoneroRepo struct {
+type moneroRepo struct {
 	db *database.DB
 }
 
-func New() MoneroRepository {
-	return &MoneroRepo{db: database.GetDB()}
+func New() *moneroRepo {
+	return &moneroRepo{db: database.GetDB()}
 }
 
 // Node represents a single remote node
@@ -68,7 +57,7 @@ type Node struct {
 }
 
 // Get node from database by id
-func (r *MoneroRepo) Node(id int) (Node, error) {
+func (r *moneroRepo) Node(id int) (Node, error) {
 	var node Node
 	err := r.db.Get(&node, `SELECT * FROM tbl_node WHERE id = ?`, id)
 	if err != nil && err != sql.ErrNoRows {
@@ -162,7 +151,7 @@ type Nodes struct {
 }
 
 // Get nodes from database
-func (r *MoneroRepo) Nodes(q QueryNodes) (Nodes, error) {
+func (r *moneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 	args, where, sortBy, sortDirection := q.toSQL()
 
 	var nodes Nodes
@@ -198,7 +187,7 @@ func (r *MoneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 	return nodes, err
 }
 
-func (repo *MoneroRepo) Add(protocol string, hostname string, port uint) error {
+func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 	if protocol != "http" && protocol != "https" {
 		return errors.New("Invalid protocol, must one of or HTTP/HTTPS")
 	}
@@ -233,7 +222,7 @@ func (repo *MoneroRepo) Add(protocol string, hostname string, port uint) error {
 		ip = hostIp.String()
 	}
 
-	row, err := repo.db.Query(`
+	row, err := r.db.Query(`
 		SELECT
 			id
 		FROM
@@ -252,7 +241,7 @@ func (repo *MoneroRepo) Add(protocol string, hostname string, port uint) error {
 		return errors.New("Node already monitored")
 	}
 	statusDb, _ := json.Marshal([5]int{2, 2, 2, 2, 2})
-	_, err = repo.db.Exec(`
+	_, err = r.db.Exec(`
 		INSERT INTO tbl_node (
 			protocol,
 			hostname,
@@ -296,7 +285,7 @@ func (repo *MoneroRepo) Add(protocol string, hostname string, port uint) error {
 	return nil
 }
 
-func (r *MoneroRepo) Delete(id uint) error {
+func (r *moneroRepo) Delete(id uint) error {
 	if _, err := r.db.Exec(`DELETE FROM tbl_node WHERE id = ?`, id); err != nil {
 		return err
 	}
@@ -314,7 +303,7 @@ type NetFee struct {
 }
 
 // Get majority net fee from table tbl_fee
-func (r *MoneroRepo) NetFees() []NetFee {
+func (r *moneroRepo) NetFees() []NetFee {
 	var netFees []NetFee
 	err := r.db.Select(&netFees, `
 		SELECT
@@ -338,7 +327,7 @@ type Countries struct {
 }
 
 // Get list of countries (count by nodes)
-func (r *MoneroRepo) Countries() ([]Countries, error) {
+func (r *moneroRepo) Countries() ([]Countries, error) {
 	var c []Countries
 	err := r.db.Select(&c, `
 		SELECT
