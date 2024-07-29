@@ -17,9 +17,9 @@ export async function load() {
 			{ text: 'revuo-xmr.com', uri: 'https://revuo-xmr.com/' }
 		],
 		stagenet: [
-			{ label: 'P2P', value: 'testnet.xmr.ditatompel.com:28080', key: 'tnetP2P' },
-			{ label: 'RPC', value: 'testnet.xmr.ditatompel.com:28089', key: 'tnetRPC' },
-			{ label: 'RPC SSL', value: 'testnet.xmr.ditatompel.com:443', key: 'tnetSSL' }
+			{ label: 'P2P', value: 'stagenet.xmr.ditatompel.com:38080', key: 'snetP2P' },
+			{ label: 'RPC', value: 'stagenet.xmr.ditatompel.com:38089', key: 'snetRPC' },
+			{ label: 'RPC SSL', value: 'stagenet.xmr.ditatompel.com:443', key: 'snetSSL' }
 		],
 		testnet: [
 			{ label: 'P2P', value: 'testnet.xmr.ditatompel.com:28080', key: 'tnetP2P' },
