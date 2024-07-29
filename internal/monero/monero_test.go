@@ -35,6 +35,8 @@ func init() {
 	}
 }
 
+// Single test:
+// go test -race ./internal/monero -run=TestQueryNodes_toSQL -v
 func TestQueryNodes_toSQL(t *testing.T) {
 	tests := []struct {
 		name              string
@@ -102,6 +104,28 @@ func TestQueryNodes_toSQL(t *testing.T) {
 	}
 }
 
+// Single bench test:
+// go test ./internal/monero -bench QueryNodes_toSQL -benchmem -run=^$ -v
+func Benchmark_QueryNodes_toSQL(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_, _, _, _ = QueryNodes{
+			Host:          "test",
+			Nettype:       "any",
+			Protocol:      "any",
+			CC:            "any",
+			Status:        -1,
+			CORS:          -1,
+			RowsPerPage:   10,
+			Page:          1,
+			SortBy:        "last_checked",
+			SortDirection: "desc",
+		}.toSQL()
+	}
+}
+
+// equalArgs is helper function for testing.
+//
+// This returns true if two slices of interface{} are equal.
 func equalArgs(a, b []interface{}) bool {
 	if len(a) != len(b) {
 		return false
