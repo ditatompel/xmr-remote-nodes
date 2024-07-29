@@ -94,11 +94,9 @@ func (q QueryNodes) toSQL() (args []interface{}, where, sortBy, sortDirection st
 		wq = append(wq, "(hostname LIKE ? OR ip_addr LIKE ?)")
 		args = append(args, "%"+q.Host+"%", "%"+q.Host+"%")
 	}
-	if q.Nettype != "any" {
-		if q.Nettype == "mainnet" || q.Nettype == "stagenet" || q.Nettype == "testnet" {
-			wq = append(wq, "nettype = ?")
-			args = append(args, q.Nettype)
-		}
+	if slices.Contains([]string{"mainnet", "stagenet", "testnet"}, q.Nettype) {
+		wq = append(wq, "nettype = ?")
+		args = append(args, q.Nettype)
 	}
 	if q.Protocol != "any" && slices.Contains([]string{"tor", "http", "https"}, q.Protocol) {
 		if q.Protocol == "tor" {
