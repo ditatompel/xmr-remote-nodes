@@ -178,7 +178,7 @@
 		</div>
 		<div class="md:basis-1/4">
 			<img src={data.donation.qr} alt="ditatompel's monero address" />
-			<p>Thank you so much! 🥰</p>
+			<p>Thank you so much! It means a lot to me. 🥰</p>
 		</div>
 	</div>
 </section>

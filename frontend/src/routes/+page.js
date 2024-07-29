@@ -27,6 +27,7 @@ export async function load() {
 			{ label: 'RPC SSL', value: 'testnet.xmr.ditatompel.com:443', key: 'tnetSSL' }
 		],
 		donation: {
+			// You change donation address and qr image below if you run your own "instance"
 			address:
 				'8BWYe6GzbNKbxe3D8mPkfFMQA2rViaZJFhWShhZTjJCNG6EZHkXRZCKHiuKmwwe4DXDYF8KKcbGkvNYaiRG3sNt7JhnVp7D',
 			qr: '/img/monerotip.png'
