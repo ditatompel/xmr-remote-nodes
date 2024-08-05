@@ -87,7 +87,7 @@ type QueryNodes struct {
 }
 
 // toSQL generates SQL query from query parameters
-func (q QueryNodes) toSQL() (args []interface{}, where, sortBy, sortDirection string) {
+func (q *QueryNodes) toSQL() (args []interface{}, where string) {
 	wq := []string{}
 
 	if q.Host != "" {
@@ -128,17 +128,14 @@ func (q QueryNodes) toSQL() (args []interface{}, where, sortBy, sortDirection st
 		where = "WHERE " + strings.Join(wq, " AND ")
 	}
 
-	as := []string{"last_checked", "uptime"}
-	sortBy = "last_checked"
-	if slices.Contains(as, q.SortBy) {
-		sortBy = q.SortBy
+	if !slices.Contains([]string{"last_checked", "uptime"}, q.SortBy) {
+		q.SortBy = "last_checked"
 	}
-	sortDirection = "DESC"
-	if q.SortDirection == "asc" {
-		sortDirection = "ASC"
+	if q.SortDirection != "asc" {
+		q.SortDirection = "DESC"
 	}
 
-	return args, where, sortBy, sortDirection
+	return args, where
 }
 
 // Nodes represents a list of nodes
@@ -150,7 +147,7 @@ type Nodes struct {
 
 // Get nodes from database
 func (r *moneroRepo) Nodes(q QueryNodes) (Nodes, error) {
-	args, where, sortBy, sortDirection := q.toSQL()
+	args, where := q.toSQL()
 
 	var nodes Nodes
 
@@ -174,12 +171,12 @@ func (r *moneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 			*
 		FROM
 			tbl_node
-		%s -- where query if any
+		%s
 		ORDER BY
 			%s
 			%s
 		LIMIT ?
-		OFFSET ?`, where, sortBy, sortDirection)
+		OFFSET ?`, where, q.SortBy, q.SortDirection)
 	err = r.db.Select(&nodes.Items, query, args...)
 
 	return nodes, err

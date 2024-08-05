@@ -87,18 +87,18 @@ func TestQueryNodes_toSQL(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotArgs, gotWhere, gotSortBy, gotSortDirection := tt.query.toSQL()
+			gotArgs, gotWhere := tt.query.toSQL()
 			if !equalArgs(gotArgs, tt.wantArgs) {
 				t.Errorf("QueryNodes.toSQL() gotArgs = %v, want %v", gotArgs, tt.wantArgs)
 			}
 			if gotWhere != tt.wantWhere {
 				t.Errorf("QueryNodes.toSQL() gotWhere = %v, want %v", gotWhere, tt.wantWhere)
 			}
-			if gotSortBy != tt.wantSortBy {
-				t.Errorf("QueryNodes.toSQL() gotSortBy = %v, want %v", gotSortBy, tt.wantSortBy)
+			if tt.query.SortBy != tt.wantSortBy {
+				t.Errorf("QueryNodes.toSQL() gotSortBy = %v, want %v", tt.query.SortBy, tt.wantSortBy)
 			}
-			if gotSortDirection != tt.wantSortDirection {
-				t.Errorf("QueryNodes.toSQL() gotSortDirection = %v, want %v", gotSortDirection, tt.wantSortDirection)
+			if tt.query.SortDirection != tt.wantSortDirection {
+				t.Errorf("QueryNodes.toSQL() gotSortDirection = %v, want %v", tt.query.SortDirection, tt.wantSortDirection)
 			}
 		})
 	}
@@ -107,19 +107,20 @@ func TestQueryNodes_toSQL(t *testing.T) {
 // Single bench test:
 // go test ./internal/monero -bench QueryNodes_toSQL -benchmem -run=^$ -v
 func Benchmark_QueryNodes_toSQL(b *testing.B) {
+	q := QueryNodes{
+		Host:          "test",
+		Nettype:       "any",
+		Protocol:      "any",
+		CC:            "any",
+		Status:        -1,
+		CORS:          -1,
+		RowsPerPage:   10,
+		Page:          1,
+		SortBy:        "last_checked",
+		SortDirection: "desc",
+	}
 	for i := 0; i < b.N; i++ {
-		_, _, _, _ = QueryNodes{
-			Host:          "test",
-			Nettype:       "any",
-			Protocol:      "any",
-			CC:            "any",
-			Status:        -1,
-			CORS:          -1,
-			RowsPerPage:   10,
-			Page:          1,
-			SortBy:        "last_checked",
-			SortDirection: "desc",
-		}.toSQL()
+		_, _ = q.toSQL()
 	}
 }
 
