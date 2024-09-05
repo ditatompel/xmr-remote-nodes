@@ -108,13 +108,17 @@ func (r *moneroRepo) Logs(q QueryLogs) (FetchLogs, error) {
 }
 
 // GiveJob returns node that should be probed for the next time
-func (r *moneroRepo) GiveJob(acceptTor int) (Node, error) {
+func (r *moneroRepo) GiveJob(acceptTor, acceptIPv6 int) (Node, error) {
 	args := []interface{}{}
 	wq := []string{}
 	where := ""
 
 	if acceptTor != 1 {
 		wq = append(wq, "is_tor = ?")
+		args = append(args, 0)
+	}
+	if acceptIPv6 != 1 {
+		wq = append(wq, "ipv6_only = ?")
 		args = append(args, 0)
 	}
 

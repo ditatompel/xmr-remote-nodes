@@ -54,6 +54,7 @@ type Node struct {
 	FailedCount     uint           `json:"failed_count,omitempty" db:"failed_count"`
 	LastCheckStatus types.JSONText `json:"last_check_statuses" db:"last_check_status"`
 	CORSCapable     bool           `json:"cors" db:"cors_capable"`
+	IPv6Only        bool           `json:"ipv6_only" db:"ipv6_only"`
 }
 
 // Get node from database by id
@@ -197,16 +198,22 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 	}
 	ip := ""
 
+	ipv6_only := true
+
 	if !is_tor {
 		hostIps, err := net.LookupIP(hostname)
 		if err != nil {
 			return err
 		}
 
-		hostIp := hostIps[0].To4()
-		if hostIp == nil {
-			return errors.New("Host IP is not IPv4")
+		for _, hostIp := range hostIps {
+			if hostIp.To4() != nil {
+				ipv6_only = false
+				break
+			}
 		}
+
+		hostIp := hostIps[0]
 		if hostIp.IsPrivate() {
 			return errors.New("IP address is private")
 		}
@@ -248,8 +255,10 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 			lon,
 			date_entered,
 			last_checked,
-			last_check_status
+			last_check_status,
+			ipv6_only
 		) VALUES (
+			?,
 			?,
 			?,
 			?,
@@ -272,7 +281,8 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 		0,
 		time.Now().Unix(),
 		0,
-		string(statusDb))
+		string(statusDb),
+		ipv6_only)
 	if err != nil {
 		return err
 	}

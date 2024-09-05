@@ -42,7 +42,7 @@
 
 <section id="form-add-monero-node">
 	<div class="section-container text-center">
-		<p>Enter your Monero node information below (IPv4 host only):</p>
+		<p>Enter your Monero node information below (IPv6 host check is experimental):</p>
 
 		<form
 			class="mx-auto w-full max-w-3xl py-2"

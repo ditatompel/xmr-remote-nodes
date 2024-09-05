@@ -24,6 +24,7 @@ type App struct {
 	APIKey         string
 	AcceptTor      bool
 	TorSOCKS       string
+	IPv6Capable    bool
 }
 
 func init() {
@@ -65,4 +66,5 @@ func LoadApp() {
 	app.APIKey = os.Getenv("API_KEY")
 	app.AcceptTor, _ = strconv.ParseBool(os.Getenv("ACCEPT_TOR"))
 	app.TorSOCKS = os.Getenv("TOR_SOCKS")
+	app.IPv6Capable, _ = strconv.ParseBool(os.Getenv("IPV6_CAPABLE"))
 }

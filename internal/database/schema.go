@@ -7,7 +7,7 @@ import (
 
 type migrateFn func(*DB) error
 
-var dbMigrate = [...]migrateFn{v1, v2}
+var dbMigrate = [...]migrateFn{v1, v2, v3}
 
 func MigrateDb(db *DB) error {
 	version := getSchemaVersion(db)
@@ -250,6 +250,22 @@ func v2(db *DB) error {
 			'Calculate majority Monero fee',
 			300
 		);`)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func v3(db *DB) error {
+	slog.Debug("[DB] Migrating database schema version 3")
+
+	// table: tbl_node
+	slog.Debug("[DB] Adding ipv6_only column to tbl_node")
+	_, err := db.Exec(`
+		ALTER TABLE tbl_node
+		ADD ipv6_only TINYINT(1) UNSIGNED NOT NULL DEFAULT '0'
+		AFTER cors_capable;`)
 	if err != nil {
 		return err
 	}

@@ -171,9 +171,10 @@ func Countries(c *fiber.Ctx) error {
 // This handler should protected by `CheckProber` middleware.
 func GiveJob(c *fiber.Ctx) error {
 	acceptTor := c.QueryInt("accept_tor", 0)
+	acceptIPv6 := c.QueryInt("accept_ipv6", 0)
 
 	moneroRepo := monero.New()
-	node, err := moneroRepo.GiveJob(acceptTor)
+	node, err := moneroRepo.GiveJob(acceptTor, acceptIPv6)
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"status":  "error",

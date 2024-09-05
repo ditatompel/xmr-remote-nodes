@@ -36,20 +36,22 @@ func (err errProber) Error() string {
 }
 
 type proberClient struct {
-	endpoint  string // server endpoint
-	apiKey    string // prober api key
-	acceptTor bool   // accept tor
-	torSOCKS  string // IP:Port of tor socks
-	message   string // message to include when reporting back to server
+	endpoint   string // server endpoint
+	apiKey     string // prober api key
+	acceptTor  bool   // accept tor
+	torSOCKS   string // IP:Port of tor socks
+	acceptIPv6 bool   // accept ipv6
+	message    string // message to include when reporting back to server
 }
 
 func newProber() *proberClient {
 	cfg := config.AppCfg()
 	return &proberClient{
-		endpoint:  cfg.ServerEndpoint,
-		apiKey:    cfg.APIKey,
-		acceptTor: cfg.AcceptTor,
-		torSOCKS:  cfg.TorSOCKS,
+		endpoint:   cfg.ServerEndpoint,
+		apiKey:     cfg.APIKey,
+		acceptTor:  cfg.AcceptTor,
+		torSOCKS:   cfg.TorSOCKS,
+		acceptIPv6: cfg.IPv6Capable,
 	}
 }
 
@@ -83,6 +85,10 @@ func (p *proberClient) SetEndpoint(endpoint string) {
 
 func (p *proberClient) SetAcceptTor(acceptTor bool) {
 	p.acceptTor = acceptTor
+}
+
+func (p *proberClient) SetAcceptIPv6(acceptIPv6 bool) {
+	p.acceptIPv6 = acceptIPv6
 }
 
 // Fetch a new job from the server, fetches node info, and sends it to the server
@@ -121,20 +127,26 @@ func (p *proberClient) validateConfig() error {
 
 // Get monero node info to fetch from the server
 func (p *proberClient) fetchJob() (monero.Node, error) {
-	queryParams := ""
+	acceptTor := 0
 	if p.acceptTor {
-		queryParams = "?accept_tor=1"
+		acceptTor = 1
+	}
+
+	acceptIPv6 := 0
+	if p.acceptIPv6 {
+		acceptIPv6 = 1
 	}
 
 	var node monero.Node
 
-	uri := fmt.Sprintf("%s/api/v1/job%s", p.endpoint, queryParams)
+	uri := fmt.Sprintf("%s/api/v1/job?accept_tor=%d&accept_ipv6=%d", p.endpoint, acceptTor, acceptIPv6)
 	slog.Info(fmt.Sprintf("[PROBE] Getting node from %s", uri))
 
 	req, err := http.NewRequest(http.MethodGet, uri, nil)
 	if err != nil {
 		return node, err
 	}
+
 	req.Header.Add(monero.ProberAPIKey, p.apiKey)
 	req.Header.Set("User-Agent", RPCUserAgent)
 
