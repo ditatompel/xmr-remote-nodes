@@ -71,9 +71,9 @@ See the [Makefile](./Makefile).
 
 ## ToDo's
 
--   [] Accept IPv6 nodes.
--   [] Use `a-h/templ` and `HTMX` instead of `Svelte`.
--   [] Use Go standard `net/http` instead of `fiber`.
+-   Accept IPv6 nodes.
+-   Use `a-h/templ` and `HTMX` instead of `Svelte`.
+-   Use Go standard `net/http` instead of `fiber`.
 
 ## Similar Projects
 
