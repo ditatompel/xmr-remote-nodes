@@ -1,5 +1,6 @@
 <script>
 	import { getModalStore } from '@skeletonlabs/skeleton';
+	import { formatHostname } from '$lib/utils/strings';
 
 	const modalStore = getModalStore();
 
@@ -41,7 +42,7 @@
 	</button><br />.onion:<span class="text-indigo-800 dark:text-indigo-400">{port}</span>
 	<span class="text-gray-700 dark:text-gray-400">(TOR)</span>
 {:else}
-	{hostname}:<span class="text-indigo-800 dark:text-indigo-400">{port}</span><br />
+	{formatHostname(hostname)}:<span class="text-indigo-800 dark:text-indigo-400">{port}</span><br />
 	{#if ipv6_only}
 		<span class="text-rose-800 dark:text-rose-400">(IPv6 only)</span>
 	{/if}

@@ -1,4 +1,27 @@
 /**
+ * Modifies the input string based on whether it is an IPv6 address.
+ * If the input is an IPv6 address, it wraps it in square brackets `[ ]`.
+ * Otherwise, it returns the input string as-is (for domain names or
+ * IPv4 addresses). AND I'M SORRY USING REGEX FOR THIS!
+ *
+ * @param {string} hostname
+ * @returns {string} - The modified string, IPv6 addresses wrapped in `[ ]`.
+ */
+export const formatHostname = (hostname) => {
+	// const ipv6Pattern = /^(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}$/; // full
+	// pattern for both full and compressed IPv6 addresses.
+	// source: https://regex101.com/library/cP9mH9?filterFlavors=dotnet&filterFlavors=javascript&orderBy=RELEVANCE&search=ip
+	// This may be incorrect, but let's assume it's correct. xD
+	const ipv6Pattern =
+		/^(([0-9A-Fa-f]{1,4}:){7})([0-9A-Fa-f]{1,4})$|(([0-9A-Fa-f]{1,4}:){1,6}:)(([0-9A-Fa-f]{1,4}:){0,4})([0-9A-Fa-f]{1,4})$/;
+	if (ipv6Pattern.test(hostname)) {
+		return `[${hostname}]`;
+	}
+
+	return hostname;
+};
+
+/**
  * @param {number} bytes
  * @param {number} decimals
  * @returns {string}

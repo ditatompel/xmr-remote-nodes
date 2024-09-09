@@ -3,7 +3,7 @@
 	import { format, formatDistance } from 'date-fns';
 	import { loadData, loadNodeInfo } from './api-handler';
 	import { onMount } from 'svelte';
-	import { formatHashes, formatBytes } from '$lib/utils/strings';
+	import { formatHostname, formatHashes, formatBytes } from '$lib/utils/strings';
 	import {
 		DtSrRowsPerPage,
 		DtSrThSort,
@@ -71,7 +71,7 @@
 				<tbody>
 					<tr>
 						<td class="font-bold">Hostname:Port</td>
-						<td>{nodeInfo?.hostname}:{nodeInfo?.port}</td>
+						<td>{formatHostname(nodeInfo?.hostname)}:{nodeInfo?.port}</td>
 					</tr>
 					<tr>
 						<td class="font-bold">Public IP</td>
