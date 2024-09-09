@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/ditatompel/xmr-remote-nodes/internal/database"
-
+	"github.com/ditatompel/xmr-remote-nodes/internal/ip"
 	"github.com/jmoiron/sqlx/types"
 )
 
@@ -196,9 +196,9 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 	if strings.HasSuffix(hostname, ".onion") {
 		is_tor = true
 	}
-	ip := ""
 
-	ipv6_only := true
+	ipAddr := ""
+	ipv6_only := false
 
 	if !is_tor {
 		hostIps, err := net.LookupIP(hostname)
@@ -206,12 +206,7 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 			return err
 		}
 
-		for _, hostIp := range hostIps {
-			if hostIp.To4() != nil {
-				ipv6_only = false
-				break
-			}
-		}
+		ipv6_only = ip.IsIPv6Only(hostIps)
 
 		hostIp := hostIps[0]
 		if hostIp.IsPrivate() {
@@ -221,7 +216,7 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 			return errors.New("IP address is loopback address")
 		}
 
-		ip = hostIp.String()
+		ipAddr = hostIp.String()
 	}
 
 	row, err := r.db.Query(`
@@ -276,7 +271,7 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 		port,
 		is_tor,
 		"",
-		ip,
+		ipAddr,
 		0,
 		0,
 		time.Now().Unix(),

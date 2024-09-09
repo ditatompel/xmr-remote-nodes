@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ditatompel/xmr-remote-nodes/internal/geo"
+	"github.com/ditatompel/xmr-remote-nodes/internal/ip/geo"
 )
 
 type QueryLogs struct {
@@ -308,7 +308,8 @@ func (r *moneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			city = ?,
 			last_checked = ?,
 			last_check_status = ?,
-			cors_capable = ?
+			cors_capable = ?,
+			ipv6_only = ?
 		WHERE
 			id = ?`
 		_, err := r.db.Exec(update,
@@ -330,6 +331,7 @@ func (r *moneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			now.Unix(),
 			statuses,
 			report.Node.CORSCapable,
+			report.Node.IPv6Only,
 			report.Node.ID)
 		if err != nil {
 			slog.Warn(err.Error())
@@ -341,10 +343,11 @@ func (r *moneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			is_available = ?,
 			uptime = ?,
 			last_checked = ?,
-			last_check_status = ?
+			last_check_status = ?,
+			ipv6_only = ?
 		WHERE
 			id = ?`
-		if _, err := r.db.Exec(u, 0, report.Node.Uptime, now.Unix(), statuses, report.Node.ID); err != nil {
+		if _, err := r.db.Exec(u, 0, report.Node.Uptime, now.Unix(), statuses, report.Node.IPv6Only, report.Node.ID); err != nil {
 			slog.Warn(err.Error())
 		}
 	}

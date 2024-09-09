@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/ditatompel/xmr-remote-nodes/internal/config"
+	"github.com/ditatompel/xmr-remote-nodes/internal/ip"
 	"github.com/ditatompel/xmr-remote-nodes/internal/monero"
 
 	"github.com/spf13/cobra"
@@ -334,6 +335,12 @@ func (p *proberClient) fetchFee(client http.Client, endpoint string) (uint, erro
 }
 
 func (p *proberClient) reportResult(node monero.Node, tookTime float64) error {
+	if !node.IsTor {
+		if hostIps, err := net.LookupIP(node.Hostname); err == nil {
+			node.IPv6Only = ip.IsIPv6Only(hostIps)
+		}
+	}
+
 	jsonData, err := json.Marshal(monero.ProbeReport{
 		TookTime: tookTime,
 		Message:  p.message,
