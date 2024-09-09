@@ -2,18 +2,19 @@
 	import { getModalStore } from '@skeletonlabs/skeleton';
 
 	const modalStore = getModalStore();
-	/** @type {string} */
-	export let ip;
-	/** @type {boolean} */
-	export let is_tor;
-	/** @type {string} */
-	export let hostname;
-	/** @type {number} */
-	export let port;
 
-	// if (is_tor) {
-	// 	hostname = hostname.substring(0, 8) + '[...].onion';
-	// }
+	/**
+	 * @type {{
+	 *  is_tor: boolean,
+	 *  hostname: string,
+	 *  port: number,
+	 *  ipv6_only: boolean
+	 * }}
+	 */
+	export let is_tor;
+	export let hostname;
+	export let port;
+	export let ipv6_only;
 
 	/**
 	 * @param {string} onionAddr
@@ -40,8 +41,8 @@
 	</button><br />.onion:<span class="text-indigo-800 dark:text-indigo-400">{port}</span>
 	<span class="text-gray-700 dark:text-gray-400">(TOR)</span>
 {:else}
-	{hostname}:<span class="text-indigo-800 dark:text-indigo-400">{port}</span>
-	{#if ip !== ''}
-		<br /><span class="text-gray-700 dark:text-gray-400">{ip}</span>
+	{hostname}:<span class="text-indigo-800 dark:text-indigo-400">{port}</span><br />
+	{#if ipv6_only}
+		<span class="text-rose-800 dark:text-rose-400">(IPv6 only)</span>
 	{/if}
 {/if}

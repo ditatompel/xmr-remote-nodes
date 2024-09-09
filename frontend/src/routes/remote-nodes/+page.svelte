@@ -211,10 +211,10 @@
 						<tr>
 							<td
 								><HostPortCell
-									ip={row.ip}
 									is_tor={row.is_tor}
 									hostname={row.hostname}
 									port={row.port}
+									ipv6_only={row.ipv6_only}
 								/>
 								<a class="anchor" href="/remote-nodes/logs/?node_id={row.id}">[Logs]</a>
 							</td>
