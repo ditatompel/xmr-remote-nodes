@@ -217,7 +217,6 @@
 									port={row.port}
 									ipv6_only={row.ipv6_only}
 								/>
-								<a class="anchor" href="/remote-nodes/logs/?node_id={row.id}">[Logs]</a>
 							</td>
 							<td><NetTypeCell nettype={row.nettype} height={row.height} /></td>
 							<td><ProtocolCell protocol={row.protocol} cors={row.cors} /></td>
@@ -242,7 +241,13 @@
 									majority_fee={majorityFee[row.nettype]}
 								/>
 							</td>
-							<td><UptimeCell uptime={row.uptime} /></td>
+							<td
+								><UptimeCell uptime={row.uptime} /><br />
+								<a
+									class="anchor !text-purple-800 dark:!text-purple-400"
+									href="/remote-nodes/logs/?node_id={row.id}">[Logs]</a
+								>
+							</td>
 							<td>
 								{format(row.last_checked * 1000, 'PP HH:mm')}<br />
 								{formatDistance(row.last_checked * 1000, new Date(), { addSuffix: true })}
