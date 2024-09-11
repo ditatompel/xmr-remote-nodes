@@ -211,6 +211,7 @@
 						<tr>
 							<td
 								><HostPortCell
+									ip_addresses={row.ip_addresses}
 									is_tor={row.is_tor}
 									hostname={row.hostname}
 									port={row.port}

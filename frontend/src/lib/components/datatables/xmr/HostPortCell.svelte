@@ -16,6 +16,8 @@
 	export let hostname;
 	export let port;
 	export let ipv6_only;
+	/** @type {string} */
+	export let ip_addresses;
 
 	/**
 	 * @param {string} onionAddr
@@ -35,7 +37,7 @@
 
 {#if is_tor}
 	<button
-		class="max-w-32 truncate text-orange-800 dark:text-orange-300"
+		class="max-w-40 truncate text-orange-800 dark:text-orange-300"
 		on:click={() => modalAlert(hostname, port)}
 	>
 		👁 {hostname}
@@ -43,7 +45,12 @@
 	<span class="text-gray-700 dark:text-gray-400">(TOR)</span>
 {:else}
 	{formatHostname(hostname)}:<span class="text-indigo-800 dark:text-indigo-400">{port}</span><br />
-	{#if ipv6_only}
-		<span class="text-rose-800 dark:text-rose-400">(IPv6 only)</span>
-	{/if}
+	<div class="max-w-40 text-ellipsis overflow-x-auto md:overflow-hidden hover:overflow-visible">
+		<span class="whitespace-break-spaces text-gray-700 dark:text-gray-400"
+			>{ip_addresses.replace(/,/g, ', ')}</span
+		>
+		{#if ipv6_only}
+			<span class="text-rose-800 dark:text-rose-400">(IPv6 only)</span>
+		{/if}
+	</div>
 {/if}

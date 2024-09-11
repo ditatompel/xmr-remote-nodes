@@ -21,6 +21,7 @@ declare global {
 		is_tor: boolean;
 		is_available: boolean;
 		nettype: string;
+		ip_addresses: string;
 	}
 
 	interface ApiResponse {
