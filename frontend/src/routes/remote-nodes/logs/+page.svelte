@@ -75,7 +75,7 @@
 					</tr>
 					<tr>
 						<td class="font-bold">Public IP</td>
-						<td>{nodeInfo?.ip_addresses}</td>
+						<td>{nodeInfo?.ip_addresses.replace(/,/g, ', ')}</td>
 					</tr>
 					<tr>
 						<td class="font-bold">Net Type</td>

@@ -47,7 +47,7 @@
 	{formatHostname(hostname)}:<span class="text-indigo-800 dark:text-indigo-400">{port}</span><br />
 	<div class="max-w-40 text-ellipsis overflow-x-auto md:overflow-hidden hover:overflow-visible">
 		<span class="whitespace-break-spaces text-gray-700 dark:text-gray-400"
-			>{ip_addresses.replace(/,/g, ', ')}</span
+			>{ip_addresses.replace(/,/g, ' ')}</span
 		>
 		{#if ipv6_only}
 			<span class="text-rose-800 dark:text-rose-400">(IPv6 only)</span>
