@@ -4,7 +4,7 @@ export async function load() {
 		// prettier-ignore
 		meta: {
 			title: 'Public Monero Remote Nodes List',
-			description: 'List of public Monero remote nodes that you can use with your favourite Monero wallet. You can filter by country, protocol, or CORS capable nodes.',
+			description: "Although it's possible to use these existing public Monero nodes, you're MUST RUN AND USE YOUR OWN NODE!",
 			keywords: 'monero remote nodes,public monero nodes,monero public nodes,monero wallet,tor monero node,monero cors rpc'
 		}
 	};

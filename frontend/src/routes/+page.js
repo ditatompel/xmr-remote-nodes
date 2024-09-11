@@ -4,7 +4,7 @@ export async function load() {
 		meta: {
 			title: 'Monero Remote Node',
 			description:
-				'A website that helps you monitor your favourite Monero remote nodes, a device on the internet running the Monero software with copy of the Monero blockchain.',
+				'A website that helps you monitor your favourite Monero remote nodes, but YOU BETTER RUN AND USE YOUR OWN NODE.',
 			keywords:
 				'monero,monero,xmr,monero node,xmrnode,cryptocurrency,monero remote node,monero testnet,monero stagenet'
 		},
