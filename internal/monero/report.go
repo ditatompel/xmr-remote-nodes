@@ -309,6 +309,7 @@ func (r *moneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			last_checked = ?,
 			last_check_status = ?,
 			cors_capable = ?,
+			ip_addresses = ?,
 			ipv6_only = ?
 		WHERE
 			id = ?`
@@ -331,6 +332,7 @@ func (r *moneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			now.Unix(),
 			statuses,
 			report.Node.CORSCapable,
+			report.Node.IPAddresses,
 			report.Node.IPv6Only,
 			report.Node.ID)
 		if err != nil {
@@ -344,10 +346,11 @@ func (r *moneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 			uptime = ?,
 			last_checked = ?,
 			last_check_status = ?,
+			ip_addresses = ?,
 			ipv6_only = ?
 		WHERE
 			id = ?`
-		if _, err := r.db.Exec(u, 0, report.Node.Uptime, now.Unix(), statuses, report.Node.IPv6Only, report.Node.ID); err != nil {
+		if _, err := r.db.Exec(u, 0, report.Node.Uptime, now.Unix(), statuses, report.Node.IPAddresses, report.Node.IPv6Only, report.Node.ID); err != nil {
 			slog.Warn(err.Error())
 		}
 	}

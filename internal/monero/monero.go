@@ -55,6 +55,7 @@ type Node struct {
 	LastCheckStatus types.JSONText `json:"last_check_statuses" db:"last_check_status"`
 	CORSCapable     bool           `json:"cors" db:"cors_capable"`
 	IPv6Only        bool           `json:"ipv6_only" db:"ipv6_only"`
+	IPAddresses     string         `json:"ip_addresses" db:"ip_addresses"`
 }
 
 // Get node from database by id
@@ -198,6 +199,7 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 	}
 
 	ipAddr := ""
+	ips := ""
 	ipv6_only := false
 
 	if !is_tor {
@@ -217,6 +219,7 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 		}
 
 		ipAddr = hostIp.String()
+		ips = ip.SliceToString(hostIps)
 	}
 
 	row, err := r.db.Query(`
@@ -251,8 +254,10 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 			date_entered,
 			last_checked,
 			last_check_status,
+			ip_addresses,
 			ipv6_only
 		) VALUES (
+			?,
 			?,
 			?,
 			?,
@@ -277,6 +282,7 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 		time.Now().Unix(),
 		0,
 		string(statusDb),
+		ips,
 		ipv6_only)
 	if err != nil {
 		return err

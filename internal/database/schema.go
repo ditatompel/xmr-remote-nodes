@@ -261,11 +261,14 @@ func v3(db *DB) error {
 	slog.Debug("[DB] Migrating database schema version 3")
 
 	// table: tbl_node
-	slog.Debug("[DB] Adding ipv6_only column to tbl_node")
+	// TODO: Remove IF NOT EXISTS SQL statement below after merging to main
+	// branch. The statement only to accomodate commit 518d4b4 so future main
+	// branch keep on schema version 3.
+	slog.Debug("[DB] Adding additional columns to tbl_node")
 	_, err := db.Exec(`
 		ALTER TABLE tbl_node
-		ADD ipv6_only TINYINT(1) UNSIGNED NOT NULL DEFAULT '0'
-		AFTER cors_capable;`)
+		ADD COLUMN IF NOT EXISTS ipv6_only TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER cors_capable,
+		ADD COLUMN ip_addresses TEXT NOT NULL DEFAULT '' AFTER cors_capable;`)
 	if err != nil {
 		return err
 	}

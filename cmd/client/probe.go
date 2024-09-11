@@ -338,6 +338,7 @@ func (p *proberClient) reportResult(node monero.Node, tookTime float64) error {
 	if !node.IsTor {
 		if hostIps, err := net.LookupIP(node.Hostname); err == nil {
 			node.IPv6Only = ip.IsIPv6Only(hostIps)
+			node.IPAddresses = ip.SliceToString(hostIps)
 		}
 	}
 
