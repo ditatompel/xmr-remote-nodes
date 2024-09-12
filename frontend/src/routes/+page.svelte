@@ -87,13 +87,13 @@
 		<a class="card card-hover overflow-hidden py-2 text-center" href="/remote-nodes/">
 			<h2 class="h2 font-bold">Remote Nodes</h2>
 			<div class="space-y-4 p-4">
-				<p>List of Monero remote nodes you can use when you cannot (or don't want to) run your own node.</p>
+				<p>List of submitted Monero remote nodes you can use when you <strong>cannot</strong> run your own node.</p>
 			</div>
 		</a>
 		<a class="card card-hover overflow-hidden py-2 text-center" href="/add-node/">
 			<h2 class="h2 font-bold">Add Node</h2>
 			<div class="space-y-4 p-4">
-				<p>Add your Monero public node so others can connect to your node.</p>
+				<p>Add your Monero public node to be monitored and see how it performs.</p>
 			</div>
 		</a>
 		<a class="card card-hover overflow-hidden py-2 text-center" href="https://monitor.ditatompel.com/d/xmr_metrics/monero-metrics?orgId=2" target="_blank" rel="noopener" >

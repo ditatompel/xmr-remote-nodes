@@ -271,6 +271,14 @@
 			<h2 class="h3">Info</h2>
 			<ul class="list-inside list-disc">
 				<li>
+					If you find any remote nodes that are strange or suspicious, please <a
+						class="external"
+						href="https://github.com/ditatompel/xmr-remote-nodes/issues"
+						target="_blank"
+						rel="noopener">open an issue on GitHub</a
+					> for removal.
+				</li>
+				<li>
 					Uptime percentage calculated is the <strong>last 1 month</strong> uptime.
 				</li>
 				<li>

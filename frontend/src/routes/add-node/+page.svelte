@@ -40,6 +40,20 @@
 	</div>
 </header>
 
+<section id="page-info" class="mx-auto w-full max-w-4xl px-4 pb-7">
+	<div class="alert card shadow-xl">
+		<div class="alert-message">
+			<h2 class="h3 text-center">Important Note</h2>
+			<ul class="list-inside list-disc">
+				<li>
+					As an administrator of this instance, I have full rights to delete, and blacklist any
+					submitted node with or without providing any reason.
+				</li>
+			</ul>
+		</div>
+	</div>
+</section>
+
 <section id="form-add-monero-node">
 	<div class="section-container text-center">
 		<p>Enter your Monero node information below (IPv6 host check is experimental):</p>
@@ -54,7 +68,7 @@
 				<label class="label">
 					<span>Protocol *</span>
 					<select name="protocol" class="select variant-form-material" disabled={isProcessing}>
-						<option value="http">HTTP / TOR</option>
+						<option value="http">HTTP or TOR</option>
 						<option value="https">HTTPS</option>
 					</select>
 				</label>
