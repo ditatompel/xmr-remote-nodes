@@ -220,6 +220,10 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 
 		ipAddr = hostIp.String()
 		ips = ip.SliceToString(hostIps)
+	} else {
+		if strings.HasPrefix(hostname, "http://") || strings.HasPrefix(hostname, "https://") {
+			return errors.New("Don't start hostname with http:// or https://, just put your hostname")
+		}
 	}
 
 	row, err := r.db.Query(`
