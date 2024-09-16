@@ -12,4 +12,6 @@ func init() {
 	probersCmd.AddCommand(deleteProbersCmd)
 	listProbersCmd.Flags().StringP("sort-by", "s", "last_submit_ts", "Sort by column name, can be id or last_submit_ts")
 	listProbersCmd.Flags().StringP("sort-dir", "d", "desc", "Sort direction, can be asc or desc")
+	cmd.Root.AddCommand(nodeCmd)
+	nodeCmd.AddCommand(deleteNodeCmd)
 }
