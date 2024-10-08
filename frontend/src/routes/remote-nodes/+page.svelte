@@ -20,6 +20,7 @@
 		UptimeCell,
 		EstimateFeeCell
 	} from '$lib/components/datatables/xmr';
+	import News from '$lib/components/News.svelte';
 
 	export let data;
 	let filterNettype = 'any';

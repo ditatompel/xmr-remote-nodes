@@ -8,6 +8,7 @@
 		IcnFacebook,
 		IcnTelegram
 	} from '$lib/components/svg';
+	import News from '$lib/components/News.svelte';
 
 	/** @type {import('./$types').PageData} */
 	export let data;
@@ -104,6 +105,8 @@
 		</a>
 	</div>
 </section>
+
+<News />
 
 <section id="my-monero-public-nodes" class="bg-surface-100-800-token">
 	<div class="section-container text-token grid grid-cols-1 gap-10 md:grid-cols-2">
