@@ -76,12 +76,14 @@
 </header>
 
 <!-- prettier-ignore -->
-<section id="introduction ">
+<section id="introduction">
 	<div class="section-container text-center !max-w-4xl">
 		<p>Remote node can be used by people who, for their own reasons (usually because of hardware requirements, disk space, or technical abilities), cannot/don't want to run their own node and prefer to relay on one publicly available on the Monero network.</p>
 		<p>Using an open node will allow to make a transaction instantaneously, without the need to download the blockchain and sync to the Monero network first, but at the cost of the control over your privacy. the <strong>Monero community suggests to <span class="font-extrabold text-2xl underline decoration-double decoration-2 decoration-pink-500">always run and use your own node</span></strong> to obtain the maximum possible privacy and to help decentralize the network.</p>
 	</div>
 </section>
+
+<News />
 
 <section id="monero-remote-node">
 	<div class="section-container">
