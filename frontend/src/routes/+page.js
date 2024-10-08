@@ -12,9 +12,10 @@ export async function load() {
 			{ text: 'moneroworld.com', uri: 'https://moneroworld.com' },
 			{ text: 'monero.how', uri: 'https://www.monero.how' },
 			{ text: 'monero.observer', uri: 'https://www.monero.observer' },
-			{ text: 'sethforprivacy.com', uri: 'https://sethforprivacy.com' },
-			{ text: 'localmonero.co', uri: 'https://localmonero.co/knowledge' },
-			{ text: 'revuo-xmr.com', uri: 'https://revuo-xmr.com/' }
+			{ text: 'revuo-xmr.com', uri: 'https://revuo-xmr.com' },
+			{ text: 'themonoeromoon.com', uri: 'https://www.themoneromoon.com' },
+			{ text: 'monerotopia.com', uri: 'https://monerotopia.com' },
+			{ text: 'sethforprivacy.com', uri: 'https://sethforprivacy.com' }
 		],
 		stagenet: [
 			{ label: 'P2P', value: 'stagenet.xmr.ditatompel.com:38080', key: 'snetP2P' },
