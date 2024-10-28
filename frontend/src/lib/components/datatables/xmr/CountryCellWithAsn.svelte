@@ -18,22 +18,16 @@
 
 {#if asn !== 0}
 	<br /><a
-		class="external asn"
+		class="external !text-purple-800 dark:!text-purple-400"
 		href="https://www.ditatompel.com/asn/{asn}"
 		target="_blank"
 		rel="noopener">AS{asn}</a
 	>
-	(<span class="asn-name">{asn_name}</span>)
+	(<span class="font-semibold text-green-800 dark:text-green-500">{asn_name}</span>)
 {/if}
 
 <style lang="postcss">
 	a {
 		@apply font-semibold text-sky-800 underline dark:text-sky-500;
-	}
-	a.asn {
-		@apply !text-purple-800 dark:!text-purple-400;
-	}
-	span.asn-name {
-		@apply font-semibold text-green-800 dark:text-green-500;
 	}
 </style>
