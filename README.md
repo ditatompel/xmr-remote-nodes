@@ -71,9 +71,9 @@ See the [Makefile](./Makefile).
 
 ## ToDo's
 
--   :heavy_check_mark: Accept IPv6 nodes.
--   :white_check_mark: Use `a-h/templ` and `HTMX` instead of `Svelte`.
--   :white_check_mark: Use Go standard `net/http` instead of `fiber`.
+-   :white_check_mark: Accept IPv6 nodes.
+-   Use `a-h/templ` and `HTMX` instead of `Svelte`.
+-   Use Go standard `net/http` instead of `fiber`.
 
 ## Acknowledgement
 
@@ -101,7 +101,7 @@ XMR Donation address:
 8BWYe6GzbNKbxe3D8mPkfFMQA2rViaZJFhWShhZTjJCNG6EZHkXRZCKHiuKmwwe4DXDYF8KKcbGkvNYaiRG3sNt7JhnVp7D
 ```
 
-![][./frontend/static/img/monerotip.png]
+![](./frontend/static/img/monerotip.png)
 
 Thank you!
 
