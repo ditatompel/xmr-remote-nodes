@@ -60,9 +60,6 @@
 </section>
 
 <style lang="postcss">
-	.sm-btn {
-		@apply btn btn-sm variant-ghost-surface hover:variant-soft-secondary;
-	}
 	.disabled {
 		@apply cursor-not-allowed;
 	}
