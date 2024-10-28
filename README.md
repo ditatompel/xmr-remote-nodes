@@ -37,14 +37,14 @@ To build the executable binaries, you need:
 ### Server requirements
 
 -   MySQL/MariaDB
--   [GeoIP Database][geoip_doc] (optional). Place it to `./assets/geoip`,
+-   [GeoIP Database][geoip-doc] (optional). Place it to `./assets/geoip`,
     see [./internal/ip/geo/geoip.go](./internal/ip/geo/geoip.go).
 
 ## Installation
 
 ### For initial server setup:
 
-1. Download [GeoIP Database][geoip_doc] and place it to `./assets/geoip`.
+1. Download [GeoIP Database][geoip-doc] and place it to `./assets/geoip`.
    (see [./internal/ip/geo/geoip.go](./internal/ip/geo/geoip.go)).
 2. Pepare your MySQL/MariaDB.
 3. Copy `.env.example` to `.env` and edit it to match with server environment.
@@ -52,7 +52,7 @@ To build the executable binaries, you need:
    **server** and **client** binaries).
 5. Run the service with `./bin/xmr-nodes-server-linux-<YOUR_CPU_ARCH> serve`.
 
-Systemd example: [xmr-nodes-server.service][server_systemd_service].
+Systemd example: [xmr-nodes-server.service][server-systemd-service].
 
 ### For initial prober setup:
 
@@ -62,8 +62,8 @@ Systemd example: [xmr-nodes-server.service][server_systemd_service].
    **server** and **client** binaries).
 4. Run the service with `./bin/xmr-nodes-client-linux-<YOUR_CPU_ARCH> probe`.
 
-Systemd example: [xmr-nodes-prober.service][prober_systemd_service] and
-[xmr-nodes-prober.timer][prober_systemd_timer].
+Systemd example: [xmr-nodes-prober.service][prober-systemd-service] and
+[xmr-nodes-prober.timer][prober-systemd-timer].
 
 ## Development and Deployment
 
@@ -71,22 +71,49 @@ See the [Makefile](./Makefile).
 
 ## ToDo's
 
--   Accept IPv6 nodes.
--   Use `a-h/templ` and `HTMX` instead of `Svelte`.
--   Use Go standard `net/http` instead of `fiber`.
+-   :heavy_check_mark: Accept IPv6 nodes.
+-   :white_check_mark: Use `a-h/templ` and `HTMX` instead of `Svelte`.
+-   :white_check_mark: Use Go standard `net/http` instead of `fiber`.
+
+## Acknowledgement
+
+The creators and contributors of these projects have provided valuable
+resources, which I am grateful for:
+
+-   [jtgrassie/monero-pool][jtgrassie-monero-pool]
+-   [rclone/rclone][rclone]
 
 ## Similar Projects
 
--   [lalanza808/monero.fail][monerofail_gh]
--   [cake-tech/upptime-monerocom][uptime_monerocom_gh]
+-   [lalanza808/monero.fail][monerofail-repo]
+-   [cake-tech/upptime-monerocom][uptime-monerocom-repo]
+
+## Donation
+
+The servers costs are currently covered by myself. If you find this project
+useful, please consider making a donation to help cover the ongoing expenses.
+Your contribution will go towards ensuring the continued availability of the
+website and **my** `stagenet` and `testnet` public remote nodes.
+
+XMR Donation address:
+
+```plain
+8BWYe6GzbNKbxe3D8mPkfFMQA2rViaZJFhWShhZTjJCNG6EZHkXRZCKHiuKmwwe4DXDYF8KKcbGkvNYaiRG3sNt7JhnVp7D
+```
+
+![][./frontend/static/img/monerotip.png]
+
+Thank you!
 
 ## License
 
 This project is licensed under [GLWTPL](./LICENSE).
 
-[geoip_doc]: https://dev.maxmind.com/geoip/geoip2/geolite2/ "GeoIP documentation"
-[server_systemd_service]: ./deployment/init/xmr-nodes-server.service "systemd service example for server"
-[prober_systemd_service]: ./deployment/init/xmr-nodes-prober.service "systemd service example for prober"
-[prober_systemd_timer]: ./deployment/init/xmr-nodes-prober.timer "systemd timer example for prober"
-[monerofail_gh]: https://github.com/lalanza808/monero.fail "Lalanza808's monero.fail GitHub repository"
-[uptime_monerocom_gh]: https://github.com/cake-tech/upptime-monerocom "monero.com uptime GitHub repository"
+[geoip-doc]: https://dev.maxmind.com/geoip/geoip2/geolite2/ "GeoIP documentation"
+[server-systemd-service]: ./deployment/init/xmr-nodes-server.service "systemd service example for server"
+[prober-systemd-service]: ./deployment/init/xmr-nodes-prober.service "systemd service example for prober"
+[prober-systemd-timer]: ./deployment/init/xmr-nodes-prober.timer "systemd timer example for prober"
+[jtgrassie-monero-pool]: https://github.com/jtgrassie/monero-pool "A Monero mining pool server written in C"
+[rclone]: https://github.com/rclone/rclone "rclone GitHub repository"
+[monerofail-repo]: https://github.com/lalanza808/monero.fail "Lalanza808's monero.fail GitHub repository"
+[uptime-monerocom-repo]: https://github.com/cake-tech/upptime-monerocom "monero.com uptime GitHub repository"
