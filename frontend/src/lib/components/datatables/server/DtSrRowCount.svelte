@@ -8,7 +8,7 @@
 </script>
 
 {#if $rowCount === undefined}
-	<div />
+	<div></div>
 {:else}
 	<div class={$$props.class ?? 'mr-6 leading-8 lg:leading-10'}>
 		{#if $rowCount.total > 0}
