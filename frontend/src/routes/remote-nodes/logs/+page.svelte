@@ -44,7 +44,7 @@
 	<div class="card text-token mx-auto flex w-fit justify-center p-4">
 		<ol class="breadcrumb">
 			<li class="crumb"><a class="link underline" href="/remote-nodes">Remote Nodes</a></li>
-			<li class="crumb-separator" aria-hidden>/</li>
+			<li class="crumb-separator" aria-hidden="true">/</li>
 			<li>Logs</li>
 		</ol>
 	</div>
