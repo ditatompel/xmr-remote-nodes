@@ -1,13 +1,10 @@
 package handler
 
-import (
-	"github.com/gofiber/fiber/v2"
-)
+func (s *fiberServer) Routes() {
+	s.App.Get("/", s.homeHandler)
 
-// V1 API routes
-func V1Api(app *fiber.App) {
-	app.Get("/", homeHandler)
-	v1 := app.Group("/api/v1")
+	// V1 API routes
+	v1 := s.App.Group("/api/v1")
 
 	// these routes are public, they don't require a prober api key
 	v1.Get("/nodes", Nodes)

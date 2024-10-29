@@ -8,7 +8,6 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/ditatompel/xmr-remote-nodes/frontend"
 	"github.com/ditatompel/xmr-remote-nodes/internal/config"
 	"github.com/ditatompel/xmr-remote-nodes/internal/cron"
 	"github.com/ditatompel/xmr-remote-nodes/internal/database"
@@ -17,7 +16,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/recover"
 	"github.com/spf13/cobra"
@@ -57,11 +55,7 @@ func serve() {
 	}
 
 	// Define Fiber config & app.
-	app := fiber.New(fiber.Config{
-		Prefork:     appCfg.Prefork,
-		ProxyHeader: appCfg.ProxyHeader,
-		AppName:     "XMR Nodes Aggregator",
-	})
+	app := handler.NewServer()
 
 	// recover
 	app.Use(recover.New(recover.Config{EnableStackTrace: true}))
@@ -81,12 +75,7 @@ func serve() {
 	}))
 
 	app.Use("/assets", views.EmbedAssets())
-
-	handler.V1Api(app)
-	app.Use("/", filesystem.New(filesystem.Config{
-		Root: frontend.SvelteKitHandler(),
-		// NotFoundFile: "index.html",
-	}))
+	app.Routes()
 
 	// go routine to capture system calls
 	go func() {

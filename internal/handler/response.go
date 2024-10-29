@@ -13,7 +13,7 @@ import (
 )
 
 // Render Home Page
-func homeHandler(c *fiber.Ctx) error {
+func (s *fiberServer) homeHandler(c *fiber.Ctx) error {
 	p := views.Meta{
 		Title:       "Monero Remote Node",
 		Description: "A website that helps you monitor your favourite Monero remote nodes, but YOU BETTER RUN AND USE YOUR OWN NODE.",
