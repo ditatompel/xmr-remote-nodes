@@ -12,10 +12,16 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version: 1.22.x
+
+      - name: Setup templ
+        run: go install github.com/a-h/templ/cmd/templ@v0.2.778
 
       - name: Cache Go modules
         uses: actions/cache@v3
@@ -25,22 +31,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-go-
 
-      - name: setup NodeJS
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org"
-
-      - name: Cache node modules
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Build UI
-        run: make ui
+      - name: Prepare assets
+        run: make prepare templ tailwind
 
       - name: Run lint
         uses: golangci/golangci-lint-action@v4

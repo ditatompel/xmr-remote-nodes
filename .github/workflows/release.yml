@@ -16,20 +16,20 @@ jobs:
       - name: Check out source code
         uses: actions/checkout@v4
 
-      - name: setup NodeJS
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-          registry-url: "https://registry.npmjs.org"
+      - name: Setup bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version: 1.22.x
 
+      - name: Setup templ
+        run: go install github.com/a-h/templ/cmd/templ@v0.2.778
+
       # Need to build the UI here before build the server binary with go-release-action
-      - name: Build UI
-        run: make ui
+      - name: Prepare assets
+        run: make prepare templ tailwind
 
       - name: Build server binary
         uses: wangyoucao577/go-release-action@v1
