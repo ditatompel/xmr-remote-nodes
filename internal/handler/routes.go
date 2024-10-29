@@ -6,6 +6,7 @@ import (
 
 // V1 API routes
 func V1Api(app *fiber.App) {
+	app.Get("/", homeHandler)
 	v1 := app.Group("/api/v1")
 
 	// these routes are public, they don't require a prober api key

@@ -3,3 +3,5 @@
 /node_modules
 /tmp
 /assets/geoip
+/internal/handler/views/assets/css/**/*
+/internal/handler/views/assets/js/**/*

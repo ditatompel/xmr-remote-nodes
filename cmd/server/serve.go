@@ -13,6 +13,7 @@ import (
 	"github.com/ditatompel/xmr-remote-nodes/internal/cron"
 	"github.com/ditatompel/xmr-remote-nodes/internal/database"
 	"github.com/ditatompel/xmr-remote-nodes/internal/handler"
+	"github.com/ditatompel/xmr-remote-nodes/internal/handler/views"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -78,6 +79,8 @@ func serve() {
 		AllowHeaders:     "Origin, Content-Type, Accept",
 		AllowCredentials: true,
 	}))
+
+	app.Use("/assets", views.EmbedAssets())
 
 	handler.V1Api(app)
 	app.Use("/", filesystem.New(filesystem.Config{

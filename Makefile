@@ -31,15 +31,11 @@ BUILD_LDFLAGS := -s -w -X github.com/ditatompel/xmr-remote-nodes/internal/config
 
 # This called from air cmd (see .air.toml)
 .PHONY: dev
-dev:
+dev: templ tailwind
 	go build -ldflags="$(BUILD_LDFLAGS)" -tags server -o ./tmp/main .
 
 .PHONY: build
 build: client server
-
-.PHONY: ui
-ui:
-	go generate ./...
 
 .PHONY: client
 client:
@@ -51,7 +47,7 @@ client:
 		-o bin/${BINARY_NAME}-client-linux-arm64
 
 .PHONY: server
-server: ui
+server: prepare templ tailwind
 	CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build \
 		-ldflags="$(BUILD_LDFLAGS)" -tags server   \
 		-o bin/${BINARY_NAME}-server-linux-amd64
@@ -59,11 +55,34 @@ server: ui
 		-ldflags="$(BUILD_LDFLAGS)" -tags server   \
 		-o bin/${BINARY_NAME}-server-linux-arm64
 
+.PHONY: prepare
+prepare:
+	bun install --frozen-lockfile
+	@mkdir -p ./internal/handler/views/assets/js
+	cp ./node_modules/htmx.org/dist/htmx.min.js ./internal/handler/views/assets/js
+
+# Compile template
+.PHONY: templ
+templ:
+	@echo "Compiling Templ template..."
+	templ generate
+
+.PHONY: tailwind
+tailwind:
+	mkdir -p ./internal/handler/views/assets/css
+	@echo "Compiling TailwindCSS..."
+	bun tailwindcss -i ./internal/handler/views/src/css/main.css \
+		-o ./internal/handler/views/assets/css/main.min.css \
+		-c ./tailwind.config.js \
+		--minify
+
 .PHONY: clean
 clean:
 	go clean
 	rm -rfv ./bin
-	rm -rf ./frontend/build
+	rm -rfv ./tmp/main
+	rm -rf ./internal/handler/views/*_templ.go
+	rm -rf ./internal/handler/views/assets/css/
 
 .PHONY: lint
 lint:
@@ -82,8 +101,10 @@ bench:
 # And make sure the inventory and deploy-*.yml file is properly configured.
 .PHONY: deploy-server
 deploy-server:
-	ansible-playbook -i ./deployment/ansible/inventory.ini -l server ./deployment/ansible/deploy-server.yml -K
+	ansible-playbook -i ./deployment/ansible/inventory.ini \
+		-l server ./deployment/ansible/deploy-server.yml -K
 
 .PHONY: deploy-prober
 deploy-prober:
-	ansible-playbook -i ./deployment/ansible/inventory.ini -l prober ./deployment/ansible/deploy-prober.yml -K
+	ansible-playbook -i ./deployment/ansible/inventory.ini \
+		-l prober ./deployment/ansible/deploy-prober.yml -K

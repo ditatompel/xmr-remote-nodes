@@ -28,7 +28,15 @@ serves the `/api` endpoint that is used by the clients and the Web UI itself.
 To build the executable binaries, you need:
 
 -   Go >= 1.22
--   NodeJS >= 20
+-   Bun >= 1.1.26
+-   templ v0.2.778
+
+> **Note**:
+>
+> -   If you want to contribute to the code, please use exact templ version
+>     (v0.2.778).
+> -   The UI is using Preline UI that uses [Lucide Icons][lucide-icons], use
+>     that for SVG icons.
 
 ### Server & Prober requirements
 
@@ -66,6 +74,10 @@ Systemd example: [xmr-nodes-prober.service][prober-systemd-service] and
 [xmr-nodes-prober.timer][prober-systemd-timer].
 
 ## Development and Deployment
+
+1. Clone or fork this repository.
+2. Prepare the assets: `make prepare`,
+3. Run `air serve` (live reload using [air-verse/air][air-repo]).
 
 See the [Makefile](./Makefile).
 
@@ -113,6 +125,7 @@ This project is licensed under [GLWTPL](./LICENSE).
 [server-systemd-service]: ./deployment/init/xmr-nodes-server.service "systemd service example for server"
 [prober-systemd-service]: ./deployment/init/xmr-nodes-prober.service "systemd service example for prober"
 [prober-systemd-timer]: ./deployment/init/xmr-nodes-prober.timer "systemd timer example for prober"
+[air-repo]: https://github.com/air-verse/air "Air - Live reload for Go apps"
 [jtgrassie-monero-pool]: https://github.com/jtgrassie/monero-pool "A Monero mining pool server written in C"
 [rclone]: https://github.com/rclone/rclone "rclone GitHub repository"
 [monerofail-repo]: https://github.com/lalanza808/monero.fail "Lalanza808's monero.fail GitHub repository"

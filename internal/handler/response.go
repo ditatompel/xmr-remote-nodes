@@ -1,12 +1,34 @@
 package handler
 
 import (
+	"fmt"
 	"strconv"
 
+	"github.com/a-h/templ"
+	"github.com/ditatompel/xmr-remote-nodes/internal/handler/views"
 	"github.com/ditatompel/xmr-remote-nodes/internal/monero"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/adaptor"
 )
+
+// Render Home Page
+func homeHandler(c *fiber.Ctx) error {
+	p := views.Meta{
+		Title:       "Monero Remote Node",
+		Description: "A website that helps you monitor your favourite Monero remote nodes, but YOU BETTER RUN AND USE YOUR OWN NODE.",
+		Keywords:    "monero,monero,xmr,monero node,xmrnode,cryptocurrency,monero remote node,monero testnet,monero stagenet",
+		Robots:      "INDEX,FOLLOW",
+		Permalink:   "https://xmr.ditatompel.com",
+		Identifier:  "/",
+	}
+
+	c.Set("Link", fmt.Sprintf(`<%s>; rel="canonical"`, p.Permalink))
+	home := views.BaseLayout(p, views.Home())
+	handler := adaptor.HTTPHandler(templ.Handler(home))
+
+	return handler(c)
+}
 
 // Returns a single node information based on `id` query param
 func Node(c *fiber.Ctx) error {

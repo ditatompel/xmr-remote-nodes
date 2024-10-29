@@ -1,0 +1,64 @@
+package views
+
+import (
+	"fmt"
+	"github.com/ditatompel/xmr-remote-nodes/internal/config"
+	"time"
+)
+
+var buildTime = time.Now().Unix()
+
+type Meta struct {
+	Title       string
+	Description string
+	Keywords    string
+	Robots      string
+	Permalink   string
+	Identifier  string
+}
+
+templ base(m Meta) {
+	<!DOCTYPE html>
+	<html lang="en" class="dark">
+		<head>
+			<meta charset="utf-8"/>
+			<title>{ m.Title } — xmr.ditatompel.com</title>
+			<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+			<meta name="title" content={ fmt.Sprintf("%s — xmr.ditatompel.com", m.Title) }/>
+			<meta name="description" content={ m.Description }/>
+			<meta name="keywords" content={ m.Keywords }/>
+			<meta name="robots" content={ m.Robots }/>
+			<meta name="theme-color" content="#272b31"/>
+			<meta name="author" content="ditatompel"/>
+			<meta property="og:site_name" content="xmr.ditatompel.com"/>
+			<meta property="og:type" content="website"/>
+			<meta property="og:url" content={ m.Permalink }/>
+			<meta property="og:locale" content="en_US"/>
+			<meta property="og:title" content={ fmt.Sprintf("%s — xmr.ditatompel.com", m.Title) }/>
+			<meta property="og:description" content={ m.Description }/>
+			<link href={ fmt.Sprintf("/assets/css/main.min.css?t=%d", buildTime) } rel="stylesheet"/>
+			<script src={ fmt.Sprintf("/assets/js/htmx.min.js?t=%d", buildTime) }></script>
+		</head>
+		<body class="bg-neutral-900" hx-boost="true" hx-indicator="#hx-indicator-main">
+			<main class="flex flex-col h-screen">
+				{ children... }
+			</main>
+			<footer class="absolute bottom-0 inset-x-0 text-center py-5">
+				<div class="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8">
+					<p class="text-sm text-white/50">XMR Nodes { config.Version }, <a href="https://github.com/ditatompel/xmr-remote-nodes">source code</a> licensed under <strong>GLWTPL</strong>.</p>
+				</div>
+			</footer>
+		</body>
+	</html>
+}
+
+templ BaseLayout(m Meta, cmp templ.Component) {
+	@base(m) {
+		@cmp
+	}
+}
+
+templ BlankLayout(cmp templ.Component) {
+	@cmp
+}
