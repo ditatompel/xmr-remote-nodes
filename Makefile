@@ -75,6 +75,8 @@ tailwind:
 		-o ./internal/handler/views/assets/css/main.min.css \
 		-c ./tailwind.config.js \
 		--minify
+	bun build ./internal/handler/views/src/js/main.js --minify \
+		--outfile ./internal/handler/views/assets/js/main.min.js
 
 .PHONY: clean
 clean:

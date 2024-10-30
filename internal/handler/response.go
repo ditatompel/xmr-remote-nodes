@@ -30,6 +30,42 @@ func (s *fiberServer) homeHandler(c *fiber.Ctx) error {
 	return handler(c)
 }
 
+// Render Remote Nodes Page
+func (s *fiberServer) remoteNodesHandler(c *fiber.Ctx) error {
+	p := views.Meta{
+		Title:       "Public Monero Remote Nodes List",
+		Description: "Although it's possible to use these existing public Monero nodes, you're MUST RUN AND USE YOUR OWN NODE!",
+		Keywords:    "monero remote nodes,public monero nodes,monero public nodes,monero wallet,tor monero node,monero cors rpc",
+		Robots:      "INDEX,FOLLOW",
+		Permalink:   "https://xmr.ditatompel.com/remote-nodes",
+		Identifier:  "/remote-nodes",
+	}
+
+	c.Set("Link", fmt.Sprintf(`<%s>; rel="canonical"`, p.Permalink))
+	home := views.BaseLayout(p, views.RemoteNodes())
+	handler := adaptor.HTTPHandler(templ.Handler(home))
+
+	return handler(c)
+}
+
+// Render Add Node Page
+func (s *fiberServer) addNodeHandler(c *fiber.Ctx) error {
+	p := views.Meta{
+		Title:       "Add Monero Node",
+		Description: "You can use this page to add known remote node to the system so my bots can monitor it.",
+		Keywords:    "monero,monero node,monero public node,monero wallet,list monero node,monero node monitoring",
+		Robots:      "INDEX,FOLLOW",
+		Permalink:   "https://xmr.ditatompel.com/add-node",
+		Identifier:  "/add-node",
+	}
+
+	c.Set("Link", fmt.Sprintf(`<%s>; rel="canonical"`, p.Permalink))
+	home := views.BaseLayout(p, views.AddNode())
+	handler := adaptor.HTTPHandler(templ.Handler(home))
+
+	return handler(c)
+}
+
 // Returns a single node information based on `id` query param
 func Node(c *fiber.Ctx) error {
 	nodeId, err := c.ParamsInt("id", 0)

@@ -39,8 +39,10 @@ templ base(m Meta) {
 			<meta property="og:description" content={ m.Description }/>
 			<link href={ fmt.Sprintf("/assets/css/main.min.css?t=%d", buildTime) } rel="stylesheet"/>
 			<script src={ fmt.Sprintf("/assets/js/htmx.min.js?t=%d", buildTime) }></script>
+			<script src={ fmt.Sprintf("/assets/js/main.min.js?t=%d", buildTime) }></script>
 		</head>
 		<body class="bg-neutral-900" hx-boost="true" hx-indicator="#hx-indicator-main">
+			@navbar()
 			<main class="flex flex-col h-screen">
 				{ children... }
 			</main>
