@@ -42,7 +42,7 @@ templ base(m Meta) {
 			<script src={ fmt.Sprintf("/assets/js/main.min.js?t=%d", buildTime) }></script>
 		</head>
 		<body class="bg-neutral-900" hx-boost="true" hx-indicator="#hx-indicator-main">
-			@navbar()
+			@navbar(m.Identifier)
 			<main class="flex flex-col h-screen">
 				{ children... }
 			</main>

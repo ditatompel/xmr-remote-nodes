@@ -1,6 +1,6 @@
 package views
 
-templ navbar() {
+templ navbar(pageIdentifier string) {
 	<header class="sticky top-4 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full before:absolute before:inset-0 before:max-w-[66rem] before:mx-2 before:lg:mx-auto before:rounded-[26px] before:bg-neutral-800/30 before:backdrop-blur-md">
 		<nav class="relative max-w-[66rem] w-full py-2.5 ps-5 pe-2 md:flex md:items-center md:justify-between md:py-0 mx-2 lg:mx-auto">
 			<div class="flex items-center justify-between">
@@ -20,9 +20,27 @@ templ navbar() {
 			<!-- Collapse -->
 			<div id="main-navbar" class="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow md:block" aria-labelledby="main-navbar-collapse">
 				<div class="flex flex-col md:flex-row md:items-center md:justify-end gap-2 md:gap-3 mt-3 md:mt-0 py-2 md:py-0 md:ps-7">
-					<a class="py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 border-orange-400 font-medium text-neutral-200 focus:outline-none" href="/" aria-current="page">Home</a>
-					<a class="py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 border-transparent text-gray-500 hover:text-gray-800 focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-200" href="/remote-nodes">Remote Nodes</a>
-					<a class="py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 border-transparent text-gray-500 hover:text-gray-800 focus:outline-none dark:text-neutral-400 dark:hover:text-neutral-200" href="/add-node">Add Node</a>
+					<a
+						href="/"
+						if pageIdentifier == "/" {
+							class="active"
+							aria-current="page"
+						}
+					>Home</a>
+					<a
+						href="/remote-nodes"
+						if pageIdentifier == "/remote-nodes" {
+							class="active"
+							aria-current="page"
+						}
+					>Remote Nodes</a>
+					<a
+						href="/add-node"
+						if pageIdentifier == "/add-node" {
+							class="active"
+							aria-current="page"
+						}
+					>Add Node</a>
 				</div>
 			</div>
 			<!-- End Collapse -->
