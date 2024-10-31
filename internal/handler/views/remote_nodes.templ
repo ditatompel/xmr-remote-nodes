@@ -1,6 +1,13 @@
 package views
 
-templ RemoteNodes() {
+import (
+	"fmt"
+	"github.com/ditatompel/xmr-remote-nodes/internal/monero"
+	"github.com/ditatompel/xmr-remote-nodes/internal/paging"
+	"time"
+)
+
+templ RemoteNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 	<!-- Hero -->
 	<section class="relative overflow-hidden pt-6">
 		<!-- Gradients -->
@@ -30,4 +37,49 @@ templ RemoteNodes() {
 		</div>
 	</section>
 	<!-- End Hero -->
+	<div class="flex flex-col max-w-6xl mx-auto mb-10">
+		<div class="min-w-full inline-block align-middle">
+			@TableNodes(data, q, p)
+		</div>
+	</div>
+}
+
+templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
+	<div id="tbl_nodes" class="bg-neutral-800 border border-neutral-700 rounded-xl shadow-sm overflow-hidden">
+		<div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-neutral-700">
+			@DtRowPerPage("/remote-nodes", "#tbl_nodes", q.Limit, q)
+		</div>
+		<div class="overflow-x-auto">
+			<table class="table-striped table-hover">
+				<thead>
+					<tr>
+						<th scope="col">Host:Port</th>
+						<th scope="col">Nettype</th>
+						<th scope="col">Protocol</th>
+						<th scope="col">Country</th>
+						<th scope="col">Status</th>
+						<th scope="col">Estimate Fee</th>
+						<th scope="col">Uptime</th>
+						<th scope="col">Check</th>
+					</tr>
+				</thead>
+				<tbody>
+					for _, row := range data.Items {
+						<tr>
+							<td>{ fmt.Sprintf("%s:%d", row.Hostname, row.Port) }</td>
+							<td>{ row.Nettype }<br/>{ fmt.Sprintf("%d", row.Height) } </td>
+							<td>{ row.Protocol }</td>
+							<td>{ row.CountryCode }</td>
+							<td>{ fmt.Sprintf("%d", row.EstimateFee) }</td>
+							<td>{ time.Unix(row.LastChecked, 0).Format("2006-01-02 15:04") }</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+		<div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-neutral-700">
+			@DtRowCount(p.CurrentPage, data.RowsPerPage, data.TotalRows)
+			@DtPagination("/remote-nodes", "#tbl_nodes", q, p)
+		</div>
+	</div>
 }

@@ -8,6 +8,7 @@ import (
 
 	"github.com/ditatompel/xmr-remote-nodes/internal/config"
 	"github.com/ditatompel/xmr-remote-nodes/internal/database"
+	"github.com/ditatompel/xmr-remote-nodes/internal/paging"
 )
 
 var testMySQL = true
@@ -39,50 +40,56 @@ func init() {
 // go test -race ./internal/monero -run=TestQueryNodes_toSQL -v
 func TestQueryNodes_toSQL(t *testing.T) {
 	tests := []struct {
-		name              string
-		query             QueryNodes
-		wantArgs          []interface{}
-		wantWhere         string
-		wantSortBy        string
-		wantSortDirection string
+		name        string
+		query       QueryNodes
+		wantArgs    []interface{}
+		wantWhere   string
+		wantSortBy  string
+		wantSortDir string
 	}{
 		{
 			name: "Default query",
 			query: QueryNodes{
-				Host:          "",
-				Nettype:       "any",
-				Protocol:      "any",
-				CC:            "any",
-				Status:        -1,
-				CORS:          -1,
-				RowsPerPage:   10,
-				Page:          1,
-				SortBy:        "last_checked",
-				SortDirection: "desc",
+				Paging: paging.Paging{
+					Limit:         10,
+					Page:          1,
+					SortBy:        "last_checked",
+					SortDir:       "desc",
+					SortDirection: "desc", // deprecated
+				},
+				Host:     "",
+				Nettype:  "any",
+				Protocol: "any",
+				CC:       "any",
+				Status:   -1,
+				CORS:     -1,
 			},
-			wantArgs:          []interface{}{},
-			wantWhere:         "",
-			wantSortBy:        "last_checked",
-			wantSortDirection: "DESC",
+			wantArgs:    []interface{}{},
+			wantWhere:   "",
+			wantSortBy:  "last_checked",
+			wantSortDir: "DESC",
 		},
 		{
 			name: "With host query",
 			query: QueryNodes{
-				Host:          "test",
-				Nettype:       "any",
-				Protocol:      "any",
-				CC:            "any",
-				Status:        -1,
-				CORS:          -1,
-				RowsPerPage:   10,
-				Page:          1,
-				SortBy:        "last_checked",
-				SortDirection: "desc",
+				Paging: paging.Paging{
+					Limit:         10,
+					Page:          1,
+					SortBy:        "last_checked",
+					SortDir:       "desc",
+					SortDirection: "desc", // deprecated
+				},
+				Host:     "test",
+				Nettype:  "any",
+				Protocol: "any",
+				CC:       "any",
+				Status:   -1,
+				CORS:     -1,
 			},
-			wantArgs:          []interface{}{"%test%", "%test%"},
-			wantWhere:         "WHERE (hostname LIKE ? OR ip_addr LIKE ?)",
-			wantSortBy:        "last_checked",
-			wantSortDirection: "DESC",
+			wantArgs:    []interface{}{"%test%", "%test%"},
+			wantWhere:   "WHERE (hostname LIKE ? OR ip_addr LIKE ?)",
+			wantSortBy:  "last_checked",
+			wantSortDir: "DESC",
 		},
 	}
 	for _, tt := range tests {
@@ -97,8 +104,8 @@ func TestQueryNodes_toSQL(t *testing.T) {
 			if tt.query.SortBy != tt.wantSortBy {
 				t.Errorf("QueryNodes.toSQL() gotSortBy = %v, want %v", tt.query.SortBy, tt.wantSortBy)
 			}
-			if tt.query.SortDirection != tt.wantSortDirection {
-				t.Errorf("QueryNodes.toSQL() gotSortDirection = %v, want %v", tt.query.SortDirection, tt.wantSortDirection)
+			if tt.query.SortDir != tt.wantSortDir {
+				t.Errorf("QueryNodes.toSQL() gotSortDir = %v, want %v", tt.query.SortDir, tt.wantSortDir)
 			}
 		})
 	}
@@ -108,16 +115,19 @@ func TestQueryNodes_toSQL(t *testing.T) {
 // go test ./internal/monero -bench QueryNodes_toSQL -benchmem -run=^$ -v
 func Benchmark_QueryNodes_toSQL(b *testing.B) {
 	q := QueryNodes{
-		Host:          "test",
-		Nettype:       "any",
-		Protocol:      "any",
-		CC:            "any",
-		Status:        -1,
-		CORS:          -1,
-		RowsPerPage:   10,
-		Page:          1,
-		SortBy:        "last_checked",
-		SortDirection: "desc",
+		Paging: paging.Paging{
+			Limit:         10,
+			Page:          1,
+			SortBy:        "last_checked",
+			SortDir:       "desc",
+			SortDirection: "desc", // deprecated
+		},
+		Host:     "test",
+		Nettype:  "any",
+		Protocol: "any",
+		CC:       "any",
+		Status:   -1,
+		CORS:     -1,
 	}
 	for i := 0; i < b.N; i++ {
 		_, _ = q.toSQL()

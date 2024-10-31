@@ -1,0 +1,70 @@
+package views
+
+import (
+	"fmt"
+	"github.com/ditatompel/xmr-remote-nodes/internal/paging"
+)
+
+var availablePages = []int{5, 10, 20, 50, 100}
+
+templ DtRowPerPage(url, hxTarget string, rowsPerPage int, q interface{}) {
+	<div class="max-w-sm space-y-3">
+		<select
+			name="limit"
+			id="dt_limit"
+			class="py-2 px-3 pe-9 block bg-neutral-900 border-neutral-700 rounded-lg text-sm focus:border-orange-400 focus:ring-orange-400"
+			hx-get={ fmt.Sprintf("%s?%s", url, paging.EncodedQuery(q, []string{"limit"})) }
+			hx-trigger="change"
+			hx-push-url="true"
+			hx-target={ hxTarget }
+			hx-swap="outerHTML"
+		>
+			<option disabled>CHOOSE</option>
+			for _, page := range availablePages {
+				<option
+					value={ fmt.Sprintf("%d", page) }
+					selected?={ page == rowsPerPage }
+				>{ fmt.Sprintf("%d", page) }</option>
+			}
+		</select>
+	</div>
+}
+
+templ DtRowCount(currentPage, rowsPerPage, totalRows int) {
+	<div>
+		<p class="text-sm">
+			if totalRows <= 0 {
+				No entries found
+			} else {
+				<b>{ fmt.Sprintf("%d", (rowsPerPage * currentPage) - rowsPerPage + 1) }</b>
+				if rowsPerPage * currentPage > totalRows {
+					- <b>{ fmt.Sprintf("%d", totalRows) }</b>
+				} else {
+					- <b>{ fmt.Sprintf("%d", rowsPerPage * currentPage) }</b>
+				}
+				<b>/ { fmt.Sprintf("%d", totalRows) }</b>
+			}
+		</p>
+	</div>
+}
+
+templ DtPagination(url, hxTarget string, q interface{}, p paging.Pagination) {
+	<div>
+		<nav class="pagination inline-flex gap-x-2">
+			for _, page := range p.Pages {
+				if page == -1 {
+					<button class="cursor-not-allowed" disabled>...</button>
+				} else if page == p.CurrentPage {
+					<button class="active" disabled>{ fmt.Sprintf("%d", page) }</button>
+				} else {
+					<button
+						hx-get={ fmt.Sprintf("%s?%s&page=%d", url, paging.EncodedQuery(q, []string{"page"}), page) }
+						hx-push-url="true"
+						hx-target={ hxTarget }
+						hx-swap="outerHTML"
+					>{ fmt.Sprintf("%d", page) }</button>
+				}
+			}
+		</nav>
+	</div>
+}

@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"math"
 	"net"
 	"slices"
 	"strings"
@@ -13,6 +14,7 @@ import (
 
 	"github.com/ditatompel/xmr-remote-nodes/internal/database"
 	"github.com/ditatompel/xmr-remote-nodes/internal/ip"
+	"github.com/ditatompel/xmr-remote-nodes/internal/paging"
 	"github.com/jmoiron/sqlx/types"
 )
 
@@ -74,18 +76,13 @@ func (r *moneroRepo) Node(id int) (Node, error) {
 
 // QueryNodes represents database query parameters
 type QueryNodes struct {
-	Host     string
+	paging.Paging
+	Host     string `url:"host,omitempty"`
 	Nettype  string // Can be "any", mainnet, stagenet, testnet. Default: "any"
 	Protocol string // Can be "any", tor, http, https. Default: "any"
-	CC       string // 2 letter country code
+	CC       string `url:"cc,omitempty"` // 2 letter country code
 	Status   int
 	CORS     int
-
-	// pagination
-	RowsPerPage   int
-	Page          int
-	SortBy        string
-	SortDirection string
 }
 
 // toSQL generates SQL query from query parameters
@@ -133,8 +130,14 @@ func (q *QueryNodes) toSQL() (args []interface{}, where string) {
 	if !slices.Contains([]string{"last_checked", "uptime"}, q.SortBy) {
 		q.SortBy = "last_checked"
 	}
+
+	// deprecated: Use SortDir instead
 	if q.SortDirection != "asc" {
-		q.SortDirection = "DESC"
+		q.SortDir = "DESC"
+	}
+
+	if q.SortDir != "asc" {
+		q.SortDir = "DESC"
 	}
 
 	return args, where
@@ -143,6 +146,7 @@ func (q *QueryNodes) toSQL() (args []interface{}, where string) {
 // Nodes represents a list of nodes
 type Nodes struct {
 	TotalRows   int     `json:"total_rows"`
+	TotalPages  int     `json:"total_pages"` // total pages
 	RowsPerPage int     `json:"rows_per_page"`
 	Items       []*Node `json:"items"`
 }
@@ -153,7 +157,7 @@ func (r *moneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 
 	var nodes Nodes
 
-	nodes.RowsPerPage = q.RowsPerPage
+	nodes.RowsPerPage = q.Limit
 
 	qTotal := fmt.Sprintf(`
 		SELECT
@@ -166,7 +170,8 @@ func (r *moneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 	if err != nil {
 		return nodes, err
 	}
-	args = append(args, q.RowsPerPage, (q.Page-1)*q.RowsPerPage)
+	nodes.TotalPages = int(math.Ceil(float64(nodes.TotalRows) / float64(q.Limit)))
+	args = append(args, q.Limit, (q.Page-1)*q.Limit)
 
 	query := fmt.Sprintf(`
 		SELECT
@@ -178,7 +183,7 @@ func (r *moneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 			%s
 			%s
 		LIMIT ?
-		OFFSET ?`, where, q.SortBy, q.SortDirection)
+		OFFSET ?`, where, q.SortBy, q.SortDir)
 	err = r.db.Select(&nodes.Items, query, args...)
 
 	return nodes, err

@@ -8,7 +8,14 @@ package views
 import "github.com/a-h/templ"
 import templruntime "github.com/a-h/templ/runtime"
 
-func RemoteNodes() templ.Component {
+import (
+	"fmt"
+	"github.com/ditatompel/xmr-remote-nodes/internal/monero"
+	"github.com/ditatompel/xmr-remote-nodes/internal/paging"
+	"time"
+)
+
+func RemoteNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -29,7 +36,165 @@ func RemoteNodes() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!-- Hero --><section class=\"relative overflow-hidden pt-6\"><!-- Gradients --><div aria-hidden=\"true\" class=\"flex absolute -top-96 start-1/2 transform -translate-x-1/2\"><div class=\"bg-gradient-to-r blur-3xl w-[25rem] h-[44rem] rotate-[-60deg] transform -translate-x-[10rem] from-amber-800/30 to-orange-800/40\"></div><div class=\"bg-gradient-to-tl blur-3xl w-[90rem] h-[50rem] rounded-fulls origin-top-left -rotate-12 -translate-x-[15rem] from-orange-900/60 via-orange-900/40 to-amber-900/80\"></div></div><!-- End Gradients --><div class=\"relative z-10\"><div class=\"max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16\"><div class=\"text-center\"><!-- Title --><div class=\"mt-5\"><h1 class=\"block font-extrabold text-4xl md:text-5xl lg:text-6xl text-neutral-200\">Public Monero Remote Nodes List</h1></div><!-- End Title --><div class=\"mt-5\"><p class=\"text-lg text-neutral-300\"><strong>Monero remote node</strong> is a device on the internet running the Monero software with full copy of the Monero blockchain that doesn't run on the same local machine where the Monero wallet is located.</p></div><hr class=\"mt-6\"></div><div class=\"max-w-3xl text-center mx-auto mt-8 prose prose-invert\"><p>Remote node can be used by people who, for their own reasons (usually because of hardware requirements, disk space, or technical abilities), cannot/don't want to run their own node and prefer to relay on one publicly available on the Monero network.</p><p>Using an open node will allow to make a transaction instantaneously, without the need to download the blockchain and sync to the Monero network first, but at the cost of the control over your privacy. the <strong>Monero community suggests to <span class=\"font-extrabold text-2xl underline decoration-double decoration-2 decoration-pink-500\">always run and use your own node</span></strong> to obtain the maximum possible privacy and to help decentralize the network.</p></div></div></div></section><!-- End Hero -->")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!-- Hero --><section class=\"relative overflow-hidden pt-6\"><!-- Gradients --><div aria-hidden=\"true\" class=\"flex absolute -top-96 start-1/2 transform -translate-x-1/2\"><div class=\"bg-gradient-to-r blur-3xl w-[25rem] h-[44rem] rotate-[-60deg] transform -translate-x-[10rem] from-amber-800/30 to-orange-800/40\"></div><div class=\"bg-gradient-to-tl blur-3xl w-[90rem] h-[50rem] rounded-fulls origin-top-left -rotate-12 -translate-x-[15rem] from-orange-900/60 via-orange-900/40 to-amber-900/80\"></div></div><!-- End Gradients --><div class=\"relative z-10\"><div class=\"max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16\"><div class=\"text-center\"><!-- Title --><div class=\"mt-5\"><h1 class=\"block font-extrabold text-4xl md:text-5xl lg:text-6xl text-neutral-200\">Public Monero Remote Nodes List</h1></div><!-- End Title --><div class=\"mt-5\"><p class=\"text-lg text-neutral-300\"><strong>Monero remote node</strong> is a device on the internet running the Monero software with full copy of the Monero blockchain that doesn't run on the same local machine where the Monero wallet is located.</p></div><hr class=\"mt-6\"></div><div class=\"max-w-3xl text-center mx-auto mt-8 prose prose-invert\"><p>Remote node can be used by people who, for their own reasons (usually because of hardware requirements, disk space, or technical abilities), cannot/don't want to run their own node and prefer to relay on one publicly available on the Monero network.</p><p>Using an open node will allow to make a transaction instantaneously, without the need to download the blockchain and sync to the Monero network first, but at the cost of the control over your privacy. the <strong>Monero community suggests to <span class=\"font-extrabold text-2xl underline decoration-double decoration-2 decoration-pink-500\">always run and use your own node</span></strong> to obtain the maximum possible privacy and to help decentralize the network.</p></div></div></div></section><!-- End Hero --><div class=\"flex flex-col max-w-6xl mx-auto mb-10\"><div class=\"min-w-full inline-block align-middle\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = TableNodes(data, q, p).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) templ.Component {
+	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
+		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
+			return templ_7745c5c3_CtxErr
+		}
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
+		if !templ_7745c5c3_IsBuffer {
+			defer func() {
+				templ_7745c5c3_BufErr := templruntime.ReleaseBuffer(templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err == nil {
+					templ_7745c5c3_Err = templ_7745c5c3_BufErr
+				}
+			}()
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var2 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var2 == nil {
+			templ_7745c5c3_Var2 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"tbl_nodes\" class=\"bg-neutral-800 border border-neutral-700 rounded-xl shadow-sm overflow-hidden\"><div class=\"px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-neutral-700\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = DtRowPerPage("/remote-nodes", "#tbl_nodes", q.Limit, q).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"overflow-x-auto\"><table class=\"table-striped table-hover\"><thead><tr><th scope=\"col\">Host:Port</th><th scope=\"col\">Nettype</th><th scope=\"col\">Protocol</th><th scope=\"col\">Country</th><th scope=\"col\">Status</th><th scope=\"col\">Estimate Fee</th><th scope=\"col\">Uptime</th><th scope=\"col\">Check</th></tr></thead> <tbody>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		for _, row := range data.Items {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<tr><td>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var3 string
+			templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s:%d", row.Hostname, row.Port))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 69, Col: 57}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var4 string
+			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(row.Nettype)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 70, Col: 24}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<br>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var5 string
+			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", row.Height))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 70, Col: 62}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var6 string
+			templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(row.Protocol)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 71, Col: 25}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var7 string
+			templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(row.CountryCode)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 72, Col: 28}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var8 string
+			templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", row.EstimateFee))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 73, Col: 47}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td><td>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var9 string
+			templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(time.Unix(row.LastChecked, 0).Format("2006-01-02 15:04"))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 74, Col: 69}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</td></tr>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tbody></table></div><div class=\"px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-neutral-700\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = DtRowCount(p.CurrentPage, data.RowsPerPage, data.TotalRows).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = DtPagination("/remote-nodes", "#tbl_nodes", q, p).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

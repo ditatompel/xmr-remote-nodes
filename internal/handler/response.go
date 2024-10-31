@@ -7,6 +7,7 @@ import (
 	"github.com/a-h/templ"
 	"github.com/ditatompel/xmr-remote-nodes/internal/handler/views"
 	"github.com/ditatompel/xmr-remote-nodes/internal/monero"
+	"github.com/ditatompel/xmr-remote-nodes/internal/paging"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
@@ -25,24 +26,6 @@ func (s *fiberServer) homeHandler(c *fiber.Ctx) error {
 
 	c.Set("Link", fmt.Sprintf(`<%s>; rel="canonical"`, p.Permalink))
 	home := views.BaseLayout(p, views.Home())
-	handler := adaptor.HTTPHandler(templ.Handler(home))
-
-	return handler(c)
-}
-
-// Render Remote Nodes Page
-func (s *fiberServer) remoteNodesHandler(c *fiber.Ctx) error {
-	p := views.Meta{
-		Title:       "Public Monero Remote Nodes List",
-		Description: "Although it's possible to use these existing public Monero nodes, you're MUST RUN AND USE YOUR OWN NODE!",
-		Keywords:    "monero remote nodes,public monero nodes,monero public nodes,monero wallet,tor monero node,monero cors rpc",
-		Robots:      "INDEX,FOLLOW",
-		Permalink:   "https://xmr.ditatompel.com/remote-nodes",
-		Identifier:  "/remote-nodes",
-	}
-
-	c.Set("Link", fmt.Sprintf(`<%s>; rel="canonical"`, p.Permalink))
-	home := views.BaseLayout(p, views.RemoteNodes())
 	handler := adaptor.HTTPHandler(templ.Handler(home))
 
 	return handler(c)
@@ -102,20 +85,78 @@ func Node(c *fiber.Ctx) error {
 	})
 }
 
-// Returns a list of nodes
+// Render Remote Nodes Page
+func (s *fiberServer) remoteNodesHandler(c *fiber.Ctx) error {
+	p := views.Meta{
+		Title:       "Public Monero Remote Nodes List",
+		Description: "Although it's possible to use these existing public Monero nodes, you're MUST RUN AND USE YOUR OWN NODE!",
+		Keywords:    "monero remote nodes,public monero nodes,monero public nodes,monero wallet,tor monero node,monero cors rpc",
+		Robots:      "INDEX,FOLLOW",
+		Permalink:   "https://xmr.ditatompel.com/remote-nodes",
+		Identifier:  "/remote-nodes",
+	}
+
+	moneroRepo := monero.New()
+	query := monero.QueryNodes{
+		Paging: paging.Paging{
+			Limit:         c.QueryInt("limit", 10), // rows per page
+			Page:          c.QueryInt("page", 1),
+			SortBy:        c.Query("sort_by", "id"),
+			SortDir:       c.Query("sort_dir", "desc"),
+			SortDirection: c.Query("sort_direction", "desc"), // deprecated
+			Refresh:       c.QueryInt("refresh", 0),
+		},
+		Host:     c.Query("host"),
+		Nettype:  c.Query("nettype", "any"),
+		Protocol: c.Query("protocol", "any"),
+		CC:       c.Query("cc", "any"),
+		Status:   c.QueryInt("status", -1),
+		CORS:     c.QueryInt("cors", -1),
+	}
+
+	nodes, err := moneroRepo.Nodes(query)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
+
+	pagination := paging.NewPagination(query.Page, nodes.TotalPages)
+
+	// handle request from HTMX
+	if c.Get("HX-Target") == "tbl_nodes" {
+		cmp := views.BlankLayout(views.TableNodes(nodes, query, pagination))
+		handler := adaptor.HTTPHandler(templ.Handler(cmp))
+		return handler(c)
+	}
+
+	c.Set("Link", fmt.Sprintf(`<%s>; rel="canonical"`, p.Permalink))
+	home := views.BaseLayout(p, views.RemoteNodes(nodes, query, pagination))
+	handler := adaptor.HTTPHandler(templ.Handler(home))
+
+	return handler(c)
+}
+
+// Returns a list of nodes (API)
 func Nodes(c *fiber.Ctx) error {
 	moneroRepo := monero.New()
 	query := monero.QueryNodes{
-		RowsPerPage:   c.QueryInt("limit", 10),
-		Page:          c.QueryInt("page", 1),
-		SortBy:        c.Query("sort_by", "id"),
-		SortDirection: c.Query("sort_direction", "desc"),
-		Host:          c.Query("host"),
-		Nettype:       c.Query("nettype", "any"),
-		Protocol:      c.Query("protocol", "any"),
-		CC:            c.Query("cc", "any"),
-		Status:        c.QueryInt("status", -1),
-		CORS:          c.QueryInt("cors", -1),
+		Paging: paging.Paging{
+			Limit:         c.QueryInt("limit", 10), // rows per page
+			Page:          c.QueryInt("page", 1),
+			SortBy:        c.Query("sort_by", "id"),
+			SortDir:       c.Query("sort_dir", "desc"),
+			SortDirection: c.Query("sort_direction", "desc"), // deprecated
+			Refresh:       c.QueryInt("refresh", 0),
+		},
+		Host:     c.Query("host"),
+		Nettype:  c.Query("nettype", "any"),
+		Protocol: c.Query("protocol", "any"),
+		CC:       c.Query("cc", "any"),
+		Status:   c.QueryInt("status", -1),
+		CORS:     c.QueryInt("cors", -1),
 	}
 
 	nodes, err := moneroRepo.Nodes(query)
