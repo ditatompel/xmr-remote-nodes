@@ -113,7 +113,7 @@ XMR Donation address:
 8BWYe6GzbNKbxe3D8mPkfFMQA2rViaZJFhWShhZTjJCNG6EZHkXRZCKHiuKmwwe4DXDYF8KKcbGkvNYaiRG3sNt7JhnVp7D
 ```
 
-![](./frontend/static/img/monerotip.png)
+![](./internal/handler/views/assets/img/monerotip.png)
 
 Thank you!
 
