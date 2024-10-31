@@ -81,7 +81,7 @@ func TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) tem
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"overflow-x-auto\"><table class=\"table-striped table-hover\"><thead><tr><th scope=\"col\">Host:Port</th><th scope=\"col\">Nettype</th><th scope=\"col\">Protocol</th><th scope=\"col\">Country</th><th scope=\"col\">Status</th><th scope=\"col\">Estimate Fee</th><th scope=\"col\">Uptime</th><th scope=\"col\">Check</th></tr></thead> <tbody>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"overflow-x-auto\"><table class=\"dt\"><thead><tr><th scope=\"col\">Host:Port</th><th scope=\"col\">Nettype</th><th scope=\"col\">Protocol</th><th scope=\"col\">Country</th><th scope=\"col\">Status</th><th scope=\"col\">Estimate Fee</th><th scope=\"col\">Uptime</th><th scope=\"col\">Check</th></tr></thead> <tbody>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

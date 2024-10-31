@@ -50,7 +50,7 @@ templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 			@DtRowPerPage("/remote-nodes", "#tbl_nodes", q.Limit, q)
 		</div>
 		<div class="overflow-x-auto">
-			<table class="table-striped table-hover">
+			<table class="dt">
 				<thead>
 					<tr>
 						<th scope="col">Host:Port</th>
