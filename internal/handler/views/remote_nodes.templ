@@ -67,7 +67,9 @@ templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 					for _, row := range data.Items {
 						<tr>
 							<td>{ fmt.Sprintf("%s:%d", row.Hostname, row.Port) }</td>
-							<td>{ row.Nettype }<br/>{ fmt.Sprintf("%d", row.Height) } </td>
+							<td>
+								@cellNettype(row.Nettype, row.Height)
+							</td>
 							<td>{ row.Protocol }</td>
 							<td>{ row.CountryCode }</td>
 							<td>{ fmt.Sprintf("%d", row.EstimateFee) }</td>
@@ -82,4 +84,17 @@ templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 			@DtPagination("/remote-nodes", "#tbl_nodes", q, p)
 		</div>
 	</div>
+}
+
+templ cellNettype(nettype string, height uint) {
+	switch nettype {
+		case "stagenet":
+			<span class="font-semibold uppercase text-sky-500">{ nettype }</span>
+		case "testnet":
+			<span class="font-semibold uppercase text-rose-500">{ nettype }</span>
+		default:
+			<span class="font-semibold uppercase text-green-500">{ nettype }</span>
+	}
+	<br/>
+	{ fmt.Sprintf("%d", height) }
 }
