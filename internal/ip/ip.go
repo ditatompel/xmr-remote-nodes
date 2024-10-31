@@ -26,3 +26,16 @@ func SliceToString(ips []net.IP) string {
 
 	return strings.Join(r, ",")
 }
+
+// Add brackets based on whether the given string is IPv6 or not.
+// If the input is an IPv6 address, wraps it in square brackets `[ ]`.
+// Otherwise, it returns the input string as-is (for domain names or IPv4
+// addresses).
+func FormatHostname(hostname string) string {
+	ip := net.ParseIP(hostname)
+	if ip != nil && ip.To4() == nil {
+		return "[" + hostname + "]"
+	}
+
+	return hostname
+}

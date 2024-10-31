@@ -2,8 +2,10 @@ package views
 
 import (
 	"fmt"
+	"github.com/ditatompel/xmr-remote-nodes/internal/ip"
 	"github.com/ditatompel/xmr-remote-nodes/internal/monero"
 	"github.com/ditatompel/xmr-remote-nodes/internal/paging"
+	"strings"
 	"time"
 )
 
@@ -66,7 +68,9 @@ templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 				<tbody>
 					for _, row := range data.Items {
 						<tr>
-							<td>{ fmt.Sprintf("%s:%d", row.Hostname, row.Port) }</td>
+							<td>
+								@cellHostPort(row.IPAddresses, row.Hostname, row.Port, row.IsTor, row.IPv6Only)
+							</td>
 							<td>
 								@cellNettype(row.Nettype, row.Height)
 							</td>
@@ -84,6 +88,27 @@ templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 			@DtPagination("/remote-nodes", "#tbl_nodes", q, p)
 		</div>
 	</div>
+}
+
+templ cellHostPort(ips, hostname string, port uint, isTor, ipv6Only bool) {
+	if isTor {
+		<!-- TODO: Add modal -->
+		<button class="max-w-40 truncate text-orange-400">
+			👁 { hostname }
+		</button>
+		<br/>
+		.onion:<span class="text-indigo-400">{ fmt.Sprintf("%d", port) }</span>
+		<span class="text-neutral-400">(TOR)</span>
+	} else {
+		{ ip.FormatHostname(hostname) }:<span class="text-indigo-400">{ fmt.Sprintf("%d", port) }</span>
+		<br/>
+		<div class="max-w-40 text-ellipsis overflow-x-auto md:overflow-hidden hover:overflow-visible">
+			<span class="whitespace-break-spaces text-gray-400">{ strings.ReplaceAll(ips, ",", " ") }</span>
+			if ipv6Only {
+				<span class="text-rose-400">(IPv6 only)</span>
+			}
+		</div>
+	}
 }
 
 templ cellNettype(nettype string, height uint) {
