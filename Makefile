@@ -60,6 +60,7 @@ prepare:
 	bun install --frozen-lockfile
 	@mkdir -p ./internal/handler/views/assets/js
 	cp ./node_modules/htmx.org/dist/htmx.min.js ./internal/handler/views/assets/js
+	cp ./node_modules/clipboard/dist/clipboard.min.js ./internal/handler/views/assets/js
 
 # Compile template
 .PHONY: templ

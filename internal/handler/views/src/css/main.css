@@ -17,6 +17,11 @@ a.external {
   @apply py-0.5 md:py-3 px-4 md:px-1 border-s-2 md:border-s-0 md:border-b-2 border-orange-400 font-medium text-neutral-200 focus:outline-none;
 }
 
+/** home page **/
 a.btn-link {
   @apply py-1 px-3 mt-2 inline-flex items-center gap-x-1 text-sm font-medium rounded-lg border border-neutral-700 bg-neutral-800 text-white shadow-sm hover:bg-neutral-700;
+}
+/* my nodes copy input button */
+button.copy-input {
+  @apply px-2 shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md border border-transparent bg-orange-600 text-white hover:brightness-125 focus:outline-none focus:bg-orange-700 disabled:opacity-50 disabled:pointer-events-none;
 }

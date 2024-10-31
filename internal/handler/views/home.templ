@@ -89,7 +89,6 @@ templ Home() {
 				<div class="group flex flex-col text-center gap-2">
 					<h2 class="font-semibold text-neutral-200 text-3xl">My Stagenet Public Node</h2>
 					<p>Stagenet is what you need to learn Monero safely. Stagenet is technically equivalent to mainnet, both in terms of features and consensus rules.</p>
-					<!-- TODO: add copy to clipboard functionality -->
 					<div>
 						<label for="stagenet-p2p" class="sr-only">Stagenet P2P</label>
 						<div class="flex rounded-lg shadow-sm">
@@ -97,7 +96,7 @@ templ Home() {
 								<span class="text-sm text-neutral-400">P2P</span>
 							</span>
 							<input type="text" id="stagenet-p2p" name="stagenet-p2p" class="py-3 px-4 block w-full text-neutral-400 bg-neutral-900 border-neutral-700 shadow-sm rounded-0 text-sm focus:z-10 focus:border-orange-500 focus:ring-orange-500" value="stagenet.xmr.ditatompel.com:38080" readonly/>
-							<button type="button" class="w-[2.875rem] h-[2.875rem] shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md border border-transparent bg-orange-600 text-white hover:bg-orange-500 focus:outline-none focus:bg-orange-700">
+							<button class="clipboard copy-input" data-clipboard-target="#stagenet-p2p">
 								Copy
 							</button>
 						</div>
@@ -109,7 +108,7 @@ templ Home() {
 								<span class="text-sm text-neutral-400">RPC</span>
 							</span>
 							<input type="text" id="stagenet-rpc" name="stagenet-rpc" class="py-3 px-4 block w-full text-neutral-400 bg-neutral-900 border-neutral-700 shadow-sm rounded-0 text-sm focus:z-10 focus:border-orange-500 focus:ring-orange-500" value="stagenet.xmr.ditatompel.com:38089" readonly/>
-							<button type="button" class="w-[2.875rem] h-[2.875rem] shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md border border-transparent bg-orange-600 text-white hover:bg-orange-500 focus:outline-none focus:bg-orange-700">
+							<button class="clipboard copy-input" data-clipboard-target="#stagenet-rpc">
 								Copy
 							</button>
 						</div>
@@ -121,7 +120,7 @@ templ Home() {
 								<span class="text-sm text-neutral-400">RPC SSL</span>
 							</span>
 							<input type="text" id="stagenet-ssl" name="stagenet-ssl" class="py-3 px-4 block w-full text-neutral-400 bg-neutral-900 border-neutral-700 shadow-sm rounded-0 text-sm focus:z-10 focus:border-orange-500 focus:ring-orange-500" value="stagenet.xmr.ditatompel.com:443" readonly/>
-							<button type="button" class="w-[2.875rem] h-[2.875rem] shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md border border-transparent bg-orange-600 text-white hover:bg-orange-500 focus:outline-none focus:bg-orange-700">
+							<button class="clipboard copy-input" data-clipboard-target="#stagenet-ssl">
 								Copy
 							</button>
 						</div>
@@ -131,7 +130,6 @@ templ Home() {
 				<div class="group flex flex-col text-center gap-2">
 					<h2 class="font-semibold text-neutral-200 text-3xl">My Testnet Public Node</h2>
 					<p>Testnet is the <em>"experimental"</em> network and blockchain where things get released long before mainnet. As a normal user, use mainnet instead.</p>
-					<!-- TODO: add copy to clipboard functionality -->
 					<div>
 						<label for="testnet-p2p" class="sr-only">Testnet P2P</label>
 						<div class="flex rounded-lg shadow-sm">
@@ -139,7 +137,7 @@ templ Home() {
 								<span class="text-sm text-neutral-400">P2P</span>
 							</span>
 							<input type="text" id="testnet-p2p" name="testnet-p2p" class="py-3 px-4 block w-full text-neutral-400 bg-neutral-900 border-neutral-700 shadow-sm rounded-0 text-sm focus:z-10 focus:border-orange-500 focus:ring-orange-500" value="testnet.xmr.ditatompel.com:28080" readonly/>
-							<button type="button" class="w-[2.875rem] h-[2.875rem] shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md border border-transparent bg-orange-600 text-white hover:bg-orange-500 focus:outline-none focus:bg-orange-700">
+							<button class="clipboard copy-input" data-clipboard-target="#testnet-p2p">
 								Copy
 							</button>
 						</div>
@@ -151,7 +149,7 @@ templ Home() {
 								<span class="text-sm text-neutral-400">RPC</span>
 							</span>
 							<input type="text" id="testnet-rpc" name="testnet-rpc" class="py-3 px-4 block w-full text-neutral-400 bg-neutral-900 border-neutral-700 shadow-sm rounded-0 text-sm focus:z-10 focus:border-orange-500 focus:ring-orange-500" value="testnet.xmr.ditatompel.com:28089" readonly/>
-							<button type="button" class="w-[2.875rem] h-[2.875rem] shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md border border-transparent bg-orange-600 text-white hover:bg-orange-500 focus:outline-none focus:bg-orange-700">
+							<button class="clipboard copy-input" data-clipboard-target="#testnet-rpc">
 								Copy
 							</button>
 						</div>
@@ -163,7 +161,7 @@ templ Home() {
 								<span class="text-sm text-neutral-400">RPC SSL</span>
 							</span>
 							<input type="text" id="testnet-ssl" name="testnet-ssl" class="py-3 px-4 block w-full text-neutral-400 bg-neutral-900 border-neutral-700 shadow-sm rounded-0 text-sm focus:z-10 focus:border-orange-500 focus:ring-orange-500" value="testnet.xmr.ditatompel.com:443" readonly/>
-							<button type="button" class="w-[2.875rem] h-[2.875rem] shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md border border-transparent bg-orange-600 text-white hover:bg-orange-500 focus:outline-none focus:bg-orange-700">
+							<button class="clipboard copy-input" data-clipboard-target="#testnet-ssl">
 								Copy
 							</button>
 						</div>
@@ -199,9 +197,8 @@ templ Home() {
 			<div class="md:basis-3/4">
 				<p>If you find this project useful, please consider making a donation to help cover the ongoing expenses. Your contribution will go towards ensuring the continued availability of <strong>this website</strong>, my <strong>stagenet</strong> and <strong>testnet</strong> public nodes.</p>
 				<label for="donate" class="block text-sm text-white font-medium my-2">XMR Donation address:</label>
-				<!-- TODO: add copy to clipboard functionality -->
-				<textarea id="donate" class="py-3 px-4 block w-full text-neutral-400 bg-neutral-900 border-neutral-700 rounded-lg text-sm focus:border-neutral-500 focus:ring-neutral-600" rows="3" disabled>8BWYe6GzbNKbxe3D8mPkfFMQA2rViaZJFhWShhZTjJCNG6EZHkXRZCKHiuKmwwe4DXDYF8KKcbGkvNYaiRG3sNt7JhnVp7D</textarea>
-				<button type="button" class="mt-2 py-2 px-3 inline-flex items-center gap-x-2 text-sm font-bold rounded-full border border-transparent bg-orange-600 text-white hover:bg-orange-500 focus:outline-none">
+				<textarea id="donate" class="py-3 px-4 block w-full text-neutral-400 bg-neutral-900 border-neutral-700 rounded-lg text-sm focus:border-neutral-500 focus:ring-neutral-600" rows="3" readonly>8BWYe6GzbNKbxe3D8mPkfFMQA2rViaZJFhWShhZTjJCNG6EZHkXRZCKHiuKmwwe4DXDYF8KKcbGkvNYaiRG3sNt7JhnVp7D</textarea>
+				<button type="button" class="clipboard mt-2 py-2 px-3 inline-flex items-center gap-x-2 text-sm font-bold rounded-full border border-transparent bg-orange-600 text-white hover:bg-orange-500 focus:outline-none disabled:bg-green-600 disabled:opacity-60 disabled:pointer-events-none" data-clipboard-target="#donate" data-success-text="Donation Address Copied! 🤩">
 					Copy Donation Address
 				</button>
 			</div>
