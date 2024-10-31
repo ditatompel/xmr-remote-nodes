@@ -29,7 +29,7 @@ func AddNode() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<h1>Add Node</h1>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!-- Hero --><section class=\"relative overflow-hidden pt-6\"><!-- Gradients --><div aria-hidden=\"true\" class=\"flex absolute -top-96 start-1/2 transform -translate-x-1/2\"><div class=\"bg-gradient-to-r blur-3xl w-[25rem] h-[44rem] rotate-[-60deg] transform -translate-x-[10rem] from-amber-800/30 to-orange-800/40\"></div><div class=\"bg-gradient-to-tl blur-3xl w-[90rem] h-[50rem] rounded-fulls origin-top-left -rotate-12 -translate-x-[15rem] from-orange-900/60 via-orange-900/40 to-amber-900/80\"></div></div><!-- End Gradients --><div class=\"relative z-10\"><div class=\"max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16\"><div class=\"text-center\"><!-- Title --><div class=\"mt-5\"><h1 class=\"block font-extrabold text-4xl md:text-5xl lg:text-6xl text-neutral-200\">Add Monero Node</h1></div><!-- End Title --><div class=\"mt-5\"><p class=\"text-lg text-neutral-300\">You can use this page to add known remote node to the system so my bots can monitor it.</p></div><hr class=\"mt-6\"></div></div></div></section><!-- End Hero -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
