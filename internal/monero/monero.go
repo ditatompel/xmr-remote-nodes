@@ -50,7 +50,7 @@ type Node struct {
 	Latitude        float64        `json:"latitude" db:"lat"`
 	Longitude       float64        `json:"longitude" db:"lon"`
 	DateEntered     uint           `json:"date_entered,omitempty" db:"date_entered"`
-	LastChecked     uint           `json:"last_checked" db:"last_checked"`
+	LastChecked     int64          `json:"last_checked" db:"last_checked"`
 	FailedCount     uint           `json:"failed_count,omitempty" db:"failed_count"`
 	LastCheckStatus types.JSONText `json:"last_check_statuses" db:"last_check_status"`
 	CORSCapable     bool           `json:"cors" db:"cors_capable"`
