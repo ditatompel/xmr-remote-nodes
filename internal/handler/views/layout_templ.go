@@ -218,7 +218,7 @@ func base(m Meta) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(", <a href=\"https://github.com/ditatompel/xmr-remote-nodes\">source code</a> licensed under <strong>GLWTPL</strong>.</p></div></footer></body></html>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(", <a href=\"https://github.com/ditatompel/xmr-remote-nodes\">source code</a> licensed under <strong>BSD-3-Clause</strong> license.</p></div></footer></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
