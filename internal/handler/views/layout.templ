@@ -41,14 +41,14 @@ templ base(m Meta) {
 			<script src={ fmt.Sprintf("/assets/js/htmx.min.js?t=%d", buildTime) }></script>
 			<script src={ fmt.Sprintf("/assets/js/main.min.js?t=%d", buildTime) }></script>
 		</head>
-		<body class="bg-neutral-900" hx-boost="true" hx-indicator="#hx-indicator-main">
+		<body class="bg-neutral-900 text-neutral-400" hx-boost="true" hx-indicator="#hx-indicator-main">
 			@navbar(m.Identifier)
-			<main class="flex flex-col h-screen">
+			<main class="shrink-0 min-h-screen">
 				{ children... }
 			</main>
-			<footer class="absolute bottom-0 inset-x-0 text-center py-5">
+			<footer class="mt-auto py-3 bg-neutral-800 text-center">
 				<div class="max-w-[85rem] mx-auto px-4 sm:px-6 lg:px-8">
-					<p class="text-sm text-white/50">XMR Nodes { config.Version }, <a href="https://github.com/ditatompel/xmr-remote-nodes">source code</a> licensed under <strong>GLWTPL</strong>.</p>
+					<p class="text-sm">XMR Nodes { config.Version }, <a href="https://github.com/ditatompel/xmr-remote-nodes">source code</a> licensed under <strong>GLWTPL</strong>.</p>
 				</div>
 			</footer>
 		</body>
