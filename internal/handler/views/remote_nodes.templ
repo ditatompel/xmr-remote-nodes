@@ -84,6 +84,9 @@ templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 								@cellStatuses(row.IsAvailable, monero.ParseNodeStatuses(row.LastCheckStatus))
 							</td>
 							<td>{ fmt.Sprintf("%d", row.EstimateFee) }</td>
+							<td class="text-right">
+								@cellUptime(row.Uptime)
+							</td>
 							<td>{ time.Unix(row.LastChecked, 0).Format("2006-01-02 15:04") }</td>
 						</tr>
 					}
@@ -179,5 +182,17 @@ templ cellStatuses(isAvailable bool, statuses [5]int) {
 		} else {
 			<span class="text-neutral-600 mr-1">•</span>
 		}
+	}
+}
+
+templ cellUptime(uptime float64) {
+	if uptime >= 98 {
+		<span class="text-green-500">{ formatFloat(uptime) }%</span>
+	} else if uptime < 98 && uptime >= 80 {
+		<span class="text-sky-500">{ formatFloat(uptime) }%</span>
+	} else if uptime < 80 && uptime > 75 {
+		<span class="text-orange-500">{ formatFloat(uptime) }%</span>
+	} else {
+		<span class="text-rose-500">{ formatFloat(uptime) }%</span>
 	}
 }
