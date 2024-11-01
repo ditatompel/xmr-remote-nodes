@@ -77,7 +77,9 @@ templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 							<td>
 								@cellProtocol(row.Protocol, row.CORSCapable)
 							</td>
-							<td>{ row.CountryCode }</td>
+							<td>
+								@cellCountry(row.CountryCode, row.CountryName, row.City, row.ASNName, row.ASN)
+							</td>
 							<td>{ fmt.Sprintf("%d", row.EstimateFee) }</td>
 							<td>{ time.Unix(row.LastChecked, 0).Format("2006-01-02 15:04") }</td>
 						</tr>
@@ -136,5 +138,25 @@ templ cellProtocol(protocol string, cors bool) {
 	if cors {
 		<br/>
 		(CORS 💪)
+	}
+}
+
+templ cellCountry(cc, countryName, city, asnName string, asn uint) {
+	if cc != "" {
+		if city != "" {
+			{ city },
+		}
+		{ countryName }
+		<img class="inline-block" src={ fmt.Sprintf("/assets/img/cf/%s.svg", strings.ToLower(cc)) } alt={ fmt.Sprintf("%s Flag", cc) } width="22px"/>
+	}
+	if asn != 0 {
+		<br/>
+		<a
+			class="external font-semibold underline !text-purple-400"
+			href={ templ.URL(fmt.Sprintf("https://www.ditatompel.com/asn/%d", asn)) }
+			target="_blank"
+			rel="noopener"
+		>{ fmt.Sprintf("AS%d", asn) }</a>
+		(<span class="font-semibold text-green-500">{ asnName }</span>)
 	}
 }
