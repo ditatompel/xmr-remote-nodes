@@ -74,7 +74,9 @@ templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 							<td>
 								@cellNettype(row.Nettype, row.Height)
 							</td>
-							<td>{ row.Protocol }</td>
+							<td>
+								@cellProtocol(row.Protocol, row.CORSCapable)
+							</td>
 							<td>{ row.CountryCode }</td>
 							<td>{ fmt.Sprintf("%d", row.EstimateFee) }</td>
 							<td>{ time.Unix(row.LastChecked, 0).Format("2006-01-02 15:04") }</td>
@@ -122,4 +124,17 @@ templ cellNettype(nettype string, height uint) {
 	}
 	<br/>
 	{ fmt.Sprintf("%d", height) }
+}
+
+templ cellProtocol(protocol string, cors bool) {
+	switch protocol {
+		case "http":
+			<span class="font-semibold uppercase text-sky-500">{ protocol }</span>
+		default:
+			<span class="font-semibold uppercase text-green-500">{ protocol }</span>
+	}
+	if cors {
+		<br/>
+		(CORS 💪)
+	}
 }
