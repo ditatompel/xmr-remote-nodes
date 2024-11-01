@@ -357,3 +357,14 @@ func (r *moneroRepo) Countries() ([]Countries, error) {
 			country ASC`)
 	return c, err
 }
+
+// ParseNodeStatuses parses JSONText into [5]int
+// Used this to parse last_check_status for templ engine
+func ParseNodeStatuses(statuses types.JSONText) [5]int {
+	s := [5]int{}
+	if err := statuses.Unmarshal(&s); err != nil {
+		return [5]int{2, 2, 2, 2, 2}
+	}
+
+	return s
+}

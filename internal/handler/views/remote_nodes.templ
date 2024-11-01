@@ -80,6 +80,9 @@ templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 							<td>
 								@cellCountry(row.CountryCode, row.CountryName, row.City, row.ASNName, row.ASN)
 							</td>
+							<td>
+								@cellStatuses(row.IsAvailable, monero.ParseNodeStatuses(row.LastCheckStatus))
+							</td>
 							<td>{ fmt.Sprintf("%d", row.EstimateFee) }</td>
 							<td>{ time.Unix(row.LastChecked, 0).Format("2006-01-02 15:04") }</td>
 						</tr>
@@ -158,5 +161,23 @@ templ cellCountry(cc, countryName, city, asnName string, asn uint) {
 			rel="noopener"
 		>{ fmt.Sprintf("AS%d", asn) }</a>
 		(<span class="font-semibold text-green-500">{ asnName }</span>)
+	}
+}
+
+templ cellStatuses(isAvailable bool, statuses [5]int) {
+	if isAvailable {
+		<span class="font-semibold text-green-500">Online</span>
+	} else {
+		<span class="text-rose-400">Offline</span>
+	}
+	<br/>
+	for _, status := range statuses {
+		if status == 1 {
+			<span class="text-green-400 mr-1">•</span>
+		} else if status == 0 {
+			<span class="text-red-400 mr-1">•</span>
+		} else {
+			<span class="text-neutral-600 mr-1">•</span>
+		}
 	}
 }
