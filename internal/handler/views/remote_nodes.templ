@@ -87,7 +87,7 @@ templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 							<td class="text-right">
 								@cellUptime(row.Uptime)
 							</td>
-							<td>{ time.Unix(row.LastChecked, 0).Format("2006-01-02 15:04") }</td>
+							<td title={ time.Unix(row.LastChecked, 0).UTC().Format("Jan 2, 2006 15:04 MST") }>{ timeSince(row.LastChecked) }</td>
 						</tr>
 					}
 				</tbody>
