@@ -10,6 +10,7 @@ import (
 )
 
 var nettypes = []string{"mainnet", "stagenet", "testnet"}
+var protocols = []string{"tor", "http", "https"}
 
 templ RemoteNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 	<!-- Hero -->
@@ -98,6 +99,24 @@ templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 								<option value="">ANY</option>
 								for _, nettype := range nettypes {
 									<option value={ fmt.Sprintf("%s", nettype) } selected?={ nettype == q.Nettype }>{ nettype }</option>
+								}
+							</select>
+						</td>
+						<td>
+							<select
+								id="protocol"
+								name="protocol"
+								class="th-filter"
+								autocomplete="off"
+								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"protocol"})) }
+								hx-trigger="change"
+								hx-push-url="true"
+								hx-target="#tbl_nodes"
+								hx-swap="outerHTML"
+							>
+								<option value="">ANY</option>
+								for _, protocol := range protocols {
+									<option value={ fmt.Sprintf("%s", protocol) } selected?={ protocol == q.Protocol }>{ protocol }</option>
 								}
 							</select>
 						</td>
