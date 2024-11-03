@@ -81,7 +81,7 @@ type QueryNodes struct {
 	Nettype  string `url:"nettype,omitempty"`  // Can be empty string, "any", mainnet, stagenet, testnet.
 	Protocol string `url:"protocol,omitempty"` // Can be "any", tor, http, https. Default: "any"
 	CC       string `url:"cc,omitempty"`       // 2 letter country code
-	Status   int
+	Status   int    `url:"status"`
 	CORS     int
 }
 

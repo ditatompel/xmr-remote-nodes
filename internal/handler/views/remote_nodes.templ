@@ -12,6 +12,17 @@ import (
 var nettypes = []string{"mainnet", "stagenet", "testnet"}
 var protocols = []string{"tor", "http", "https"}
 
+type nodeStatus struct {
+	Code int
+	Text string
+}
+
+var nodeStatuses = []nodeStatus{
+	{-1, "ANY"},
+	{1, "Online"},
+	{0, "Offline"},
+}
+
 templ RemoteNodes(data monero.Nodes, countries []monero.Countries, q monero.QueryNodes, p paging.Pagination) {
 	<!-- Hero -->
 	<section class="relative overflow-hidden pt-6">
@@ -139,6 +150,23 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 									} else {
 										<option value={ fmt.Sprintf("%s", country.CC) } selected?={ country.CC == q.CC }>{ fmt.Sprintf("%s (%d)", country.Name, country.TotalNodes ) }</option>
 									}
+								}
+							</select>
+						</td>
+						<td>
+							<select
+								id="status"
+								name="status"
+								class="th-filter"
+								autocomplete="off"
+								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"status"})) }
+								hx-trigger="change"
+								hx-push-url="true"
+								hx-target="#tbl_nodes"
+								hx-swap="outerHTML"
+							>
+								for _, status := range nodeStatuses {
+									<option value={ fmt.Sprintf("%d", status.Code) } selected?={ status.Code == q.Status }>{ status.Text }</option>
 								}
 							</select>
 						</td>
