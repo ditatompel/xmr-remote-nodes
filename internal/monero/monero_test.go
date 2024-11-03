@@ -62,7 +62,7 @@ func TestQueryNodes_toSQL(t *testing.T) {
 				Protocol: "any",
 				CC:       "any",
 				Status:   -1,
-				CORS:     -1,
+				CORS:     "",
 			},
 			wantArgs:    []interface{}{},
 			wantWhere:   "",
@@ -84,7 +84,7 @@ func TestQueryNodes_toSQL(t *testing.T) {
 				Protocol: "any",
 				CC:       "any",
 				Status:   -1,
-				CORS:     -1,
+				CORS:     "",
 			},
 			wantArgs:    []interface{}{"%test%", "%test%"},
 			wantWhere:   "WHERE (hostname LIKE ? OR ip_addr LIKE ?)",
@@ -127,7 +127,7 @@ func Benchmark_QueryNodes_toSQL(b *testing.B) {
 		Protocol: "any",
 		CC:       "any",
 		Status:   -1,
-		CORS:     -1,
+		CORS:     "",
 	}
 	for i := 0; i < b.N; i++ {
 		_, _ = q.toSQL()

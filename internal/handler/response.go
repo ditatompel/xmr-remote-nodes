@@ -111,7 +111,7 @@ func (s *fiberServer) remoteNodesHandler(c *fiber.Ctx) error {
 		Protocol: c.Query("protocol", "any"),
 		CC:       c.Query("cc", "any"),
 		Status:   c.QueryInt("status", -1),
-		CORS:     c.QueryInt("cors", -1),
+		CORS:     c.Query("cors"),
 	}
 
 	nodes, err := moneroRepo.Nodes(query)
@@ -165,7 +165,7 @@ func Nodes(c *fiber.Ctx) error {
 		Protocol: c.Query("protocol", "any"),
 		CC:       c.Query("cc", "any"),
 		Status:   c.QueryInt("status", -1),
-		CORS:     c.QueryInt("cors", -1),
+		CORS:     c.Query("cors"),
 	}
 
 	nodes, err := moneroRepo.Nodes(query)

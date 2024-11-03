@@ -82,7 +82,7 @@ type QueryNodes struct {
 	Protocol string `url:"protocol,omitempty"` // Can be "any", tor, http, https. Default: "any"
 	CC       string `url:"cc,omitempty"`       // 2 letter country code
 	Status   int    `url:"status"`
-	CORS     int
+	CORS     string `url:"cors,omitempty"`
 }
 
 // toSQL generates SQL query from query parameters
@@ -118,9 +118,9 @@ func (q *QueryNodes) toSQL() (args []interface{}, where string) {
 		wq = append(wq, "is_available = ?")
 		args = append(args, q.Status)
 	}
-	if q.CORS != -1 {
+	if q.CORS == "on" || q.CORS == "1" { // DEPRECATED: CORS = int is deprecated, use CORS = on" instead
 		wq = append(wq, "cors_capable = ?")
-		args = append(args, q.CORS)
+		args = append(args, 1)
 	}
 
 	if len(wq) > 0 {

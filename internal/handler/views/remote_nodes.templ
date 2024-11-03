@@ -153,7 +153,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								}
 							</select>
 						</td>
-						<td>
+						<td colspan="2">
 							<select
 								id="status"
 								name="status"
@@ -169,6 +169,24 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 									<option value={ fmt.Sprintf("%d", status.Code) } selected?={ status.Code == q.Status }>{ status.Text }</option>
 								}
 							</select>
+						</td>
+						<td colspan="2">
+							<div class="flex justify-center">
+								<input
+									type="checkbox"
+									id="cors"
+									name="cors"
+									autocomplete="off"
+									checked?={ q.CORS == "on" }
+									hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"cors"})) }
+									hx-trigger="change"
+									hx-push-url="true"
+									hx-target="#tbl_nodes"
+									hx-swap="outerHTML"
+									class="shrink-0 mt-0.5 text-orange-400 bg-neutral-800 border-neutral-700 rounded focus:ring-0 checked:bg-orange-400 checked:border-orange-400 focus:ring-offset-orange-500"
+								/>
+								<label for="cors" class="text-sm ms-3 text-neutral-400">CORS</label>
+							</div>
 						</td>
 					</tr>
 				</thead>
