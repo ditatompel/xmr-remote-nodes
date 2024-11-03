@@ -75,8 +75,8 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 						<th scope="col">Country</th>
 						<th scope="col">Status</th>
 						<th scope="col">Estimate Fee</th>
-						<th scope="col">Uptime</th>
-						<th scope="col">Check</th>
+						@DtThSort("/remote-nodes", "#tbl_nodes", "Uptime", "uptime", q.SortBy, q.SortDirection, q)
+						@DtThSort("/remote-nodes", "#tbl_nodes", "Check", "last_checked", q.SortBy, q.SortDirection, q)
 					</tr>
 					<tr>
 						<td>

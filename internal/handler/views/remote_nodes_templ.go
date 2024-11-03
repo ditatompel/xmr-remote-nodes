@@ -97,7 +97,19 @@ func TableNodes(data monero.Nodes, countries []monero.Countries, q monero.QueryN
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"overflow-x-auto\"><table class=\"dt\"><thead><tr><th scope=\"col\">Host:Port</th><th scope=\"col\">Nettype</th><th scope=\"col\">Protocol</th><th scope=\"col\">Country</th><th scope=\"col\">Status</th><th scope=\"col\">Estimate Fee</th><th scope=\"col\">Uptime</th><th scope=\"col\">Check</th></tr><tr><td><input type=\"text\" id=\"host\" name=\"host\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"overflow-x-auto\"><table class=\"dt\"><thead><tr><th scope=\"col\">Host:Port</th><th scope=\"col\">Nettype</th><th scope=\"col\">Protocol</th><th scope=\"col\">Country</th><th scope=\"col\">Status</th><th scope=\"col\">Estimate Fee</th>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = DtThSort("/remote-nodes", "#tbl_nodes", "Uptime", "uptime", q.SortBy, q.SortDirection, q).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = DtThSort("/remote-nodes", "#tbl_nodes", "Check", "last_checked", q.SortBy, q.SortDirection, q).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</tr><tr><td><input type=\"text\" id=\"host\" name=\"host\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

@@ -30,6 +30,46 @@ templ DtRowPerPage(url, hxTarget string, rowsPerPage int, q interface{}) {
 	</div>
 }
 
+// Sort TH table
+//
+// URL: Where the URL to get the results is
+// HxTarget: Where the results will be displayed
+// Title: The title of the column
+// ExpectedSort: The expected sort, used to determine the sort direction indicator
+// SortBy: The current sort by
+// SortDir: The current sort direction
+// Q: The current query
+templ DtThSort(url, hxTarget, title, expectedSort, sortBy, sortDir string, q interface{}) {
+	if expectedSort == sortBy && sortDir== "asc" {
+		<th
+			scope="col"
+			class="cursor-pointer"
+			hx-push-url="true"
+			hx-target={ hxTarget }
+			hx-swap="outerHTML"
+			hx-get={ fmt.Sprintf("%s?sort_by=%s&sort_direction=desc&%s", url, expectedSort, paging.EncodedQuery(q, []string{"sort_by", "sort_direction"})) }
+		>{ title } ▾</th>
+	} else if expectedSort == sortBy && sortDir== "desc" {
+		<th
+			scope="col"
+			class="cursor-pointer"
+			hx-push-url="true"
+			hx-target={ hxTarget }
+			hx-swap="outerHTML"
+			hx-get={ string(templ.URL(fmt.Sprintf("%s?sort_by=%s&sort_direction=asc&%s", url, expectedSort, paging.EncodedQuery(q, []string{"sort_by", "sort_direction"})))) }
+		>{ title } ▴</th>
+	} else {
+		<th
+			scope="col"
+			class="cursor-pointer"
+			hx-push-url="true"
+			hx-target={ hxTarget }
+			hx-swap="outerHTML"
+			hx-get={ string(templ.URL(fmt.Sprintf("%s?sort_by=%s&sort_direction=desc&%s", url, expectedSort, paging.EncodedQuery(q, []string{"sort_by", "sort_direction"})))) }
+		>{ title } ▴▾</th>
+	}
+}
+
 templ DtRowCount(currentPage, rowsPerPage, totalRows int) {
 	<div>
 		<p class="text-sm">
