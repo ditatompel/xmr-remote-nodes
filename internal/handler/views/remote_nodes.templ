@@ -12,7 +12,7 @@ import (
 var nettypes = []string{"mainnet", "stagenet", "testnet"}
 var protocols = []string{"tor", "http", "https"}
 
-templ RemoteNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
+templ RemoteNodes(data monero.Nodes, countries []monero.Countries, q monero.QueryNodes, p paging.Pagination) {
 	<!-- Hero -->
 	<section class="relative overflow-hidden pt-6">
 		<!-- Gradients -->
@@ -44,12 +44,12 @@ templ RemoteNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 	<!-- End Hero -->
 	<div class="flex flex-col max-w-6xl mx-auto mb-10">
 		<div class="min-w-full inline-block align-middle">
-			@TableNodes(data, q, p)
+			@TableNodes(data, countries, q, p)
 		</div>
 	</div>
 }
 
-templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
+templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.QueryNodes, p paging.Pagination) {
 	<div id="tbl_nodes" class="bg-neutral-800 border border-neutral-700 rounded-xl shadow-sm overflow-hidden">
 		<div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-neutral-700">
 			@DtRowPerPage("/remote-nodes", "#tbl_nodes", q.Limit, q)
@@ -117,6 +117,28 @@ templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 								<option value="">ANY</option>
 								for _, protocol := range protocols {
 									<option value={ fmt.Sprintf("%s", protocol) } selected?={ protocol == q.Protocol }>{ protocol }</option>
+								}
+							</select>
+						</td>
+						<td>
+							<select
+								id="cc"
+								name="cc"
+								class="th-filter"
+								autocomplete="off"
+								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"cc"})) }
+								hx-trigger="change"
+								hx-push-url="true"
+								hx-target="#tbl_nodes"
+								hx-swap="outerHTML"
+							>
+								<option value="any">ANY</option>
+								for _, country := range countries {
+									if country.CC == "" {
+										<option value="UNKNOWN" selected?={ q.CC== "UNKNOWN" }>{ fmt.Sprintf("UNKNOWN (%d)", country.TotalNodes ) }</option>
+									} else {
+										<option value={ fmt.Sprintf("%s", country.CC) } selected?={ country.CC == q.CC }>{ fmt.Sprintf("%s (%d)", country.Name, country.TotalNodes ) }</option>
+									}
 								}
 							</select>
 						</td>

@@ -123,17 +123,26 @@ func (s *fiberServer) remoteNodesHandler(c *fiber.Ctx) error {
 		})
 	}
 
+	countries, err := moneroRepo.Countries()
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
+
 	pagination := paging.NewPagination(query.Page, nodes.TotalPages)
 
 	// handle request from HTMX
 	if c.Get("HX-Target") == "tbl_nodes" {
-		cmp := views.BlankLayout(views.TableNodes(nodes, query, pagination))
+		cmp := views.BlankLayout(views.TableNodes(nodes, countries, query, pagination))
 		handler := adaptor.HTTPHandler(templ.Handler(cmp))
 		return handler(c)
 	}
 
 	c.Set("Link", fmt.Sprintf(`<%s>; rel="canonical"`, p.Permalink))
-	home := views.BaseLayout(p, views.RemoteNodes(nodes, query, pagination))
+	home := views.BaseLayout(p, views.RemoteNodes(nodes, countries, query, pagination))
 	handler := adaptor.HTTPHandler(templ.Handler(home))
 
 	return handler(c)
