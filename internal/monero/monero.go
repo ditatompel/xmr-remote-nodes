@@ -78,7 +78,7 @@ func (r *moneroRepo) Node(id int) (Node, error) {
 type QueryNodes struct {
 	paging.Paging
 	Host     string `url:"host,omitempty"`
-	Nettype  string // Can be "any", mainnet, stagenet, testnet. Default: "any"
+	Nettype  string `url:"nettype,omitempty"` // Can be empty string, "any", mainnet, stagenet, testnet.
 	Protocol string // Can be "any", tor, http, https. Default: "any"
 	CC       string `url:"cc,omitempty"` // 2 letter country code
 	Status   int

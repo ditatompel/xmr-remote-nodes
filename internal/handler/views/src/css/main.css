@@ -36,6 +36,10 @@ table.dt thead {
 table.dt thead tr th {
   @apply px-3 py-3 text-start text-xs font-semibold uppercase text-neutral-200;
 }
+thead input.th-filter,
+thead select.th-filter {
+  @apply block w-full text-neutral-400 placeholder-neutral-500 bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-neutral-700 text-sm focus:border-t-transparent focus:border-x-transparent focus:border-b-orange-400 focus:ring-0 focus:ring-orange-400;
+}
 table.dt tbody {
   @apply divide-y divide-neutral-700;
 }

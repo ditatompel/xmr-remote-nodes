@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+var nettypes = []string{"mainnet", "stagenet", "testnet"}
+
 templ RemoteNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 	<!-- Hero -->
 	<section class="relative overflow-hidden pt-6">
@@ -63,6 +65,42 @@ templ TableNodes(data monero.Nodes, q monero.QueryNodes, p paging.Pagination) {
 						<th scope="col">Estimate Fee</th>
 						<th scope="col">Uptime</th>
 						<th scope="col">Check</th>
+					</tr>
+					<tr>
+						<td>
+							<input
+								type="text"
+								id="host"
+								name="host"
+								value={ fmt.Sprintf("%s", q.Host) }
+								autocomplete="off"
+								class="th-filter"
+								placeholder="Filter Host / IP"
+								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"host"})) }
+								hx-push-url="true"
+								hx-trigger="keyup changed delay:0.4s"
+								hx-target="#tbl_nodes"
+								hx-swap="outerHTML"
+							/>
+						</td>
+						<td>
+							<select
+								id="nettype"
+								name="nettype"
+								class="th-filter"
+								autocomplete="off"
+								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"nettype"})) }
+								hx-trigger="change"
+								hx-push-url="true"
+								hx-target="#tbl_nodes"
+								hx-swap="outerHTML"
+							>
+								<option value="">ANY</option>
+								for _, nettype := range nettypes {
+									<option value={ fmt.Sprintf("%s", nettype) } selected?={ nettype == q.Nettype }>{ nettype }</option>
+								}
+							</select>
+						</td>
 					</tr>
 				</thead>
 				<tbody>
