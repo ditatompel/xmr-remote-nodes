@@ -7,12 +7,10 @@ import (
 )
 
 type Paging struct {
-	Limit   int    `url:"limit,omitempty"` // rows per page
-	Page    int    `url:"page"`
-	SortBy  string `url:"sort_by,omitempty"`
-	SortDir string `url:"sort_dir,omitempty"`
-
-	SortDirection string `url:"sort_direction,omitempty"` // DEPRECATED: use SortDir
+	Limit         int    `url:"limit,omitempty"` // rows per page
+	Page          int    `url:"page"`
+	SortBy        string `url:"sort_by,omitempty"`
+	SortDirection string `url:"sort_direction,omitempty"`
 
 	// Refresh interval
 	Refresh int `url:"refresh,omitempty"`

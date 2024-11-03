@@ -131,13 +131,8 @@ func (q *QueryNodes) toSQL() (args []interface{}, where string) {
 		q.SortBy = "last_checked"
 	}
 
-	// deprecated: Use SortDir instead
 	if q.SortDirection != "asc" {
-		q.SortDir = "DESC"
-	}
-
-	if q.SortDir != "asc" {
-		q.SortDir = "DESC"
+		q.SortDirection = "DESC"
 	}
 
 	return args, where
@@ -183,7 +178,7 @@ func (r *moneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 			%s
 			%s
 		LIMIT ?
-		OFFSET ?`, where, q.SortBy, q.SortDir)
+		OFFSET ?`, where, q.SortBy, q.SortDirection)
 	err = r.db.Select(&nodes.Items, query, args...)
 
 	return nodes, err

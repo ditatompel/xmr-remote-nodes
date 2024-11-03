@@ -54,8 +54,7 @@ func TestQueryNodes_toSQL(t *testing.T) {
 					Limit:         10,
 					Page:          1,
 					SortBy:        "last_checked",
-					SortDir:       "desc",
-					SortDirection: "desc", // deprecated
+					SortDirection: "desc",
 				},
 				Host:     "",
 				Nettype:  "any",
@@ -76,8 +75,7 @@ func TestQueryNodes_toSQL(t *testing.T) {
 					Limit:         10,
 					Page:          1,
 					SortBy:        "last_checked",
-					SortDir:       "desc",
-					SortDirection: "desc", // deprecated
+					SortDirection: "desc",
 				},
 				Host:     "test",
 				Nettype:  "any",
@@ -104,8 +102,8 @@ func TestQueryNodes_toSQL(t *testing.T) {
 			if tt.query.SortBy != tt.wantSortBy {
 				t.Errorf("QueryNodes.toSQL() gotSortBy = %v, want %v", tt.query.SortBy, tt.wantSortBy)
 			}
-			if tt.query.SortDir != tt.wantSortDir {
-				t.Errorf("QueryNodes.toSQL() gotSortDir = %v, want %v", tt.query.SortDir, tt.wantSortDir)
+			if tt.query.SortDirection != tt.wantSortDir {
+				t.Errorf("QueryNodes.toSQL() gotSortDir = %v, want %v", tt.query.SortDirection, tt.wantSortDir)
 			}
 		})
 	}
@@ -119,8 +117,7 @@ func Benchmark_QueryNodes_toSQL(b *testing.B) {
 			Limit:         10,
 			Page:          1,
 			SortBy:        "last_checked",
-			SortDir:       "desc",
-			SortDirection: "desc", // deprecated
+			SortDirection: "desc",
 		},
 		Host:     "test",
 		Nettype:  "any",

@@ -102,8 +102,7 @@ func (s *fiberServer) remoteNodesHandler(c *fiber.Ctx) error {
 			Limit:         c.QueryInt("limit", 10), // rows per page
 			Page:          c.QueryInt("page", 1),
 			SortBy:        c.Query("sort_by", "id"),
-			SortDir:       c.Query("sort_dir", "desc"),
-			SortDirection: c.Query("sort_direction", "desc"), // deprecated
+			SortDirection: c.Query("sort_direction", "desc"),
 			Refresh:       c.QueryInt("refresh", 0),
 		},
 		Host:     c.Query("host"),
@@ -156,8 +155,7 @@ func Nodes(c *fiber.Ctx) error {
 			Limit:         c.QueryInt("limit", 10), // rows per page
 			Page:          c.QueryInt("page", 1),
 			SortBy:        c.Query("sort_by", "id"),
-			SortDir:       c.Query("sort_dir", "desc"),
-			SortDirection: c.Query("sort_direction", "desc"), // deprecated
+			SortDirection: c.Query("sort_direction", "desc"),
 			Refresh:       c.QueryInt("refresh", 0),
 		},
 		Host:     c.Query("host"),
