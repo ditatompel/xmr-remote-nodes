@@ -89,3 +89,10 @@ templ ModalLayout(title string, cmp templ.Component) {
 		</div>
 	</div>
 }
+
+templ heroGradient() {
+	<div aria-hidden="true" class="flex absolute -top-96 start-1/2 transform -translate-x-1/2">
+		<div class="bg-gradient-to-r blur-3xl w-[25rem] h-[44rem] rotate-[-60deg] transform -translate-x-[10rem] from-amber-800/30 to-orange-800/40"></div>
+		<div class="bg-gradient-to-tl blur-3xl w-[90rem] h-[50rem] rounded-fulls origin-top-left -rotate-12 -translate-x-[15rem] from-orange-900/60 via-orange-900/40 to-amber-900/80"></div>
+	</div>
+}
