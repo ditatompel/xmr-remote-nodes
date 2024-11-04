@@ -23,7 +23,7 @@
 		"@vincjo/datatables": "^1.14.10",
 		"autoprefixer": "^10.4.20",
 		"date-fns": "^4.1.0",
-		"eslint": "^9.13.0",
+		"eslint": "^9.14.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.46.0",
 		"postcss": "^8.4.47",
