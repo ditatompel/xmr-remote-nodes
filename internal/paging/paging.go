@@ -13,7 +13,7 @@ type Paging struct {
 	SortDirection string `url:"sort_direction,omitempty"`
 
 	// Refresh interval
-	Refresh int `url:"refresh,omitempty"`
+	Refresh string `url:"refresh,omitempty"`
 }
 
 // a-h templ helpers

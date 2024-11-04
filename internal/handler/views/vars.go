@@ -14,3 +14,5 @@ var communityLinks = []link{
 	{Text: "monerotopia.com", URI: "https://monerotopia.com"},
 	{Text: "sethforprivacy.com", URI: "https://sethforprivacy.com"},
 }
+
+var refreshIntevals = []string{"5s", "10s", "30s", "1m"}

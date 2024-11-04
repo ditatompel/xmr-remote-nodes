@@ -3,6 +3,7 @@ package views
 import (
 	"fmt"
 	"github.com/ditatompel/xmr-remote-nodes/internal/paging"
+	"slices"
 )
 
 var availablePages = []int{5, 10, 20, 50, 100}
@@ -13,6 +14,7 @@ templ DtRowPerPage(url, hxTarget string, rowsPerPage int, q interface{}) {
 			name="limit"
 			id="dt_limit"
 			class="py-2 px-3 pe-9 block bg-neutral-900 border-neutral-700 rounded-lg text-sm focus:border-orange-400 focus:ring-orange-400"
+			autocomplete="off"
 			hx-get={ fmt.Sprintf("%s?%s", url, paging.EncodedQuery(q, []string{"limit"})) }
 			hx-trigger="change"
 			hx-push-url="true"
@@ -27,6 +29,39 @@ templ DtRowPerPage(url, hxTarget string, rowsPerPage int, q interface{}) {
 				>{ fmt.Sprintf("%d", page) }</option>
 			}
 		</select>
+	</div>
+}
+
+templ DtRefreshInterval(url, hxTarget, interval string, q interface{}) {
+	<div class="inline-flex gap-x-2 items-center">
+		<div>Auto refresh:</div>
+		<div class="max-w-sm space-y-3">
+			<select
+				name="refresh"
+				id="dt_refresh"
+				class="py-2 px-3 pe-9 block text-sm text-neutral-400 bg-neutral-900 border-neutral-700 rounded-lg focus:border-orange-400 focus:ring-orange-400"
+				autocomplete="off"
+				hx-get={ fmt.Sprintf("%s?%s", url, paging.EncodedQuery(q, []string{"refresh"})) }
+				hx-trigger="change"
+				hx-push-url="true"
+				hx-target={ hxTarget }
+				hx-swap="outerHTML"
+			>
+				<option value="">off</option>
+				for _, v := range refreshIntevals {
+					<option value={ v } selected?={ v == interval }>{ v }</option>
+				}
+			</select>
+		</div>
+		if slices.Contains(refreshIntevals, interval) {
+			<div
+				hx-get={ fmt.Sprintf("%s?%s", url, paging.EncodedQuery(q, []string{""})) }
+				hx-push-url="false"
+				hx-target={ hxTarget }
+				hx-trigger={ fmt.Sprintf("every %s", interval) }
+				hx-swap="outerHTML"
+			></div>
+		}
 	</div>
 }
 
