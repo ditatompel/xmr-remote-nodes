@@ -67,6 +67,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 			<div>
 				@DtRefreshInterval("/remote-nodes", "#tbl_nodes", q.Refresh, q)
 			</div>
+			@DtReload("/remote-nodes", "#tbl_nodes", q)
 		</div>
 		<div class="overflow-x-auto">
 			<table class="dt">
