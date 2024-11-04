@@ -53,6 +53,7 @@ templ base(m Meta) {
 				</div>
 			</footer>
 		</body>
+		<div id="modal-section" class="hs-overlay hidden size-full fixed top-0 start-0 z-[80] overflow-x-hidden overflow-y-auto pointer-events-none" role="dialog" tabindex="-1" aria-labelledby="modal-section-label"></div>
 	</html>
 }
 
@@ -64,4 +65,27 @@ templ BaseLayout(m Meta, cmp templ.Component) {
 
 templ BlankLayout(cmp templ.Component) {
 	@cmp
+}
+
+templ ModalLayout(title string, cmp templ.Component) {
+	<div class="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all lg:max-w-4xl lg:w-full m-3 lg:mx-auto h-[calc(100%-3.5rem)] min-h-[calc(100%-3.5rem)] flex items-center">
+		<div class="modal-container">
+			<div class="modal-header">
+				<h3 class="font-bold">{ title }</h3>
+				<button type="button" class="btn-close" data-hs-overlay="#modal-section">
+					<span class="sr-only">Close</span>
+					<svg class="flex-shrink-0 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<path d="M18 6 6 18"></path>
+						<path d="m6 6 12 12"></path>
+					</svg>
+				</button>
+			</div>
+			<div class="modal-body">
+				@cmp
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="py-2 px-3 inline-flex items-center gap-x-2 bg-neutral-900 text-sm text-white rounded-lg shadow-sm border border-neutral-700 hover:bg-neutral-800" data-hs-overlay="#modal-section">Close</button>
+			</div>
+		</div>
+	</div>
 }

@@ -147,6 +147,48 @@ func (s *fiberServer) remoteNodesHandler(c *fiber.Ctx) error {
 	return handler(c)
 }
 
+// Returns a single node information based on `id` query param.
+// For now, only process from HTMX request.
+func (s *fiberServer) nodeHandler(c *fiber.Ctx) error {
+	switch c.Get("HX-Target") {
+	case "modal-section":
+		nodeID, err := c.ParamsInt("id", 0)
+		if err != nil {
+			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+				"status":  "error",
+				"message": err.Error(),
+				"data":    nil,
+			})
+		}
+		if nodeID == 0 {
+			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+				"status":  "error",
+				"message": "Invalid node id",
+				"data":    nil,
+			})
+		}
+		moneroRepo := monero.New()
+		node, err := moneroRepo.Node(nodeID)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"status":  "error",
+				"message": err.Error(),
+				"data":    nil,
+			})
+		}
+		cmp := views.ModalLayout(fmt.Sprintf("Node #%d", nodeID), views.Node(node))
+		handler := adaptor.HTTPHandler(templ.Handler(cmp))
+		return handler(c)
+	}
+
+	// for now, just return 400
+	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+		"status":  "error",
+		"message": "Bad Request, invalid HTMX request",
+		"data":    nil,
+	})
+}
+
 // Returns a list of nodes (API)
 func Nodes(c *fiber.Ctx) error {
 	moneroRepo := monero.New()

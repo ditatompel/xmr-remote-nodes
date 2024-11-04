@@ -1,4 +1,5 @@
 import "@preline/collapse";
+import "@preline/overlay";
 
 window.addEventListener("load", () => {
   var clipboard = new ClipboardJS(".clipboard");
@@ -24,4 +25,5 @@ htmx.onLoad(function () {
   // Auto init preline JS, see https://preline.co/docs/preline-javascript.html
   // This need to be inside `htmx.onLoad` to be work together with hx-boost.
   HSCollapse.autoInit();
+  HSOverlay.autoInit();
 });

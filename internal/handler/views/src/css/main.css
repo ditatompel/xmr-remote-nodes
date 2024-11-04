@@ -58,3 +58,20 @@ nav.pagination button.active {
 nav.pagination button {
   @apply py-1.5 px-2 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg bg-neutral-800 border border-neutral-700 text-white shadow-sm hover:brightness-125 disabled:opacity-50 disabled:pointer-events-none;
 }
+
+/* modal */
+.modal-container {
+  @apply w-full max-h-full overflow-hidden flex flex-col border shadow-sm rounded-xl pointer-events-auto bg-neutral-800 border-neutral-700 shadow-neutral-700/70;
+}
+.modal-container .modal-header {
+  @apply flex justify-between items-center py-3 px-4 border-b border-neutral-700;
+}
+.modal-header button.btn-close {
+  @apply flex justify-center items-center size-7 text-sm font-semibold rounded-full border border-transparent text-white hover:bg-neutral-700;
+}
+.modal-container .modal-body {
+  @apply p-4 overflow-y-auto;
+}
+.modal-container .modal-footer {
+  @apply flex justify-end items-center gap-x-2 py-3 px-4 border-t border-neutral-700;
+}

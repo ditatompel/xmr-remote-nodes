@@ -3,6 +3,7 @@ package handler
 func (s *fiberServer) Routes() {
 	s.App.Get("/", s.homeHandler)
 	s.App.Get("/remote-nodes", s.remoteNodesHandler)
+	s.App.Get("/remote-nodes/id/:id", s.nodeHandler)
 	s.App.Get("/add-node", s.addNodeHandler)
 
 	// V1 API routes

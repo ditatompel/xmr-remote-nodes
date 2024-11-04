@@ -1,10 +1,12 @@
 {
   "dependencies": {
     "@preline/collapse": "^2.5.0",
+    "@preline/overlay": "^2.5.0",
     "@tailwindcss/forms": "^0.5.9",
     "@tailwindcss/typography": "^0.5.15",
     "clipboard": "^2.0.11",
     "htmx.org": "^1.9.12",
+    "preline": "^2.5.1",
     "tailwindcss": "^3.4.14"
   }
 }
