@@ -5,13 +5,14 @@ func (s *fiberServer) Routes() {
 	s.App.Get("/remote-nodes", s.remoteNodesHandler)
 	s.App.Get("/remote-nodes/id/:id", s.nodeHandler)
 	s.App.Get("/add-node", s.addNodeHandler)
+	s.App.Put("/add-node", s.addNodeHandler)
 
 	// V1 API routes
 	v1 := s.App.Group("/api/v1")
 
 	// these routes are public, they don't require a prober api key
 	v1.Get("/nodes", Nodes)
-	v1.Post("/nodes", AddNode)
+	v1.Post("/nodes", AddNode) // old add node form action endpoint. Deprecated: Use PUT /add-node instead
 	v1.Get("/nodes/id/:id", Node)
 	v1.Get("/nodes/logs", ProbeLogs)
 	v1.Get("/fees", NetFees)

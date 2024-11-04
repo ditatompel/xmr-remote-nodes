@@ -33,6 +33,29 @@ func (s *fiberServer) homeHandler(c *fiber.Ctx) error {
 
 // Render Add Node Page
 func (s *fiberServer) addNodeHandler(c *fiber.Ctx) error {
+	switch c.Method() {
+	case fiber.MethodPut:
+		type formData struct {
+			Protocol string `form:"protocol"`
+			Hostname string `form:"hostname"`
+			Port     int    `form:"port"`
+		}
+		var f formData
+
+		if err := c.BodyParser(&f); err != nil {
+			handler := adaptor.HTTPHandler(templ.Handler(views.Alert("error", "Cannot parse the request body")))
+			return handler(c)
+		}
+
+		moneroRepo := monero.New()
+		if err := moneroRepo.Add(f.Protocol, f.Hostname, uint(f.Port)); err != nil {
+			handler := adaptor.HTTPHandler(templ.Handler(views.Alert("error", err.Error())))
+			return handler(c)
+		}
+
+		handler := adaptor.HTTPHandler(templ.Handler(views.Alert("success", "Node added successfully")))
+		return handler(c)
+	}
 	p := views.Meta{
 		Title:       "Add Monero Node",
 		Description: "You can use this page to add known remote node to the system so my bots can monitor it.",
@@ -256,6 +279,8 @@ func ProbeLogs(c *fiber.Ctx) error {
 }
 
 // Handles `POST /nodes` request to add a new node
+//
+// Deprecated: AddNode is deprecated, use s.addNodeHandler with put method instead
 func AddNode(c *fiber.Ctx) error {
 	formPort := c.FormValue("port")
 	port, err := strconv.Atoi(formPort)

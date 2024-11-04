@@ -96,3 +96,14 @@ templ heroGradient() {
 		<div class="bg-gradient-to-tl blur-3xl w-[90rem] h-[50rem] rounded-fulls origin-top-left -rotate-12 -translate-x-[15rem] from-orange-900/60 via-orange-900/40 to-amber-900/80"></div>
 	</div>
 }
+
+templ Alert(status, message string) {
+	switch status {
+		case "success":
+			<div class="mt-2 bg-green-600 text-white rounded-lg p-4"><strong>Success:</strong> { message }</div>
+		case "error":
+			<div class="mt-2 bg-red-600 text-white rounded-lg p-4"><strong>Error:</strong> { message }</div>
+		default:
+			<div class="mt-2 bg-blue-600 text-white rounded-lg p-4">{ message }</div>
+	}
+}
