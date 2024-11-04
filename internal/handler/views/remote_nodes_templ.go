@@ -146,7 +146,7 @@ func TableNodes(data monero.Nodes, countries []monero.Countries, q monero.QueryN
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" autocomplete=\"off\" class=\"th-filter\" placeholder=\"Filter Host / IP\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" autocomplete=\"off\" class=\"frameless\" placeholder=\"Filter Host / IP\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -159,7 +159,7 @@ func TableNodes(data monero.Nodes, countries []monero.Countries, q monero.QueryN
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-push-url=\"true\" hx-trigger=\"keyup changed delay:0.4s\" hx-target=\"#tbl_nodes\" hx-swap=\"outerHTML\"></td><td><select id=\"nettype\" name=\"nettype\" class=\"th-filter\" autocomplete=\"off\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-push-url=\"true\" hx-trigger=\"keyup changed delay:0.4s\" hx-target=\"#tbl_nodes\" hx-swap=\"outerHTML\"></td><td><select id=\"nettype\" name=\"nettype\" class=\"frameless\" autocomplete=\"off\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -218,7 +218,7 @@ func TableNodes(data monero.Nodes, countries []monero.Countries, q monero.QueryN
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></td><td><select id=\"protocol\" name=\"protocol\" class=\"th-filter\" autocomplete=\"off\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></td><td><select id=\"protocol\" name=\"protocol\" class=\"frameless\" autocomplete=\"off\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -277,7 +277,7 @@ func TableNodes(data monero.Nodes, countries []monero.Countries, q monero.QueryN
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></td><td><select id=\"cc\" name=\"cc\" class=\"th-filter\" autocomplete=\"off\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></td><td><select id=\"cc\" name=\"cc\" class=\"frameless\" autocomplete=\"off\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -366,7 +366,7 @@ func TableNodes(data monero.Nodes, countries []monero.Countries, q monero.QueryN
 				}
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></td><td colspan=\"2\"><select id=\"status\" name=\"status\" class=\"th-filter\" autocomplete=\"off\" hx-get=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</select></td><td colspan=\"2\"><select id=\"status\" name=\"status\" class=\"frameless\" autocomplete=\"off\" hx-get=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

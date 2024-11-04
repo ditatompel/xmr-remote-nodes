@@ -26,6 +26,12 @@ button.copy-input {
   @apply px-2 shrink-0 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-e-md border border-transparent bg-orange-600 text-white hover:brightness-125 focus:outline-none focus:bg-orange-700 disabled:opacity-50 disabled:pointer-events-none;
 }
 
+/* forms */
+input.frameless,
+select.frameless {
+  @apply block w-full text-neutral-400 placeholder-neutral-500 bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-neutral-700 text-sm focus:border-t-transparent focus:border-x-transparent focus:border-b-orange-400 focus:ring-0 focus:ring-orange-400 disabled:opacity-50 disabled:pointer-events-none;
+}
+
 /* table */
 table.dt {
   @apply min-w-full divide-y divide-neutral-700;
@@ -35,10 +41,6 @@ table.dt thead {
 }
 table.dt thead tr th {
   @apply px-3 py-3 text-start text-xs font-semibold uppercase text-neutral-200;
-}
-thead input.th-filter,
-thead select.th-filter {
-  @apply block w-full text-neutral-400 placeholder-neutral-500 bg-transparent border-t-transparent border-b-2 border-x-transparent border-b-neutral-700 text-sm focus:border-t-transparent focus:border-x-transparent focus:border-b-orange-400 focus:ring-0 focus:ring-orange-400;
 }
 table.dt tbody {
   @apply divide-y divide-neutral-700;

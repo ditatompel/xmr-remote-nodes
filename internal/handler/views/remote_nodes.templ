@@ -85,7 +85,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								name="host"
 								value={ fmt.Sprintf("%s", q.Host) }
 								autocomplete="off"
-								class="th-filter"
+								class="frameless"
 								placeholder="Filter Host / IP"
 								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"host"})) }
 								hx-push-url="true"
@@ -98,7 +98,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 							<select
 								id="nettype"
 								name="nettype"
-								class="th-filter"
+								class="frameless"
 								autocomplete="off"
 								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"nettype"})) }
 								hx-trigger="change"
@@ -116,7 +116,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 							<select
 								id="protocol"
 								name="protocol"
-								class="th-filter"
+								class="frameless"
 								autocomplete="off"
 								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"protocol"})) }
 								hx-trigger="change"
@@ -134,7 +134,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 							<select
 								id="cc"
 								name="cc"
-								class="th-filter"
+								class="frameless"
 								autocomplete="off"
 								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"cc"})) }
 								hx-trigger="change"
@@ -156,7 +156,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 							<select
 								id="status"
 								name="status"
-								class="th-filter"
+								class="frameless"
 								autocomplete="off"
 								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"status"})) }
 								hx-trigger="change"
