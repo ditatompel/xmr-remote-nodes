@@ -207,7 +207,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 							<td>
 								@cellStatuses(row.IsAvailable, monero.ParseNodeStatuses(row.LastCheckStatus))
 							</td>
-							<td>{ fmt.Sprintf("%d", row.EstimateFee) }</td>
+							<td class="text-right">{ fmt.Sprintf("%d", row.EstimateFee) }</td>
 							<td class="text-right">
 								@cellUptime(row.Uptime)
 							</td>
