@@ -37,6 +37,7 @@ templ base(m Meta) {
 			<meta property="og:locale" content="en_US"/>
 			<meta property="og:title" content={ fmt.Sprintf("%s — xmr.ditatompel.com", m.Title) }/>
 			<meta property="og:description" content={ m.Description }/>
+			<link rel="icon" href="/assets/favicon.ico"/>
 			<link href={ fmt.Sprintf("/assets/css/main.min.css?t=%d", buildTime) } rel="stylesheet"/>
 			<script src={ fmt.Sprintf("/assets/js/htmx.min.js?t=%d", buildTime) }></script>
 			<script src={ fmt.Sprintf("/assets/js/clipboard.min.js?t=%d", buildTime) }></script>
