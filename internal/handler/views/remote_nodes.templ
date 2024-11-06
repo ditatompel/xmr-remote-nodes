@@ -212,7 +212,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 							<td class="text-right">
 								@cellUptime(row.Uptime)
 								<br/>
-								<a href={ templ.URL(fmt.Sprintf("/remote-nodes/id/%d", row.ID)) }>[Logs]</a>
+								<a href={ templ.URL(fmt.Sprintf("/remote-nodes/id/%d", row.ID)) } class="link">[Logs]</a>
 							</td>
 							<td title={ time.Unix(row.LastChecked, 0).UTC().Format("Jan 2, 2006 15:04 MST") }>{ utils.TimeSince(row.LastChecked) }</td>
 						</tr>
@@ -275,7 +275,6 @@ templ Node(data monero.Node) {
 			</dd>
 		</dl>
 	</div>
-	<!-- End List -->
 }
 
 templ NodeDetails(data monero.Node, logs monero.FetchLogs, q monero.QueryLogs, p paging.Pagination) {
