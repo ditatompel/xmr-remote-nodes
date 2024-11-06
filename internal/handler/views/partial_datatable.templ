@@ -68,7 +68,7 @@ templ DtRefreshInterval(url, hxTarget, interval string, q interface{}) {
 templ DtReload(url, hxTarget string, q interface{}) {
 	<button
 		class="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-bold rounded-full border border-transparent bg-orange-600 text-white hover:bg-orange-500 focus:outline-none"
-		hx-get={ fmt.Sprintf("%s?%s", hxTarget, paging.EncodedQuery(q, []string{""})) }
+		hx-get={ fmt.Sprintf("%s?%s", url, paging.EncodedQuery(q, []string{""})) }
 		hx-push-url="false"
 		hx-target={ hxTarget }
 		hx-swap="outerHTML"
