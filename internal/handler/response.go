@@ -13,6 +13,19 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/adaptor"
 )
 
+// Redirect old `/remote-nodes/logs/?node_id={id}` path to `/remote-nodes/id/{id}`
+//
+// This is temporary handler to redirect old path to new one. Once search
+// engine results updated to the new path, this handler should be removed.
+func (s *fiberServer) redirectLogs(c *fiber.Ctx) error {
+	id := c.QueryInt("node_id", 0)
+	if id == 0 {
+		return c.Redirect("/remote-nodes", fiber.StatusMovedPermanently)
+	}
+
+	return c.Redirect(fmt.Sprintf("/remote-nodes/id/%d", id), fiber.StatusMovedPermanently)
+}
+
 // Render Home Page
 func (s *fiberServer) homeHandler(c *fiber.Ctx) error {
 	p := views.Meta{

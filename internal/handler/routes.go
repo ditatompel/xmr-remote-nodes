@@ -7,6 +7,10 @@ func (s *fiberServer) Routes() {
 	s.App.Get("/add-node", s.addNodeHandler)
 	s.App.Put("/add-node", s.addNodeHandler)
 
+	// This is temporary route to redirect old path to new one. Once search
+	// engine results updated to the new path, this route should be removed.
+	s.App.Get("/remote-nodes/logs", s.redirectLogs)
+
 	// V1 API routes
 	v1 := s.App.Group("/api/v1")
 
