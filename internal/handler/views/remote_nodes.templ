@@ -329,10 +329,10 @@ templ TableLogs(hxPath string, data monero.FetchLogs, q monero.QueryLogs, p pagi
 							<td>{ fmt.Sprintf("%d", row.ProberID) }</td>
 							if row.Status == 1 {
 								<td class="text-green-500">OK</td>
-								<td>{ fmt.Sprintf("%d", row.Height) }</td>
+								<td class="text-right">{ fmt.Sprintf("%d", row.Height) }</td>
 								<td>{ time.Unix(row.AdjustedTime, 0).UTC().Format("Jan 2, 2006 15:04 MST") }</td>
-								<td>{ fmt.Sprintf("%d", row.DatabaseSize) }</td>
-								<td>{ fmt.Sprintf("%d", row.Difficulty) }</td>
+								<td>{ utils.FormatBytes(row.DatabaseSize, 0) }</td>
+								<td>{ utils.FormatHashes(float64(row.Difficulty)) }</td>
 								<td class="text-right">{ fmt.Sprintf("%d", row.EstimateFee) }</td>
 							} else {
 								<td class="text-red-500">ERR</td>
