@@ -3,6 +3,7 @@ package monero
 import (
 	"testing"
 
+	"github.com/ditatompel/xmr-remote-nodes/internal/paging"
 	"github.com/jmoiron/sqlx/types"
 )
 
@@ -64,13 +65,15 @@ func TestQueryLogs_toSQL(t *testing.T) {
 		{
 			name: "Default query",
 			fields: QueryLogs{
-				NodeID:        0,
-				Status:        -1,
-				FailedReason:  "",
-				RowsPerPage:   10,
-				Page:          1,
-				SortBy:        "date_checked",
-				SortDirection: "desc",
+				Paging: paging.Paging{
+					Limit:         10,
+					Page:          1,
+					SortBy:        "date_checked",
+					SortDirection: "desc",
+				},
+				NodeID:       0,
+				Status:       -1,
+				FailedReason: "",
 			},
 			wantArgs:          []interface{}{},
 			wantWhere:         "",
@@ -80,13 +83,15 @@ func TestQueryLogs_toSQL(t *testing.T) {
 		{
 			name: "With node_id query",
 			fields: QueryLogs{
-				NodeID:        1,
-				Status:        -1,
-				FailedReason:  "",
-				RowsPerPage:   10,
-				Page:          1,
-				SortBy:        "date_checked",
-				SortDirection: "desc",
+				Paging: paging.Paging{
+					Limit:         10,
+					Page:          1,
+					SortBy:        "date_checked",
+					SortDirection: "desc",
+				},
+				NodeID:       1,
+				Status:       -1,
+				FailedReason: "",
 			},
 			wantArgs:          []interface{}{1},
 			wantWhere:         "WHERE node_id = ?",
@@ -96,13 +101,15 @@ func TestQueryLogs_toSQL(t *testing.T) {
 		{
 			name: "All possible query",
 			fields: QueryLogs{
-				NodeID:        1,
-				Status:        0,
-				FailedReason:  "test",
-				RowsPerPage:   10,
-				Page:          1,
-				SortBy:        "date_checked",
-				SortDirection: "asc",
+				Paging: paging.Paging{
+					Limit:         10,
+					Page:          1,
+					SortBy:        "date_checked",
+					SortDirection: "asc",
+				},
+				NodeID:       1,
+				Status:       0,
+				FailedReason: "test",
 			},
 			wantArgs:          []interface{}{1, 0, "%test%"},
 			wantWhere:         "WHERE node_id = ? AND is_available = ? AND failed_reason LIKE ?",
@@ -113,13 +120,15 @@ func TestQueryLogs_toSQL(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			q := QueryLogs{
-				NodeID:        tt.fields.NodeID,
-				Status:        tt.fields.Status,
-				FailedReason:  tt.fields.FailedReason,
-				RowsPerPage:   tt.fields.RowsPerPage,
-				Page:          tt.fields.Page,
-				SortBy:        tt.fields.SortBy,
-				SortDirection: tt.fields.SortDirection,
+				Paging: paging.Paging{
+					Limit:         tt.fields.Limit,
+					Page:          tt.fields.Page,
+					SortBy:        tt.fields.SortBy,
+					SortDirection: tt.fields.SortDirection,
+				},
+				NodeID:       tt.fields.NodeID,
+				Status:       tt.fields.Status,
+				FailedReason: tt.fields.FailedReason,
 			}
 			gotArgs, gotWhere, gotSortBy, gotSortDirection := q.toSQL()
 			if !equalArgs(gotArgs, tt.wantArgs) {

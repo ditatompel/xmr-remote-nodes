@@ -171,45 +171,84 @@ func (s *fiberServer) remoteNodesHandler(c *fiber.Ctx) error {
 }
 
 // Returns a single node information based on `id` query param.
-// For now, only process from HTMX request.
+// This used for node modal and node details page including node probe logs.
 func (s *fiberServer) nodeHandler(c *fiber.Ctx) error {
+	nodeID, err := c.ParamsInt("id", 0)
+	if err != nil {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
+	if nodeID == 0 {
+		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
+			"status":  "error",
+			"message": "Invalid node id",
+			"data":    nil,
+		})
+	}
+
+	moneroRepo := monero.New()
+	node, err := moneroRepo.Node(nodeID)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
 	switch c.Get("HX-Target") {
 	case "modal-section":
-		nodeID, err := c.ParamsInt("id", 0)
-		if err != nil {
-			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
-				"status":  "error",
-				"message": err.Error(),
-				"data":    nil,
-			})
-		}
-		if nodeID == 0 {
-			return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
-				"status":  "error",
-				"message": "Invalid node id",
-				"data":    nil,
-			})
-		}
-		moneroRepo := monero.New()
-		node, err := moneroRepo.Node(nodeID)
-		if err != nil {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"status":  "error",
-				"message": err.Error(),
-				"data":    nil,
-			})
-		}
 		cmp := views.ModalLayout(fmt.Sprintf("Node #%d", nodeID), views.Node(node))
 		handler := adaptor.HTTPHandler(templ.Handler(cmp))
 		return handler(c)
 	}
 
-	// for now, just return 400
-	return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-		"status":  "error",
-		"message": "Bad Request, invalid HTMX request",
-		"data":    nil,
-	})
+	queryLogs := monero.QueryLogs{
+		Paging: paging.Paging{
+			Limit:         c.QueryInt("limit", 10), // rows per page
+			Page:          c.QueryInt("page", 1),
+			SortBy:        c.Query("sort_by", "id"),
+			SortDirection: c.Query("sort_direction", "desc"),
+			Refresh:       c.Query("refresh"),
+		},
+		NodeID:       int(node.ID),
+		Status:       c.QueryInt("status", -1),
+		FailedReason: c.Query("failed_reason"),
+	}
+
+	logs, err := moneroRepo.Logs(queryLogs)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
+
+	pagination := paging.NewPagination(queryLogs.Page, logs.TotalPages)
+
+	// handle datatable logs filters, sort request from HTMX
+	if c.Get("HX-Target") == "tbl_logs" {
+		cmp := views.BlankLayout(views.TableLogs(fmt.Sprintf("/remote-nodes/id/%d", node.ID), logs, queryLogs, pagination))
+		handler := adaptor.HTTPHandler(templ.Handler(cmp))
+		return handler(c)
+	}
+
+	p := views.Meta{
+		Title:       fmt.Sprintf("%s on Port %d", node.Hostname, node.Port),
+		Description: fmt.Sprintf("Monero %s remote node %s running on port %d", node.Nettype, node.Hostname, node.Port),
+		Keywords:    fmt.Sprintf("monero log,monero node log,monitoring monero log,monero,xmr,monero node,xmrnode,cryptocurrency,monero %s,%s", node.Nettype, node.Hostname),
+		Robots:      "INDEX,FOLLOW",
+		Permalink:   fmt.Sprintf("https://xmr.ditatompel.com/remote-nodes/id/%d", node.ID),
+		Identifier:  "/remote-nodes",
+	}
+
+	c.Set("Link", fmt.Sprintf(`<%s>; rel="canonical"`, p.Permalink))
+	cmp := views.BaseLayout(p, views.NodeDetails(node, logs, queryLogs, pagination))
+	handler := adaptor.HTTPHandler(templ.Handler(cmp))
+	return handler(c)
 }
 
 // Returns a list of nodes (API)
@@ -253,13 +292,16 @@ func Nodes(c *fiber.Ctx) error {
 func ProbeLogs(c *fiber.Ctx) error {
 	moneroRepo := monero.New()
 	query := monero.QueryLogs{
-		RowsPerPage:   c.QueryInt("limit", 10),
-		Page:          c.QueryInt("page", 1),
-		SortBy:        c.Query("sort_by", "id"),
-		SortDirection: c.Query("sort_direction", "desc"),
-		NodeID:        c.QueryInt("node_id", 0),
-		Status:        c.QueryInt("status", -1),
-		FailedReason:  c.Query("failed_reason"),
+		Paging: paging.Paging{
+			Limit:         c.QueryInt("limit", 10), // rows per page
+			Page:          c.QueryInt("page", 1),
+			SortBy:        c.Query("sort_by", "id"),
+			SortDirection: c.Query("sort_direction", "desc"),
+			Refresh:       c.Query("refresh"),
+		},
+		NodeID:       c.QueryInt("node_id", 0),
+		Status:       c.QueryInt("status", -1),
+		FailedReason: c.Query("failed_reason"),
 	}
 
 	logs, err := moneroRepo.Logs(query)

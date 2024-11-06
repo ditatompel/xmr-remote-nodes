@@ -210,6 +210,8 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 							<td class="text-right">{ fmt.Sprintf("%d", row.EstimateFee) }</td>
 							<td class="text-right">
 								@cellUptime(row.Uptime)
+								<br/>
+								<a href={ templ.URL(fmt.Sprintf("/remote-nodes/id/%d", row.ID)) }>[Logs]</a>
 							</td>
 							<td title={ time.Unix(row.LastChecked, 0).UTC().Format("Jan 2, 2006 15:04 MST") }>{ timeSince(row.LastChecked) }</td>
 						</tr>
@@ -226,6 +228,127 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 
 templ Node(data monero.Node) {
 	<p>{ fmt.Sprintf("%s:%d", data.Hostname, data.Port) }</p>
+}
+
+templ NodeDetails(data monero.Node, logs monero.FetchLogs, q monero.QueryLogs, p paging.Pagination) {
+	<section class="relative overflow-hidden pt-6">
+		@heroGradient()
+		<div class="relative z-10">
+			<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+				<div class="text-center">
+					<!-- Title -->
+					<div class="mt-5">
+						<h1 class="block font-extrabold text-4xl md:text-5xl lg:text-6xl text-neutral-200">{ fmt.Sprintf("%s on port %d", data.Hostname, data.Port) }</h1>
+					</div>
+					<hr class="mt-6"/>
+				</div>
+				<div class="max-w-3xl mx-auto mt-8">
+					@Node(data)
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Hero -->
+	<div class="flex flex-col max-w-6xl mx-auto mb-10">
+		<div class="my-6 text-center">
+			<div class="mt-5">
+				<h2 class="block font-extrabold text-4xl md:text-4xl lg:text-5xl text-neutral-200">Probe Logs</h2>
+			</div>
+		</div>
+		<div class="min-w-full inline-block align-middle">
+			@TableLogs(fmt.Sprintf("/remote-nodes/id/%d", data.ID), logs, q, p)
+		</div>
+	</div>
+}
+
+templ TableLogs(hxPath string, data monero.FetchLogs, q monero.QueryLogs, p paging.Pagination) {
+	<div id="tbl_logs" class="bg-neutral-800 border border-neutral-700 rounded-xl shadow-sm overflow-hidden">
+		<div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-neutral-700">
+			@DtRowPerPage(hxPath, "#tbl_logs", q.Limit, q)
+			<div>
+				@DtRefreshInterval(hxPath, "#tbl_logs", q.Refresh, q)
+			</div>
+			@DtReload(hxPath, "#tbl_logs", q)
+		</div>
+		<div class="overflow-x-auto">
+			<table class="dt">
+				<thead>
+					<tr>
+						<th scope="col">#ID</th>
+						<th scope="col">Prober ID</th>
+						<th scope="col">Status</th>
+						<th scope="col">Height</th>
+						<th scope="col">Adjusted Time</th>
+						<th scope="col">DB Size</th>
+						<th scope="col">Difficulty</th>
+						@DtThSort(hxPath, "#tbl_logs", "Est. Fee", "estimate_fee", q.SortBy, q.SortDirection, q)
+						@DtThSort(hxPath, "#tbl_logs", "Check", "date_checked", q.SortBy, q.SortDirection, q)
+						@DtThSort(hxPath, "#tbl_logs", "Runtime", "fetch_runtime", q.SortBy, q.SortDirection, q)
+					</tr>
+					<tr>
+						<td colspan="3">
+							<select
+								id="status"
+								name="status"
+								class="frameless"
+								autocomplete="off"
+								hx-get={ fmt.Sprintf("%s?%s", hxPath, paging.EncodedQuery(q, []string{"status"})) }
+								hx-trigger="change"
+								hx-push-url="true"
+								hx-target="#tbl_logs"
+								hx-swap="outerHTML"
+							>
+								for _, status := range nodeStatuses {
+									<option value={ fmt.Sprintf("%d", status.Code) } selected?={ status.Code == q.Status }>{ status.Text }</option>
+								}
+							</select>
+						</td>
+						<td colspan="7">
+							<input
+								type="text"
+								id="failed_reason"
+								name="failed_reason"
+								value={ fmt.Sprintf("%s", q.FailedReason) }
+								autocomplete="off"
+								class="frameless"
+								placeholder="Filter reason"
+								hx-get={ fmt.Sprintf("%s?%s", hxPath, paging.EncodedQuery(q, []string{"failed_reason"})) }
+								hx-push-url="true"
+								hx-trigger="keyup changed delay:0.4s"
+								hx-target="#tbl_logs"
+								hx-swap="outerHTML"
+							/>
+						</td>
+					</tr>
+				</thead>
+				<tbody>
+					for _, row := range data.Items {
+						<tr>
+							<td>{ fmt.Sprintf("%d", row.ID) }</td>
+							<td>{ fmt.Sprintf("%d", row.ProberID) }</td>
+							if row.Status == 1 {
+								<td class="text-green-500">OK</td>
+								<td>{ fmt.Sprintf("%d", row.Height) }</td>
+								<td>{ time.Unix(row.AdjustedTime, 0).UTC().Format("Jan 2, 2006 15:04 MST") }</td>
+								<td>{ fmt.Sprintf("%d", row.DatabaseSize) }</td>
+								<td>{ fmt.Sprintf("%d", row.Difficulty) }</td>
+								<td class="text-right">{ fmt.Sprintf("%d", row.EstimateFee) }</td>
+							} else {
+								<td class="text-red-500">ERR</td>
+								<td colspan="5">{ row.FailedReason }</td>
+							}
+							<td title={ time.Unix(row.DateChecked, 0).UTC().Format("Jan 2, 2006 15:04 MST") }>{ timeSince(row.DateChecked) }</td>
+							<td class="text-right">{ formatFloat(row.FetchRuntime) }s</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+		<div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-neutral-700">
+			@DtRowCount(p.CurrentPage, data.RowsPerPage, data.TotalRows)
+			@DtPagination(hxPath, "#tbl_logs", q, p)
+		</div>
+	</div>
 }
 
 templ cellHostPort(id, port uint, hostname, ips string, isTor, ipv6Only bool) {

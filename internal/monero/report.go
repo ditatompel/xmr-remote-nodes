@@ -11,17 +11,14 @@ import (
 	"time"
 
 	"github.com/ditatompel/xmr-remote-nodes/internal/ip/geo"
+	"github.com/ditatompel/xmr-remote-nodes/internal/paging"
 )
 
 type QueryLogs struct {
-	NodeID       int    // 0 for all, >0 for specific node
-	Status       int    // -1 for all, 0 for failed, 1 for success
-	FailedReason string // empty for all, if not empty, will be used as search from failed_reaso
-
-	RowsPerPage   int
-	Page          int
-	SortBy        string
-	SortDirection string
+	paging.Paging
+	NodeID       int    `url:"node_id,omitempty"`       // 0 for all, >0 for specific node
+	Status       int    `url:"status"`                  // -1 for all, 0 for failed, 1 for success
+	FailedReason string `url:"failed_reason,omitempty"` // empty for all, non empty string will be used as search
 }
 
 func (q QueryLogs) toSQL() (args []interface{}, where, sortBy, sortDirection string) {
@@ -62,17 +59,18 @@ type FetchLog struct {
 	ProberID     int     `db:"prober_id" json:"prober_id"`
 	Status       int     `db:"is_available" json:"status"`
 	Height       int     `db:"height" json:"height"`
-	AdjustedTime int     `db:"adjusted_time" json:"adjusted_time"`
+	AdjustedTime int64   `db:"adjusted_time" json:"adjusted_time"`
 	DatabaseSize int     `db:"database_size" json:"database_size"`
 	Difficulty   int     `db:"difficulty" json:"difficulty"`
 	EstimateFee  int     `db:"estimate_fee" json:"estimate_fee"`
-	DateChecked  int     `db:"date_checked" json:"date_checked"`
+	DateChecked  int64   `db:"date_checked" json:"date_checked"`
 	FailedReason string  `db:"failed_reason" json:"failed_reason"`
 	FetchRuntime float64 `db:"fetch_runtime" json:"fetch_runtime"`
 }
 
 type FetchLogs struct {
 	TotalRows   int         `json:"total_rows"`
+	TotalPages  int         `json:"total_pages"` // total pages
 	RowsPerPage int         `json:"rows_per_page"`
 	Items       []*FetchLog `json:"items"`
 }
@@ -82,15 +80,18 @@ func (r *moneroRepo) Logs(q QueryLogs) (FetchLogs, error) {
 	args, where, sortBy, sortDirection := q.toSQL()
 
 	var fetchLogs FetchLogs
-	fetchLogs.RowsPerPage = q.RowsPerPage
+	fetchLogs.RowsPerPage = q.Limit
 
 	qTotal := fmt.Sprintf(`SELECT COUNT(id) FROM tbl_probe_log %s`, where)
 	err := r.db.QueryRow(qTotal, args...).Scan(&fetchLogs.TotalRows)
 	if err != nil {
 		return fetchLogs, err
 	}
-	args = append(args, q.RowsPerPage, (q.Page-1)*q.RowsPerPage)
 
+	fetchLogs.TotalPages = int(math.Ceil(float64(fetchLogs.TotalRows) / float64(q.Limit)))
+	args = append(args, q.Limit, (q.Page-1)*q.Limit)
+
+	fmt.Printf("%+v", fetchLogs)
 	query := fmt.Sprintf(`
 		SELECT
 			*
