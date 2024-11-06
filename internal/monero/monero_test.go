@@ -131,6 +131,52 @@ func Benchmark_QueryNodes_toSQL(b *testing.B) {
 	}
 }
 
+// Single test:
+// go test -race ./internal/monero -run=TestValidTorHostname -v
+func TestValidTorHostname(t *testing.T) {
+	tests := []struct {
+		name      string
+		host      string
+		wantValid bool
+	}{
+		{
+			name:      "Empty host",
+			host:      "",
+			wantValid: false,
+		},
+		{
+			name:      "Valid tor host",
+			host:      "cakexmrl7bonq7ovjka5kuwuyd3f7qnkz6z6s6dmsy3uckwra7bvggyd.onion",
+			wantValid: true,
+		},
+		{
+			name:      "Valid tor host with subdomain",
+			host:      "just-test.cakexmrl7bonq7ovjka5kuwuyd3f7qnkz6z6s6dmsy3uckwra7bvggyd.onion",
+			wantValid: true,
+		},
+		{
+			name:      "Invalid host",
+			host:      "test.com",
+			wantValid: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if r := validTorHostname(tt.host); r != tt.wantValid {
+				t.Errorf("ValidTorHostname() error = %v, wantValid %v", r, tt.wantValid)
+			}
+		})
+	}
+}
+
+// Single bench test:
+// go test ./internal/monero -bench validTorHostname -benchmem -run=^$ -v
+func Benchmark_validTorHostname(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = validTorHostname("cakexmrl7bonq7ovjka5kuwuyd3f7qnkz6z6s6dmsy3uckwra7bvggyd.onion")
+	}
+}
+
 // equalArgs is helper function for testing.
 //
 // This returns true if two slices of interface{} are equal.
