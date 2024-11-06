@@ -35,8 +35,6 @@ To build the executable binaries, you need:
 >
 > -   If you want to contribute to the code, please use exact templ version
 >     (v0.2.778).
-> -   The UI is using Preline UI that uses [Lucide Icons][lucide-icons], use
->     that for SVG icons.
 
 ### Server & Prober requirements
 
@@ -84,7 +82,7 @@ See the [Makefile](./Makefile).
 ## ToDo's
 
 -   :white_check_mark: Accept IPv6 nodes.
--   Use `a-h/templ` and `HTMX` instead of `Svelte`.
+-   :white_check_mark: Use `a-h/templ` and `HTMX` instead of `Svelte`.
 -   Use Go standard `net/http` instead of `fiber`.
 
 ## Acknowledgement
@@ -119,7 +117,7 @@ Thank you!
 
 ## License
 
-This project is licensed under [GLWTPL](./LICENSE).
+This project is licensed under [BSD-3-Clause](./LICENSE) license.
 
 [geoip-doc]: https://dev.maxmind.com/geoip/geoip2/geolite2/ "GeoIP documentation"
 [server-systemd-service]: ./deployment/init/xmr-nodes-server.service "systemd service example for server"
