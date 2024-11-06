@@ -296,10 +296,12 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 	return nil
 }
 
-// Checks if a given hostname is a valid TOR v3 .onion address
-// TOR v3 .onion addresses are 56 characters of base32 followed by ".onion"
+// validTorHostname shecks if a given hostname is a valid TOR v3 .onion address
+// with optional subdomain
+//
+// TOR v3 .onion addresses are 56 characters of `base32` followed by ".onion"
 func validTorHostname(hostname string) bool {
-	return regexp.MustCompile(`^[a-z2-7]{56}\.onion$`).MatchString(hostname)
+	return regexp.MustCompile(`^([a-z0-9-]+\.)*[a-z2-7]{56}\.onion$`).MatchString(hostname)
 }
 
 func (r *moneroRepo) Delete(id uint) error {
