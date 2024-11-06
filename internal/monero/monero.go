@@ -8,6 +8,7 @@ import (
 	"log/slog"
 	"math"
 	"net"
+	"regexp"
 	"slices"
 	"strings"
 	"time"
@@ -221,8 +222,8 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 		ipAddr = hostIp.String()
 		ips = ip.SliceToString(hostIps)
 	} else {
-		if strings.HasPrefix(hostname, "http://") || strings.HasPrefix(hostname, "https://") {
-			return errors.New("Don't start hostname with http:// or https://, just put your hostname")
+		if !validTorHostname(hostname) {
+			return errors.New("Invalid TOR v3 .onion hostname")
 		}
 	}
 
@@ -293,6 +294,12 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 	}
 
 	return nil
+}
+
+// Checks if a given hostname is a valid TOR v3 .onion address
+// TOR v3 .onion addresses are 56 characters of base32 followed by ".onion"
+func validTorHostname(hostname string) bool {
+	return regexp.MustCompile(`^[a-z2-7]{56}\.onion$`).MatchString(hostname)
 }
 
 func (r *moneroRepo) Delete(id uint) error {
