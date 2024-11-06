@@ -112,7 +112,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								class="frameless"
 								placeholder="Filter Host / IP"
 								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"host"})) }
-								hx-push-url="true"
+								hx-push-url="false"
 								hx-trigger="keyup changed delay:0.4s"
 								hx-target="#tbl_nodes"
 								hx-swap="outerHTML"
@@ -126,7 +126,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								autocomplete="off"
 								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"nettype"})) }
 								hx-trigger="change"
-								hx-push-url="true"
+								hx-push-url="false"
 								hx-target="#tbl_nodes"
 								hx-swap="outerHTML"
 							>
@@ -144,7 +144,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								autocomplete="off"
 								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"protocol"})) }
 								hx-trigger="change"
-								hx-push-url="true"
+								hx-push-url="false"
 								hx-target="#tbl_nodes"
 								hx-swap="outerHTML"
 							>
@@ -162,7 +162,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								autocomplete="off"
 								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"cc"})) }
 								hx-trigger="change"
-								hx-push-url="true"
+								hx-push-url="false"
 								hx-target="#tbl_nodes"
 								hx-swap="outerHTML"
 							>
@@ -184,7 +184,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								autocomplete="off"
 								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"status"})) }
 								hx-trigger="change"
-								hx-push-url="true"
+								hx-push-url="false"
 								hx-target="#tbl_nodes"
 								hx-swap="outerHTML"
 							>
@@ -203,7 +203,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 									checked?={ q.CORS == "on" }
 									hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"cors"})) }
 									hx-trigger="change"
-									hx-push-url="true"
+									hx-push-url="false"
 									hx-target="#tbl_nodes"
 									hx-swap="outerHTML"
 									class="shrink-0 mt-0.5 text-orange-400 bg-neutral-800 border-neutral-700 rounded focus:ring-0 checked:bg-orange-400 checked:border-orange-400 focus:ring-offset-orange-500"
@@ -370,7 +370,7 @@ templ TableLogs(hxPath string, data monero.FetchLogs, q monero.QueryLogs, p pagi
 								autocomplete="off"
 								hx-get={ fmt.Sprintf("%s?%s", hxPath, paging.EncodedQuery(q, []string{"status"})) }
 								hx-trigger="change"
-								hx-push-url="true"
+								hx-push-url="false"
 								hx-target="#tbl_logs"
 								hx-swap="outerHTML"
 							>
@@ -389,7 +389,7 @@ templ TableLogs(hxPath string, data monero.FetchLogs, q monero.QueryLogs, p pagi
 								class="frameless"
 								placeholder="Filter reason"
 								hx-get={ fmt.Sprintf("%s?%s", hxPath, paging.EncodedQuery(q, []string{"failed_reason"})) }
-								hx-push-url="true"
+								hx-push-url="false"
 								hx-trigger="keyup changed delay:0.4s"
 								hx-target="#tbl_logs"
 								hx-swap="outerHTML"

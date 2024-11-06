@@ -17,7 +17,7 @@ templ DtRowPerPage(url, hxTarget string, rowsPerPage int, q interface{}) {
 			autocomplete="off"
 			hx-get={ fmt.Sprintf("%s?%s", url, paging.EncodedQuery(q, []string{"limit"})) }
 			hx-trigger="change"
-			hx-push-url="true"
+			hx-push-url="false"
 			hx-target={ hxTarget }
 			hx-swap="outerHTML"
 		>
@@ -43,7 +43,7 @@ templ DtRefreshInterval(url, hxTarget, interval string, q interface{}) {
 				autocomplete="off"
 				hx-get={ fmt.Sprintf("%s?%s", url, paging.EncodedQuery(q, []string{"refresh"})) }
 				hx-trigger="change"
-				hx-push-url="true"
+				hx-push-url="false"
 				hx-target={ hxTarget }
 				hx-swap="outerHTML"
 			>
@@ -92,7 +92,7 @@ templ DtThSort(url, hxTarget, title, expectedSort, sortBy, sortDir string, q int
 		<th
 			scope="col"
 			class="cursor-pointer"
-			hx-push-url="true"
+			hx-push-url="false"
 			hx-target={ hxTarget }
 			hx-swap="outerHTML"
 			hx-get={ fmt.Sprintf("%s?sort_by=%s&sort_direction=desc&%s", url, expectedSort, paging.EncodedQuery(q, []string{"sort_by", "sort_direction"})) }
@@ -101,7 +101,7 @@ templ DtThSort(url, hxTarget, title, expectedSort, sortBy, sortDir string, q int
 		<th
 			scope="col"
 			class="cursor-pointer"
-			hx-push-url="true"
+			hx-push-url="false"
 			hx-target={ hxTarget }
 			hx-swap="outerHTML"
 			hx-get={ string(templ.URL(fmt.Sprintf("%s?sort_by=%s&sort_direction=asc&%s", url, expectedSort, paging.EncodedQuery(q, []string{"sort_by", "sort_direction"})))) }
@@ -110,7 +110,7 @@ templ DtThSort(url, hxTarget, title, expectedSort, sortBy, sortDir string, q int
 		<th
 			scope="col"
 			class="cursor-pointer"
-			hx-push-url="true"
+			hx-push-url="false"
 			hx-target={ hxTarget }
 			hx-swap="outerHTML"
 			hx-get={ string(templ.URL(fmt.Sprintf("%s?sort_by=%s&sort_direction=desc&%s", url, expectedSort, paging.EncodedQuery(q, []string{"sort_by", "sort_direction"})))) }
@@ -147,7 +147,7 @@ templ DtPagination(url, hxTarget string, q interface{}, p paging.Pagination) {
 				} else {
 					<button
 						hx-get={ fmt.Sprintf("%s?%s&page=%d", url, paging.EncodedQuery(q, []string{"page"}), page) }
-						hx-push-url="true"
+						hx-push-url="false"
 						hx-target={ hxTarget }
 						hx-swap="outerHTML"
 					>{ fmt.Sprintf("%d", page) }</button>
