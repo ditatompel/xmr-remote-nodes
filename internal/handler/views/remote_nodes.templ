@@ -5,6 +5,7 @@ import (
 	"github.com/ditatompel/xmr-remote-nodes/internal/ip"
 	"github.com/ditatompel/xmr-remote-nodes/internal/monero"
 	"github.com/ditatompel/xmr-remote-nodes/internal/paging"
+	"github.com/ditatompel/xmr-remote-nodes/utils"
 	"strings"
 	"time"
 )
@@ -213,7 +214,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								<br/>
 								<a href={ templ.URL(fmt.Sprintf("/remote-nodes/id/%d", row.ID)) }>[Logs]</a>
 							</td>
-							<td title={ time.Unix(row.LastChecked, 0).UTC().Format("Jan 2, 2006 15:04 MST") }>{ timeSince(row.LastChecked) }</td>
+							<td title={ time.Unix(row.LastChecked, 0).UTC().Format("Jan 2, 2006 15:04 MST") }>{ utils.TimeSince(row.LastChecked) }</td>
 						</tr>
 					}
 				</tbody>
@@ -337,8 +338,8 @@ templ TableLogs(hxPath string, data monero.FetchLogs, q monero.QueryLogs, p pagi
 								<td class="text-red-500">ERR</td>
 								<td colspan="5">{ row.FailedReason }</td>
 							}
-							<td title={ time.Unix(row.DateChecked, 0).UTC().Format("Jan 2, 2006 15:04 MST") }>{ timeSince(row.DateChecked) }</td>
-							<td class="text-right">{ formatFloat(row.FetchRuntime) }s</td>
+							<td title={ time.Unix(row.DateChecked, 0).UTC().Format("Jan 2, 2006 15:04 MST") }>{ utils.TimeSince(row.DateChecked) }</td>
+							<td class="text-right">{ utils.FormatFloat(row.FetchRuntime) }s</td>
 						</tr>
 					}
 				</tbody>
@@ -446,12 +447,12 @@ templ cellStatuses(isAvailable bool, statuses [5]int) {
 
 templ cellUptime(uptime float64) {
 	if uptime >= 98 {
-		<span class="text-green-500">{ formatFloat(uptime) }%</span>
+		<span class="text-green-500">{ utils.FormatFloat(uptime) }%</span>
 	} else if uptime < 98 && uptime >= 80 {
-		<span class="text-sky-500">{ formatFloat(uptime) }%</span>
+		<span class="text-sky-500">{ utils.FormatFloat(uptime) }%</span>
 	} else if uptime < 80 && uptime > 75 {
-		<span class="text-orange-500">{ formatFloat(uptime) }%</span>
+		<span class="text-orange-500">{ utils.FormatFloat(uptime) }%</span>
 	} else {
-		<span class="text-rose-500">{ formatFloat(uptime) }%</span>
+		<span class="text-rose-500">{ utils.FormatFloat(uptime) }%</span>
 	}
 }

@@ -1,4 +1,4 @@
-package views
+package utils
 
 import (
 	"fmt"
@@ -7,12 +7,12 @@ import (
 )
 
 // Convert the float to a string, trimming unnecessary zeros
-func formatFloat(f float64) string {
+func FormatFloat(f float64) string {
 	return strconv.FormatFloat(f, 'f', -1, 64)
 }
 
 // TimeSince converts an int64 timestamp to a relative time string
-func timeSince(timestamp int64) string {
+func TimeSince(timestamp int64) string {
 	var duration time.Duration
 	var suffix string
 
