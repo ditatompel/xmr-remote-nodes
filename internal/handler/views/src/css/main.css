@@ -19,7 +19,7 @@ a.external {
 
 /** home page **/
 a.btn-link {
-  @apply py-1 px-3 mt-2 inline-flex items-center gap-x-1 text-sm font-medium rounded-lg border border-neutral-700 bg-neutral-800 text-white shadow-sm hover:bg-neutral-700;
+  @apply py-1 px-3 mt-2 inline-flex items-center gap-x-1 text-sm font-medium rounded-lg border border-orange-500 bg-orange-600 text-white shadow-sm hover:brightness-125;
 }
 /* my nodes copy input button */
 button.copy-input {
