@@ -228,7 +228,54 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 }
 
 templ Node(data monero.Node) {
-	<p>{ fmt.Sprintf("%s:%d", data.Hostname, data.Port) }</p>
+	<div class="space-y-3 text-neutral-200">
+		<dl class="flex flex-col sm:flex-row gap-1">
+			<dt class="min-w-40">
+				<span class="block text-white text-bold">Host:</span>
+			</dt>
+			<dd>
+				<ul>
+					<li class="me-1 inline-flex items-center">
+						{ fmt.Sprintf("%s:%d", data.Hostname, data.Port) }
+					</li>
+					<li class="me-1 inline-flex items-center">
+						<button type="button" class="clipboard px-2 inline-flex items-center gap-x-2 text-sm font-bold rounded-lg border border-transparent bg-orange-600 text-white hover:bg-orange-500 focus:outline-none disabled:opacity-60 disabled:pointer-events-none" data-clipboard-text={ fmt.Sprintf("%s:%d", data.Hostname, data.Port) }>Copy</button>
+					</li>
+				</ul>
+			</dd>
+		</dl>
+		<dl class="flex flex-col sm:flex-row gap-1">
+			<dt class="min-w-40">
+				<span class="block text-white text-bold">Net Type:</span>
+			</dt>
+			<dd>
+				<ul>
+					<li class="uppercase">{ data.Nettype }</li>
+				</ul>
+			</dd>
+		</dl>
+		<dl class="flex flex-col sm:flex-row gap-1">
+			<dt class="min-w-40">
+				<span class="block text-white text-bold">Protocol:</span>
+			</dt>
+			<dd>
+				<ul>
+					<li class="uppercase">{ data.Protocol }</li>
+				</ul>
+			</dd>
+		</dl>
+		<dl class="flex flex-col sm:flex-row gap-1">
+			<dt class="min-w-40">
+				<span class="block text-white text-bold">IP Addresses:</span>
+			</dt>
+			<dd>
+				<ul>
+					<li class="whitespace-break-spaces">{ strings.ReplaceAll(data.IPAddresses, ",", ", ") }</li>
+				</ul>
+			</dd>
+		</dl>
+	</div>
+	<!-- End List -->
 }
 
 templ NodeDetails(data monero.Node, logs monero.FetchLogs, q monero.QueryLogs, p paging.Pagination) {
@@ -239,7 +286,9 @@ templ NodeDetails(data monero.Node, logs monero.FetchLogs, q monero.QueryLogs, p
 				<div class="text-center">
 					<!-- Title -->
 					<div class="mt-5">
-						<h1 class="block font-extrabold text-4xl md:text-5xl lg:text-6xl text-neutral-200">{ fmt.Sprintf("%s on port %d", data.Hostname, data.Port) }</h1>
+						<h1 class="block font-extrabold text-4xl md:text-5xl lg:text-6xl text-neutral-200">
+							Monero Node #{ fmt.Sprintf("%d", data.ID) }
+						</h1>
 					</div>
 					<hr class="mt-6"/>
 				</div>
