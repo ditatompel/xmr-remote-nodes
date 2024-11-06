@@ -6,7 +6,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func CheckProber(c *fiber.Ctx) error {
+// checkProberMW is a middleware to check prober API key
+func (s *fiberServer) checkProberMW(c *fiber.Ctx) error {
 	key := c.Get(monero.ProberAPIKey)
 	if key == "" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{

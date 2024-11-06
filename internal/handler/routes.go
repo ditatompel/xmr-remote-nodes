@@ -15,14 +15,14 @@ func (s *fiberServer) Routes() {
 	v1 := s.App.Group("/api/v1")
 
 	// these routes are public, they don't require a prober api key
-	v1.Get("/nodes", Nodes)
-	v1.Post("/nodes", AddNode) // old add node form action endpoint. Deprecated: Use PUT /add-node instead
-	v1.Get("/nodes/id/:id", Node)
-	v1.Get("/nodes/logs", ProbeLogs)
-	v1.Get("/fees", NetFees)
-	v1.Get("/countries", Countries)
+	v1.Get("/nodes", s.nodesAPI)
+	v1.Post("/nodes", s.addNodeAPI) // old add node form action endpoint. Deprecated: Use PUT /add-node instead
+	v1.Get("/nodes/id/:id", s.nodeAPI)
+	v1.Get("/nodes/logs", s.probeLogsAPI)
+	v1.Get("/fees", s.netFeesAPI)
+	v1.Get("/countries", s.countriesAPI)
 
 	// these routes are for prober, they require a prober api key
-	v1.Get("/job", CheckProber, GiveJob)
-	v1.Post("/job", CheckProber, ProcessJob)
+	v1.Get("/job", s.checkProberMW, s.giveJobAPI)
+	v1.Post("/job", s.checkProberMW, s.processJobAPI)
 }

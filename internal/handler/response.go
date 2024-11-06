@@ -85,8 +85,8 @@ func (s *fiberServer) addNodeHandler(c *fiber.Ctx) error {
 	return handler(c)
 }
 
-// Returns a single node information based on `id` query param
-func Node(c *fiber.Ctx) error {
+// Returns a single node information based on `id` query param (API endpoint, JSON data)
+func (s *fiberServer) nodeAPI(c *fiber.Ctx) error {
 	nodeId, err := c.ParamsInt("id", 0)
 	if err != nil {
 		return c.Status(fiber.StatusUnprocessableEntity).JSON(fiber.Map{
@@ -264,8 +264,8 @@ func (s *fiberServer) nodeHandler(c *fiber.Ctx) error {
 	return handler(c)
 }
 
-// Returns a list of nodes (API)
-func Nodes(c *fiber.Ctx) error {
+// Returns list of nodes (API endpoint, JSON data)
+func (s *fiberServer) nodesAPI(c *fiber.Ctx) error {
 	moneroRepo := monero.New()
 	query := monero.QueryNodes{
 		Paging: paging.Paging{
@@ -299,10 +299,8 @@ func Nodes(c *fiber.Ctx) error {
 	})
 }
 
-// Returns probe logs reported by nodes
-//
-// The embadded web UI use `node_id` query param to filter logs
-func ProbeLogs(c *fiber.Ctx) error {
+// Returns probe logs reported by nodes (API endpoint, JSON data)
+func (s *fiberServer) probeLogsAPI(c *fiber.Ctx) error {
 	moneroRepo := monero.New()
 	query := monero.QueryLogs{
 		Paging: paging.Paging{
@@ -336,7 +334,7 @@ func ProbeLogs(c *fiber.Ctx) error {
 // Handles `POST /nodes` request to add a new node
 //
 // Deprecated: AddNode is deprecated, use s.addNodeHandler with put method instead
-func AddNode(c *fiber.Ctx) error {
+func (s *fiberServer) addNodeAPI(c *fiber.Ctx) error {
 	formPort := c.FormValue("port")
 	port, err := strconv.Atoi(formPort)
 	if err != nil {
@@ -366,8 +364,8 @@ func AddNode(c *fiber.Ctx) error {
 	})
 }
 
-// Returns majority network fees
-func NetFees(c *fiber.Ctx) error {
+// Returns majority network fees (API endpoint, JSON data)
+func (s *fiberServer) netFeesAPI(c *fiber.Ctx) error {
 	moneroRepo := monero.New()
 	return c.JSON(fiber.Map{
 		"status":  "ok",
@@ -376,8 +374,8 @@ func NetFees(c *fiber.Ctx) error {
 	})
 }
 
-// Returns list of countries (count by nodes)
-func Countries(c *fiber.Ctx) error {
+// Returns list of countries, count by nodes (API endpoint, JSON data)
+func (s *fiberServer) countriesAPI(c *fiber.Ctx) error {
 	moneroRepo := monero.New()
 	countries, err := moneroRepo.Countries()
 	if err != nil {
@@ -394,10 +392,10 @@ func Countries(c *fiber.Ctx) error {
 	})
 }
 
-// Returns node to be probed by the client (prober)
+// Returns node to be probed by the prober (API endpoint, JSON data)
 //
-// This handler should protected by `CheckProber` middleware.
-func GiveJob(c *fiber.Ctx) error {
+// This handler should protected by `s.checkProberMW` middleware.
+func (s *fiberServer) giveJobAPI(c *fiber.Ctx) error {
 	acceptTor := c.QueryInt("accept_tor", 0)
 	acceptIPv6 := c.QueryInt("accept_ipv6", 0)
 
@@ -418,10 +416,10 @@ func GiveJob(c *fiber.Ctx) error {
 	})
 }
 
-// Handles probe report submission by the prober
+// Handles probe report submission by the prober (API endpoint, JSON data)
 //
 // This handler should protected by `CheckProber` middleware.
-func ProcessJob(c *fiber.Ctx) error {
+func (s *fiberServer) processJobAPI(c *fiber.Ctx) error {
 	var report monero.ProbeReport
 
 	if err := c.BodyParser(&report); err != nil {
