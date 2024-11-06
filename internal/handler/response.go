@@ -26,6 +26,11 @@ func (s *fiberServer) redirectLogs(c *fiber.Ctx) error {
 	return c.Redirect(fmt.Sprintf("/remote-nodes/id/%d", id), fiber.StatusMovedPermanently)
 }
 
+// Render robots.txt
+func (s *fiberServer) robotsTxtHandler(c *fiber.Ctx) error {
+	return c.SendString("User-agent: *\nAllow: /\n")
+}
+
 // Render Home Page
 func (s *fiberServer) homeHandler(c *fiber.Ctx) error {
 	p := views.Meta{
