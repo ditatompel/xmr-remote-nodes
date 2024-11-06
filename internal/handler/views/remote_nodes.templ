@@ -269,16 +269,6 @@ templ Node(data monero.Node) {
 		</dl>
 		<dl class="flex flex-col sm:flex-row gap-1">
 			<dt class="min-w-40">
-				<span class="block text-white text-bold">Net Type:</span>
-			</dt>
-			<dd>
-				<ul>
-					<li class="uppercase">{ data.Nettype }</li>
-				</ul>
-			</dd>
-		</dl>
-		<dl class="flex flex-col sm:flex-row gap-1">
-			<dt class="min-w-40">
 				<span class="block text-white text-bold">Protocol:</span>
 			</dt>
 			<dd>
@@ -287,16 +277,30 @@ templ Node(data monero.Node) {
 				</ul>
 			</dd>
 		</dl>
-		<dl class="flex flex-col sm:flex-row gap-1">
-			<dt class="min-w-40">
-				<span class="block text-white text-bold">IP Addresses:</span>
-			</dt>
-			<dd>
-				<ul>
-					<li class="whitespace-break-spaces">{ strings.ReplaceAll(data.IPAddresses, ",", ", ") }</li>
-				</ul>
-			</dd>
-		</dl>
+		if data.Nettype != "" {
+			<dl class="flex flex-col sm:flex-row gap-1">
+				<dt class="min-w-40">
+					<span class="block text-white text-bold">Net Type:</span>
+				</dt>
+				<dd>
+					<ul>
+						<li class="uppercase">{ data.Nettype }</li>
+					</ul>
+				</dd>
+			</dl>
+		}
+		if data.IPAddresses != "" {
+			<dl class="flex flex-col sm:flex-row gap-1">
+				<dt class="min-w-40">
+					<span class="block text-white text-bold">IP Addresses:</span>
+				</dt>
+				<dd>
+					<ul>
+						<li class="whitespace-break-spaces">{ strings.ReplaceAll(data.IPAddresses, ",", ", ") }</li>
+					</ul>
+				</dd>
+			</dl>
+		}
 	</div>
 }
 
