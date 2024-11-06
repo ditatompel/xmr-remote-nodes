@@ -20,7 +20,7 @@ func (s *fiberServer) homeHandler(c *fiber.Ctx) error {
 		Description: "A website that helps you monitor your favourite Monero remote nodes, but YOU BETTER RUN AND USE YOUR OWN NODE.",
 		Keywords:    "monero,monero,xmr,monero node,xmrnode,cryptocurrency,monero remote node,monero testnet,monero stagenet",
 		Robots:      "INDEX,FOLLOW",
-		Permalink:   "https://xmr.ditatompel.com",
+		Permalink:   s.url,
 		Identifier:  "/",
 	}
 
@@ -61,7 +61,7 @@ func (s *fiberServer) addNodeHandler(c *fiber.Ctx) error {
 		Description: "You can use this page to add known remote node to the system so my bots can monitor it.",
 		Keywords:    "monero,monero node,monero public node,monero wallet,list monero node,monero node monitoring",
 		Robots:      "INDEX,FOLLOW",
-		Permalink:   "https://xmr.ditatompel.com/add-node",
+		Permalink:   s.url + "/add-node",
 		Identifier:  "/add-node",
 	}
 
@@ -115,7 +115,7 @@ func (s *fiberServer) remoteNodesHandler(c *fiber.Ctx) error {
 		Description: "Although it's possible to use these existing public Monero nodes, you're MUST RUN AND USE YOUR OWN NODE!",
 		Keywords:    "monero remote nodes,public monero nodes,monero public nodes,monero wallet,tor monero node,monero cors rpc",
 		Robots:      "INDEX,FOLLOW",
-		Permalink:   "https://xmr.ditatompel.com/remote-nodes",
+		Permalink:   s.url + "/remote-nodes",
 		Identifier:  "/remote-nodes",
 	}
 
@@ -241,7 +241,7 @@ func (s *fiberServer) nodeHandler(c *fiber.Ctx) error {
 		Description: fmt.Sprintf("Monero %s remote node %s running on port %d", node.Nettype, node.Hostname, node.Port),
 		Keywords:    fmt.Sprintf("monero log,monero node log,monitoring monero log,monero,xmr,monero node,xmrnode,cryptocurrency,monero %s,%s", node.Nettype, node.Hostname),
 		Robots:      "INDEX,FOLLOW",
-		Permalink:   fmt.Sprintf("https://xmr.ditatompel.com/remote-nodes/id/%d", node.ID),
+		Permalink:   s.url + "/remote-nodes/id/" + strconv.Itoa(int(node.ID)),
 		Identifier:  "/remote-nodes",
 	}
 

@@ -8,7 +8,8 @@ import (
 
 type fiberServer struct {
 	*fiber.App
-	db *database.DB
+	db  *database.DB
+	url string
 }
 
 // NewServer returns a new fiber server
@@ -22,7 +23,8 @@ func NewServer() *fiberServer {
 			ProxyHeader: config.AppCfg().ProxyHeader,
 			AppName:     "XMR Nodes Aggregator " + config.Version,
 		}),
-		db: database.GetDB(),
+		db:  database.GetDB(),
+		url: config.AppCfg().URL,
 	}
 
 	return server

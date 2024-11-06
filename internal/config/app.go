@@ -13,6 +13,9 @@ type App struct {
 	LogLevel string
 
 	// configuration for server
+	URL string // URL where user can access the web UI, don't put trailing slash
+
+	// fiber specific config
 	Prefork     bool
 	Host        string
 	Port        int
@@ -55,6 +58,9 @@ func LoadApp() {
 	}
 
 	// server configuration
+	app.URL = os.Getenv("APP_URL")
+
+	// fiber specific config
 	app.Host = os.Getenv("APP_HOST")
 	app.Port, _ = strconv.Atoi(os.Getenv("APP_PORT"))
 	app.Prefork, _ = strconv.ParseBool(os.Getenv("APP_PREFORK"))
