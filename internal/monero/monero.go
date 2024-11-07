@@ -319,13 +319,24 @@ func validTorHostname(hostname string) bool {
 	return regexp.MustCompile(`^([a-z0-9-]+\.)*[a-z2-7]{56}\.onion$`).MatchString(hostname)
 }
 
-// validI2PHostname checks if a given hostname is a valid p32 I2P address
+// validI2PHostname checks if a given hostname is a valid b32 or naming service
+// I2P address
 //
-// Old b32 addresses are always {52 chars}.b32.i2p and new ones are {56+ chars}.b32.i2p.
-// See: https://geti2p.net/spec/b32encrypted
-// TODO: Validate new format and allow naming service hostnames
+// Old b32 addresses are always {52 chars}.b32.i2p and new ones are
+// {56+ chars}.b32.i2p. Since I don't know if there is a length limit of new
+// b32 addresses, this function allows up to 63 characters.
+//
+// For naming service, I2P addresses are up to 67 characters, including the
+// '.i2p' part. Please note that this naming service validation only validates
+// simple length and allowed characters. Advanced validation such as
+// internationalized domain name (IDN) is not implemented.
+//
+// Ref: https://geti2p.net/spec/b32encrypted and https://geti2p.net/en/docs/naming
 func validI2PHostname(hostname string) bool {
-	return regexp.MustCompile(`^[a-z2-7]{52,}\.b32\.i2p$`).MatchString(hostname)
+	// To minimize abuse, I set minimum length of submitted i2p naming service
+	// address to 5 characters. If someone have an address of 4 characters or
+	// less, let them open an issue or create a pull request.
+	return regexp.MustCompile(`^([a-z2-7]{52,63}\.b32|[a-z0-9-]{5,63})\.i2p$`).MatchString(hostname)
 }
 
 func (r *moneroRepo) Delete(id uint) error {

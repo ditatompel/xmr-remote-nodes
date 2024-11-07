@@ -179,7 +179,6 @@ func Benchmark_validTorHostname(b *testing.B) {
 
 // Single test:
 // go test -race ./internal/monero -run=TestValidI2PHostname -v
-// TODO: Validate new format and allow naming service hostnames
 func TestValidI2PHostname(t *testing.T) {
 	tests := []struct {
 		name      string
@@ -200,6 +199,11 @@ func TestValidI2PHostname(t *testing.T) {
 			name:      "Invalid b32 i2p host (old format)",
 			host:      "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst123456.b32.i2p",
 			wantValid: false,
+		},
+		{
+			name:      "Valid naming service i2p host",
+			host:      "i2p-projekt.i2p",
+			wantValid: true,
 		},
 		{
 			name:      "clearnet domain",
