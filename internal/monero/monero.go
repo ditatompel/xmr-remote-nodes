@@ -99,13 +99,17 @@ func (q *QueryNodes) toSQL() (args []interface{}, where string) {
 		wq = append(wq, "nettype = ?")
 		args = append(args, q.Nettype)
 	}
-	if q.Protocol != "any" && slices.Contains([]string{"tor", "http", "https"}, q.Protocol) {
-		if q.Protocol == "tor" {
+	if q.Protocol != "any" && slices.Contains([]string{"tor", "i2p", "http", "https"}, q.Protocol) {
+		switch q.Protocol {
+		case "i2p":
+			wq = append(wq, "is_i2p = ?")
+			args = append(args, 1)
+		case "tor":
 			wq = append(wq, "is_tor = ?")
 			args = append(args, 1)
-		} else {
-			wq = append(wq, "(protocol = ? AND is_tor = ?)")
-			args = append(args, q.Protocol, 0)
+		default:
+			wq = append(wq, "(protocol = ? AND is_tor = ? AND is_i2p = ?)")
+			args = append(args, q.Protocol, 0, 0)
 		}
 	}
 	if q.CC != "any" {

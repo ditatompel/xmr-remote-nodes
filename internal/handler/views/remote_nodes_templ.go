@@ -19,7 +19,7 @@ import (
 )
 
 var nettypes = []string{"mainnet", "stagenet", "testnet"}
-var protocols = []string{"tor", "http", "https"}
+var protocols = []string{"tor", "i2p", "http", "https"}
 
 type nodeStatus struct {
 	Code int
