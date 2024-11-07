@@ -323,6 +323,7 @@ func validTorHostname(hostname string) bool {
 //
 // Old b32 addresses are always {52 chars}.b32.i2p and new ones are {56+ chars}.b32.i2p.
 // See: https://geti2p.net/spec/b32encrypted
+// TODO: Validate new format and allow naming service hostnames
 func validI2PHostname(hostname string) bool {
 	return regexp.MustCompile(`^[a-z2-7]{52,}\.b32\.i2p$`).MatchString(hostname)
 }

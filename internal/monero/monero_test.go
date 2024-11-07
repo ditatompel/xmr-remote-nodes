@@ -177,6 +177,53 @@ func Benchmark_validTorHostname(b *testing.B) {
 	}
 }
 
+// Single test:
+// go test -race ./internal/monero -run=TestValidI2PHostname -v
+// TODO: Validate new format and allow naming service hostnames
+func TestValidI2PHostname(t *testing.T) {
+	tests := []struct {
+		name      string
+		host      string
+		wantValid bool
+	}{
+		{
+			name:      "Empty host",
+			host:      "",
+			wantValid: false,
+		},
+		{
+			name:      "Valid b32 i2p host (old format)",
+			host:      "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst234567.b32.i2p",
+			wantValid: true,
+		},
+		{
+			name:      "Invalid b32 i2p host (old format)",
+			host:      "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst123456.b32.i2p",
+			wantValid: false,
+		},
+		{
+			name:      "clearnet domain",
+			host:      "test.com",
+			wantValid: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if r := validI2PHostname(tt.host); r != tt.wantValid {
+				t.Errorf("ValidTorHostname() error = %v, wantValid %v", r, tt.wantValid)
+			}
+		})
+	}
+}
+
+// Single bench test:
+// go test ./internal/monero -bench validI2PHostname -benchmem -run=^$ -v
+func Benchmark_validI2PHostname(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_ = validTorHostname("abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrst234567.b32.i2p")
+	}
+}
+
 // equalArgs is helper function for testing.
 //
 // This returns true if two slices of interface{} are equal.
