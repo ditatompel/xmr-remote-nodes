@@ -458,7 +458,7 @@ func TableNodes(data monero.Nodes, countries []monero.Countries, q monero.QueryN
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = cellHostPort(row.ID, row.Port, row.Hostname, row.IPAddresses, row.IsTor, row.IPv6Only).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = cellHostPort(row.ID, row.Port, row.Hostname, row.IPAddresses, row.IsTor, row.IsI2P, row.IPv6Only).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1085,7 +1085,7 @@ func TableLogs(hxPath string, data monero.FetchLogs, q monero.QueryLogs, p pagin
 	})
 }
 
-func cellHostPort(id, port uint, hostname, ips string, isTor, ipv6Only bool) templ.Component {
+func cellHostPort(id, port uint, hostname, ips string, isTor, isI2P, ipv6Only bool) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -1146,17 +1146,61 @@ func cellHostPort(id, port uint, hostname, ips string, isTor, ipv6Only bool) tem
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <span class=\"text-neutral-400\">(TOR)</span>")
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <span class=\"badge bg-purple-800\">TOR</span>")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+		} else if isI2P {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<button class=\"max-w-40 truncate text-orange-400 hover:brightness-125\" hx-get=\"")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var52 string
+			templ_7745c5c3_Var52, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/remote-nodes/id/%d", id))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 450, Col: 50}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var52))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-push-url=\"false\" hx-target=\"#modal-section\" aria-haspopup=\"dialog\" aria-expanded=\"false\" aria-controls=\"modal-section\" data-hs-overlay=\"#modal-section\">👁 ")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var53 string
+			templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(hostname)
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 458, Col: 18}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</button><br>.i2p:<span class=\"text-indigo-400\">")
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			var templ_7745c5c3_Var54 string
+			templ_7745c5c3_Var54, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", port))
+			if templ_7745c5c3_Err != nil {
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 461, Col: 62}
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var54))
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <span class=\"badge bg-green-600\">I2P</span>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			var templ_7745c5c3_Var52 string
-			templ_7745c5c3_Var52, templ_7745c5c3_Err = templ.JoinStringErrs(ip.FormatHostname(hostname))
+			var templ_7745c5c3_Var55 string
+			templ_7745c5c3_Var55, templ_7745c5c3_Err = templ.JoinStringErrs(ip.FormatHostname(hostname))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 448, Col: 31}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 464, Col: 31}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var52))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var55))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1164,12 +1208,12 @@ func cellHostPort(id, port uint, hostname, ips string, isTor, ipv6Only bool) tem
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var53 string
-			templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", port))
+			var templ_7745c5c3_Var56 string
+			templ_7745c5c3_Var56, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", port))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 448, Col: 89}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 464, Col: 89}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var56))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1177,12 +1221,12 @@ func cellHostPort(id, port uint, hostname, ips string, isTor, ipv6Only bool) tem
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var54 string
-			templ_7745c5c3_Var54, templ_7745c5c3_Err = templ.JoinStringErrs(strings.ReplaceAll(ips, ",", " "))
+			var templ_7745c5c3_Var57 string
+			templ_7745c5c3_Var57, templ_7745c5c3_Err = templ.JoinStringErrs(strings.ReplaceAll(ips, ",", " "))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 451, Col: 90}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 467, Col: 90}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var54))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var57))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1221,9 +1265,9 @@ func cellNettype(nettype string, height uint) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var55 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var55 == nil {
-			templ_7745c5c3_Var55 = templ.NopComponent
+		templ_7745c5c3_Var58 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var58 == nil {
+			templ_7745c5c3_Var58 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		switch nettype {
@@ -1232,12 +1276,12 @@ func cellNettype(nettype string, height uint) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var56 string
-			templ_7745c5c3_Var56, templ_7745c5c3_Err = templ.JoinStringErrs(nettype)
+			var templ_7745c5c3_Var59 string
+			templ_7745c5c3_Var59, templ_7745c5c3_Err = templ.JoinStringErrs(nettype)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 462, Col: 63}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 478, Col: 63}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var56))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var59))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1250,12 +1294,12 @@ func cellNettype(nettype string, height uint) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var57 string
-			templ_7745c5c3_Var57, templ_7745c5c3_Err = templ.JoinStringErrs(nettype)
+			var templ_7745c5c3_Var60 string
+			templ_7745c5c3_Var60, templ_7745c5c3_Err = templ.JoinStringErrs(nettype)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 464, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 480, Col: 64}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var57))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var60))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1268,12 +1312,12 @@ func cellNettype(nettype string, height uint) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var58 string
-			templ_7745c5c3_Var58, templ_7745c5c3_Err = templ.JoinStringErrs(nettype)
+			var templ_7745c5c3_Var61 string
+			templ_7745c5c3_Var61, templ_7745c5c3_Err = templ.JoinStringErrs(nettype)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 466, Col: 65}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 482, Col: 65}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var58))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var61))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1286,12 +1330,12 @@ func cellNettype(nettype string, height uint) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		var templ_7745c5c3_Var59 string
-		templ_7745c5c3_Var59, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", height))
+		var templ_7745c5c3_Var62 string
+		templ_7745c5c3_Var62, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%d", height))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 469, Col: 28}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 485, Col: 28}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var59))
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var62))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1315,9 +1359,9 @@ func cellProtocol(protocol string, cors bool) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var60 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var60 == nil {
-			templ_7745c5c3_Var60 = templ.NopComponent
+		templ_7745c5c3_Var63 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var63 == nil {
+			templ_7745c5c3_Var63 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		switch protocol {
@@ -1326,12 +1370,12 @@ func cellProtocol(protocol string, cors bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var61 string
-			templ_7745c5c3_Var61, templ_7745c5c3_Err = templ.JoinStringErrs(protocol)
+			var templ_7745c5c3_Var64 string
+			templ_7745c5c3_Var64, templ_7745c5c3_Err = templ.JoinStringErrs(protocol)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 475, Col: 64}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 491, Col: 64}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var61))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var64))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1344,12 +1388,12 @@ func cellProtocol(protocol string, cors bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var62 string
-			templ_7745c5c3_Var62, templ_7745c5c3_Err = templ.JoinStringErrs(protocol)
+			var templ_7745c5c3_Var65 string
+			templ_7745c5c3_Var65, templ_7745c5c3_Err = templ.JoinStringErrs(protocol)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 477, Col: 66}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 493, Col: 66}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var62))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var65))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1384,19 +1428,19 @@ func cellCountry(cc, countryName, city, asnName string, asn uint) templ.Componen
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var63 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var63 == nil {
-			templ_7745c5c3_Var63 = templ.NopComponent
+		templ_7745c5c3_Var66 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var66 == nil {
+			templ_7745c5c3_Var66 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		if cc != "" {
 			if city != "" {
-				var templ_7745c5c3_Var64 string
-				templ_7745c5c3_Var64, templ_7745c5c3_Err = templ.JoinStringErrs(city)
+				var templ_7745c5c3_Var67 string
+				templ_7745c5c3_Var67, templ_7745c5c3_Err = templ.JoinStringErrs(city)
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 488, Col: 9}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 504, Col: 9}
 				}
-				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var64))
+				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var67))
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
@@ -1409,12 +1453,12 @@ func cellCountry(cc, countryName, city, asnName string, asn uint) templ.Componen
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var65 string
-			templ_7745c5c3_Var65, templ_7745c5c3_Err = templ.JoinStringErrs(countryName)
+			var templ_7745c5c3_Var68 string
+			templ_7745c5c3_Var68, templ_7745c5c3_Err = templ.JoinStringErrs(countryName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 490, Col: 15}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 506, Col: 15}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var65))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var68))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1422,12 +1466,12 @@ func cellCountry(cc, countryName, city, asnName string, asn uint) templ.Componen
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var66 string
-			templ_7745c5c3_Var66, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/assets/img/cf/%s.svg", strings.ToLower(cc)))
+			var templ_7745c5c3_Var69 string
+			templ_7745c5c3_Var69, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("/assets/img/cf/%s.svg", strings.ToLower(cc)))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 491, Col: 91}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 507, Col: 91}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var66))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var69))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1435,12 +1479,12 @@ func cellCountry(cc, countryName, city, asnName string, asn uint) templ.Componen
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var67 string
-			templ_7745c5c3_Var67, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s Flag", cc))
+			var templ_7745c5c3_Var70 string
+			templ_7745c5c3_Var70, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("%s Flag", cc))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 491, Col: 126}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 507, Col: 126}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var67))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var70))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1454,8 +1498,8 @@ func cellCountry(cc, countryName, city, asnName string, asn uint) templ.Componen
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var68 templ.SafeURL = templ.URL(fmt.Sprintf("https://www.ditatompel.com/asn/%d", asn))
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var68)))
+			var templ_7745c5c3_Var71 templ.SafeURL = templ.URL(fmt.Sprintf("https://www.ditatompel.com/asn/%d", asn))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(string(templ_7745c5c3_Var71)))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1463,12 +1507,12 @@ func cellCountry(cc, countryName, city, asnName string, asn uint) templ.Componen
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var69 string
-			templ_7745c5c3_Var69, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("AS%d", asn))
+			var templ_7745c5c3_Var72 string
+			templ_7745c5c3_Var72, templ_7745c5c3_Err = templ.JoinStringErrs(fmt.Sprintf("AS%d", asn))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 500, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 516, Col: 29}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var69))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var72))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1476,12 +1520,12 @@ func cellCountry(cc, countryName, city, asnName string, asn uint) templ.Componen
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var70 string
-			templ_7745c5c3_Var70, templ_7745c5c3_Err = templ.JoinStringErrs(asnName)
+			var templ_7745c5c3_Var73 string
+			templ_7745c5c3_Var73, templ_7745c5c3_Err = templ.JoinStringErrs(asnName)
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 501, Col: 55}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 517, Col: 55}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var70))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var73))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1510,9 +1554,9 @@ func cellStatuses(isAvailable bool, statuses [5]int) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var71 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var71 == nil {
-			templ_7745c5c3_Var71 = templ.NopComponent
+		templ_7745c5c3_Var74 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var74 == nil {
+			templ_7745c5c3_Var74 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		if isAvailable {
@@ -1568,9 +1612,9 @@ func cellUptime(uptime float64) templ.Component {
 			}()
 		}
 		ctx = templ.InitializeContext(ctx)
-		templ_7745c5c3_Var72 := templ.GetChildren(ctx)
-		if templ_7745c5c3_Var72 == nil {
-			templ_7745c5c3_Var72 = templ.NopComponent
+		templ_7745c5c3_Var75 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var75 == nil {
+			templ_7745c5c3_Var75 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
 		if uptime >= 98 {
@@ -1578,12 +1622,12 @@ func cellUptime(uptime float64) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var73 string
-			templ_7745c5c3_Var73, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatFloat(uptime))
+			var templ_7745c5c3_Var76 string
+			templ_7745c5c3_Var76, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatFloat(uptime))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 525, Col: 58}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 541, Col: 58}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var73))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var76))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1596,12 +1640,12 @@ func cellUptime(uptime float64) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var74 string
-			templ_7745c5c3_Var74, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatFloat(uptime))
+			var templ_7745c5c3_Var77 string
+			templ_7745c5c3_Var77, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatFloat(uptime))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 527, Col: 56}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 543, Col: 56}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var74))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var77))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1614,12 +1658,12 @@ func cellUptime(uptime float64) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var75 string
-			templ_7745c5c3_Var75, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatFloat(uptime))
+			var templ_7745c5c3_Var78 string
+			templ_7745c5c3_Var78, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatFloat(uptime))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 529, Col: 59}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 545, Col: 59}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var75))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var78))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -1632,12 +1676,12 @@ func cellUptime(uptime float64) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			var templ_7745c5c3_Var76 string
-			templ_7745c5c3_Var76, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatFloat(uptime))
+			var templ_7745c5c3_Var79 string
+			templ_7745c5c3_Var79, templ_7745c5c3_Err = templ.JoinStringErrs(utils.FormatFloat(uptime))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 531, Col: 57}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `internal/handler/views/remote_nodes.templ`, Line: 547, Col: 57}
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var76))
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var79))
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
