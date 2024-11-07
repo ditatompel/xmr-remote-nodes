@@ -84,6 +84,7 @@ See the [Makefile](./Makefile).
 -   :white_check_mark: Accept IPv6 nodes.
 -   :white_check_mark: Use `a-h/templ` and `HTMX` instead of `Svelte`.
 -   Use Go standard `net/http` instead of `fiber`.
+-   Accept I2P nodes.
 
 ## Acknowledgement
 

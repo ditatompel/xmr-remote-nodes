@@ -402,10 +402,11 @@ func (s *fiberServer) countriesAPI(c *fiber.Ctx) error {
 // This handler should protected by `s.checkProberMW` middleware.
 func (s *fiberServer) giveJobAPI(c *fiber.Ctx) error {
 	acceptTor := c.QueryInt("accept_tor", 0)
+	acceptI2P := c.QueryInt("accept_i2p", 0)
 	acceptIPv6 := c.QueryInt("accept_ipv6", 0)
 
 	moneroRepo := monero.New()
-	node, err := moneroRepo.GiveJob(acceptTor, acceptIPv6)
+	node, err := moneroRepo.GiveJob(acceptTor, acceptI2P, acceptIPv6)
 	if err != nil {
 		return c.JSON(fiber.Map{
 			"status":  "error",

@@ -21,11 +21,12 @@ import (
 	"golang.org/x/net/proxy"
 )
 
-const RPCUserAgent = "ditatombot/0.0.1 (Monero RPC Monitoring; https://github.com/ditatompel/xmr-remote-nodes)"
+const RPCUserAgent = "ditatombot/0.0.2 (Monero RPC Monitoring; https://github.com/ditatompel/xmr-remote-nodes)"
 
 const (
 	errNoEndpoint         = errProber("no SERVER_ENDPOINT was provided")
 	errNoTorSocks         = errProber("no TOR_SOCKS was provided")
+	errNoI2PSocks         = errProber("no I2P_SOCKS was provided")
 	errNoAPIKey           = errProber("no API_KEY was provided")
 	errInvalidCredentials = errProber("invalid API_KEY credentials")
 )
@@ -41,6 +42,8 @@ type proberClient struct {
 	apiKey     string // prober api key
 	acceptTor  bool   // accept tor
 	torSOCKS   string // IP:Port of tor socks
+	acceptI2P  bool   // accept i2p
+	I2PSOCKS   string // IP:Port of i2p socks
 	acceptIPv6 bool   // accept ipv6
 	message    string // message to include when reporting back to server
 }
@@ -52,6 +55,8 @@ func newProber() *proberClient {
 		apiKey:     cfg.APIKey,
 		acceptTor:  cfg.AcceptTor,
 		torSOCKS:   cfg.TorSOCKS,
+		acceptI2P:  cfg.AcceptI2P,
+		I2PSOCKS:   cfg.I2PSOCKS,
 		acceptIPv6: cfg.IPv6Capable,
 	}
 }
@@ -66,6 +71,9 @@ var ProbeCmd = &cobra.Command{
 		}
 		if t, _ := cmd.Flags().GetBool("no-tor"); t {
 			prober.SetAcceptTor(false)
+		}
+		if t, _ := cmd.Flags().GetBool("no-i2p"); t {
+			prober.SetAcceptI2P(false)
 		}
 
 		if err := prober.Run(); err != nil {
@@ -86,6 +94,10 @@ func (p *proberClient) SetEndpoint(endpoint string) {
 
 func (p *proberClient) SetAcceptTor(acceptTor bool) {
 	p.acceptTor = acceptTor
+}
+
+func (p *proberClient) SetAcceptI2P(acceptI2P bool) {
+	p.acceptI2P = acceptI2P
 }
 
 func (p *proberClient) SetAcceptIPv6(acceptIPv6 bool) {
@@ -122,6 +134,9 @@ func (p *proberClient) validateConfig() error {
 	if p.acceptTor && p.torSOCKS == "" {
 		return errNoTorSocks
 	}
+	if p.acceptI2P && p.I2PSOCKS == "" {
+		return errNoI2PSocks
+	}
 
 	return nil
 }
@@ -133,6 +148,11 @@ func (p *proberClient) fetchJob() (monero.Node, error) {
 		acceptTor = 1
 	}
 
+	acceptI2P := 0
+	if p.acceptI2P {
+		acceptI2P = 1
+	}
+
 	acceptIPv6 := 0
 	if p.acceptIPv6 {
 		acceptIPv6 = 1
@@ -140,7 +160,7 @@ func (p *proberClient) fetchJob() (monero.Node, error) {
 
 	var node monero.Node
 
-	uri := fmt.Sprintf("%s/api/v1/job?accept_tor=%d&accept_ipv6=%d", p.endpoint, acceptTor, acceptIPv6)
+	uri := fmt.Sprintf("%s/api/v1/job?accept_tor=%d&accept_i2p=%d&accept_ipv6=%d", p.endpoint, acceptTor, acceptI2P, acceptIPv6)
 	slog.Info(fmt.Sprintf("[PROBE] Getting node from %s", uri))
 
 	req, err := http.NewRequest(http.MethodGet, uri, nil)
@@ -198,8 +218,16 @@ func (p *proberClient) fetchNode(node monero.Node) (monero.Node, error) {
 	req.Header.Set("Origin", "https://xmr.ditatompel.com")
 
 	var client http.Client
+	var socks5 string
+
 	if p.acceptTor && node.IsTor {
-		dialer, err := proxy.SOCKS5("tcp", p.torSOCKS, nil, proxy.Direct)
+		socks5 = p.torSOCKS
+	} else if p.acceptI2P && node.IsI2P {
+		socks5 = p.I2PSOCKS
+	}
+
+	if socks5 != "" {
+		dialer, err := proxy.SOCKS5("tcp", socks5, nil, proxy.Direct)
 		if err != nil {
 			return node, err
 		}
@@ -268,7 +296,7 @@ func (p *proberClient) fetchNode(node monero.Node) (monero.Node, error) {
 		node.CORSCapable = true
 	}
 
-	if !node.IsTor {
+	if !node.IsTor && !node.IsI2P {
 		hostIp, err := net.LookupIP(node.Hostname)
 		if err != nil {
 			fmt.Println("Warning: Could not resolve hostname: " + node.Hostname)
@@ -335,7 +363,7 @@ func (p *proberClient) fetchFee(client http.Client, endpoint string) (uint, erro
 }
 
 func (p *proberClient) reportResult(node monero.Node, tookTime float64) error {
-	if !node.IsTor {
+	if !node.IsTor && !node.IsI2P {
 		if hostIps, err := net.LookupIP(node.Hostname); err == nil {
 			node.IPv6Only = ip.IsIPv6Only(hostIps)
 			node.IPAddresses = ip.SliceToString(hostIps)

@@ -29,7 +29,8 @@ func init() {
 	Root.PersistentFlags().StringVarP(&configFile, "config-file", "c", "", "Default to .env")
 	Root.AddCommand(client.ProbeCmd)
 	client.ProbeCmd.Flags().StringP("endpoint", "e", "", "Server endpoint")
-	client.ProbeCmd.Flags().Bool("no-tor", false, "Only probe clearnet nodes")
+	client.ProbeCmd.Flags().Bool("no-tor", false, "Do not probe tor nodes")
+	client.ProbeCmd.Flags().Bool("no-i2p", false, "Do not probe i2p nodes")
 }
 
 func initConfig() {

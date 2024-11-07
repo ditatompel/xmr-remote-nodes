@@ -7,11 +7,9 @@ templ AddNode() {
 		<div class="relative z-10">
 			<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
 				<div class="text-center">
-					<!-- Title -->
 					<div class="mt-5">
 						<h1 class="block font-extrabold text-4xl md:text-5xl lg:text-6xl text-neutral-200">Add Monero Node</h1>
 					</div>
-					<!-- End Title -->
 					<div class="mt-5">
 						<p class="text-lg text-neutral-300">You can use this page to add known remote node to the system so my bots can monitor it.</p>
 					</div>
@@ -25,6 +23,7 @@ templ AddNode() {
 								<div class="mt-2 text-sm">
 									<ul class="list-disc space-y-1 ps-5">
 										<li>As an administrator of this instance, I have full rights to delete, and blacklist any submitted node with or without providing any reason.</li>
+										<li>I2P nodes monitoring is beta and currently only support b32 address.</li>
 									</ul>
 								</div>
 							</div>
@@ -32,9 +31,7 @@ templ AddNode() {
 					</div>
 				</div>
 				<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-					<p class="mt-1 text-center">
-						Enter your Monero node information below (IPv6 host check is experimental):
-					</p>
+					<p class="mt-1 text-center">Enter your Monero node information below:</p>
 					<div class="mt-12">
 						<form method="put" hx-swap="transition:true" hx-target="#form-result" hx-disabled-elt=".form" hx-on::after-request="this.reset()">
 							<div class="grid grid-cols-1 sm:grid-cols-4 gap-6">

@@ -3,6 +3,7 @@ on:
     branches:
       - main
       - htmx
+      - i2p-support
 
   pull_request:
 name: Test

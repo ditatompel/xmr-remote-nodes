@@ -35,6 +35,7 @@ type Node struct {
 	Port            uint           `json:"port" db:"port"`
 	Protocol        string         `json:"protocol" db:"protocol"`
 	IsTor           bool           `json:"is_tor" db:"is_tor"`
+	IsI2P           bool           `json:"is_i2p" db:"is_i2p"`
 	IsAvailable     bool           `json:"is_available" db:"is_available"`
 	Nettype         string         `json:"nettype" db:"nettype"`
 	Height          uint           `json:"height" db:"height"`
@@ -196,14 +197,25 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 
 	is_tor := false
 	if strings.HasSuffix(hostname, ".onion") {
+		if !validTorHostname(hostname) {
+			return errors.New("Invalid TOR v3 .onion hostname")
+		}
 		is_tor = true
+	}
+
+	is_i2p := false
+	if strings.HasSuffix(hostname, ".i2p") {
+		if !validI2PHostname(hostname) {
+			return errors.New("Invalid I2P hostname")
+		}
+		is_i2p = true
 	}
 
 	ipAddr := ""
 	ips := ""
 	ipv6_only := false
 
-	if !is_tor {
+	if !is_tor && !is_i2p {
 		hostIps, err := net.LookupIP(hostname)
 		if err != nil {
 			return err
@@ -221,10 +233,6 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 
 		ipAddr = hostIp.String()
 		ips = ip.SliceToString(hostIps)
-	} else {
-		if !validTorHostname(hostname) {
-			return errors.New("Invalid TOR v3 .onion hostname")
-		}
 	}
 
 	row, err := r.db.Query(`
@@ -252,6 +260,7 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 			hostname,
 			port,
 			is_tor,
+			is_i2p,
 			nettype,
 			ip_addr,
 			lat,
@@ -274,12 +283,14 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 			?,
 			?,
 			?,
+			?,
 			?
 		)`,
 		protocol,
 		hostname,
 		port,
 		is_tor,
+		is_i2p,
 		"",
 		ipAddr,
 		0,
@@ -302,6 +313,14 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 // TOR v3 .onion addresses are 56 characters of `base32` followed by ".onion"
 func validTorHostname(hostname string) bool {
 	return regexp.MustCompile(`^([a-z0-9-]+\.)*[a-z2-7]{56}\.onion$`).MatchString(hostname)
+}
+
+// validI2PHostname checks if a given hostname is a valid p32 I2P address
+//
+// Old b32 addresses are always {52 chars}.b32.i2p and new ones are {56+ chars}.b32.i2p.
+// See: https://geti2p.net/spec/b32encrypted
+func validI2PHostname(hostname string) bool {
+	return regexp.MustCompile(`^[a-z2-7]{52,}\.b32\.i2p$`).MatchString(hostname)
 }
 
 func (r *moneroRepo) Delete(id uint) error {

@@ -109,13 +109,17 @@ func (r *moneroRepo) Logs(q QueryLogs) (FetchLogs, error) {
 }
 
 // GiveJob returns node that should be probed for the next time
-func (r *moneroRepo) GiveJob(acceptTor, acceptIPv6 int) (Node, error) {
+func (r *moneroRepo) GiveJob(acceptTor, acceptI2P, acceptIPv6 int) (Node, error) {
 	args := []interface{}{}
 	wq := []string{}
 	where := ""
 
 	if acceptTor != 1 {
 		wq = append(wq, "is_tor = ?")
+		args = append(args, 0)
+	}
+	if acceptI2P != 1 {
+		wq = append(wq, "is_i2p = ?")
 		args = append(args, 0)
 	}
 	if acceptIPv6 != 1 {
@@ -136,10 +140,11 @@ func (r *moneroRepo) GiveJob(acceptTor, acceptIPv6 int) (Node, error) {
 			port,
 			protocol,
 			is_tor,
+			is_i2p,
 			last_check_status
 		FROM
 			tbl_node
-		%s -- where query if any
+		%s
 		ORDER BY
 			last_checked ASC
 		LIMIT 1`, where)
@@ -149,6 +154,7 @@ func (r *moneroRepo) GiveJob(acceptTor, acceptIPv6 int) (Node, error) {
 		&node.Port,
 		&node.Protocol,
 		&node.IsTor,
+		&node.IsI2P,
 		&node.LastCheckStatus)
 	if err != nil {
 		return node, err
