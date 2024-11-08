@@ -29,7 +29,7 @@ To build the executable binaries, you need:
 
 -   Go >= 1.22
 -   Bun >= 1.1.26
--   templ v0.2.778
+-   [a-h/templ][templ-repo] v0.2.778
 
 > **Note**:
 >
@@ -84,7 +84,7 @@ See the [Makefile](./Makefile).
 -   :white_check_mark: Accept IPv6 nodes.
 -   :white_check_mark: Use `a-h/templ` and `HTMX` instead of `Svelte`.
 -   Use Go standard `net/http` instead of `fiber`.
--   Accept I2P nodes.
+-   :white_check_mark: Accept I2P nodes.
 
 ## Acknowledgement
 
@@ -120,6 +120,7 @@ Thank you!
 
 This project is licensed under [BSD-3-Clause](./LICENSE) license.
 
+[templ-repo]: https://github.com/a-h/templ "a-h/templ GitHub repository"
 [geoip-doc]: https://dev.maxmind.com/geoip/geoip2/geolite2/ "GeoIP documentation"
 [server-systemd-service]: ./deployment/init/xmr-nodes-server.service "systemd service example for server"
 [prober-systemd-service]: ./deployment/init/xmr-nodes-prober.service "systemd service example for prober"
