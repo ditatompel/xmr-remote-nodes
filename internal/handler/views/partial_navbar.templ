@@ -1,12 +1,12 @@
 package views
 
 templ navbar(pageIdentifier string) {
-	<header class="fixed top-4 inset-x-0 flex flex-wrap md:justify-start md:flex-nowrap z-50 w-full before:absolute before:inset-0 before:max-w-7xl before:mx-2 before:lg:mx-auto before:rounded-[26px] before:bg-neutral-800/70 before:backdrop-blur-md">
+	<header class="fixed top-4 inset-x-0 flex flex-wrap z-50 w-full md:justify-start md:flex-nowrap before:absolute before:inset-0 before:max-w-7xl before:mx-2 before:lg:mx-auto before:rounded-[26px] before:bg-neutral-800/70 before:backdrop-blur-sm before:shadow-md before:shadow-orange-400/40">
 		<nav class="relative max-w-7xl w-full py-2.5 px-5 md:flex md:items-center md:justify-between md:py-0 mx-2 lg:mx-auto">
 			<div class="flex items-center justify-between">
 				<div class="flex-none inline-block">
 					<a class="text-xl font-semibold text-white focus:outline-none" href="/" aria-label="XMR Nodes">XMR Nodes</a>
-					<div id="hx-indicator-main" class="htmx-indicator animate-spin ml-2 inline-block size-4 border-[3px] border-current border-t-transparent text-blue-500 rounded-full" role="status" aria-label="loading indicator">
+					<div id="hx-indicator-main" class="htmx-indicator animate-spin ml-2 inline-block size-4 border-[3px] border-current border-t-transparent text-orange-400 rounded-full" role="status" aria-label="loading indicator">
 						<span class="sr-only">Loading...</span>
 					</div>
 				</div>
@@ -17,7 +17,6 @@ templ navbar(pageIdentifier string) {
 					</button>
 				</div>
 			</div>
-			<!-- Collapse -->
 			<div id="main-navbar" class="hs-collapse hidden overflow-hidden transition-all duration-300 basis-full grow md:block" aria-labelledby="main-navbar-collapse">
 				<div class="flex flex-col md:flex-row md:items-center md:justify-end gap-2 md:gap-3 mt-3 md:mt-0 py-2 md:py-0 md:ps-7">
 					<a
@@ -43,7 +42,6 @@ templ navbar(pageIdentifier string) {
 					>Add Node</a>
 				</div>
 			</div>
-			<!-- End Collapse -->
 		</nav>
 	</header>
 }
