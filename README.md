@@ -20,8 +20,8 @@ The **clients** is used to fetch node information given by the server. First,
 it will ask the server which node to fetch. Then, it will fetch the information
 and report back to the server.
 
-The **server** serves an embedded Svelte static site for the Web UI. It also
-serves the `/api` endpoint that is used by the clients and the Web UI itself.
+The **server** serves the Web UI and the `/api` endpoint that is used by the
+clients.
 
 ## Requirements
 
@@ -121,7 +121,7 @@ Thank you!
 This project is licensed under [BSD-3-Clause](./LICENSE) license.
 
 [templ-repo]: https://github.com/a-h/templ "a-h/templ GitHub repository"
-[geoip-doc]: https://dev.maxmind.com/geoip/geoip2/geolite2/ "GeoIP documentation"
+[geoip-doc]: https://dev.maxmind.com/geoip/geolite2-free-geolocation-data/ "GeoLite2 Free documentation"
 [server-systemd-service]: ./deployment/init/xmr-nodes-server.service "systemd service example for server"
 [prober-systemd-service]: ./deployment/init/xmr-nodes-prober.service "systemd service example for prober"
 [prober-systemd-timer]: ./deployment/init/xmr-nodes-prober.timer "systemd timer example for prober"
