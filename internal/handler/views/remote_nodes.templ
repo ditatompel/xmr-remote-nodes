@@ -10,20 +10,6 @@ import (
 	"time"
 )
 
-var nettypes = []string{"mainnet", "stagenet", "testnet"}
-var protocols = []string{"tor", "i2p", "http", "https"}
-
-type nodeStatus struct {
-	Code int
-	Text string
-}
-
-var nodeStatuses = []nodeStatus{
-	{-1, "ANY"},
-	{1, "Online"},
-	{0, "Offline"},
-}
-
 templ RemoteNodes(data monero.Nodes, countries []monero.Countries, q monero.QueryNodes, p paging.Pagination) {
 	<!-- Hero -->
 	<section class="relative overflow-hidden pt-6">
