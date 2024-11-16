@@ -85,6 +85,7 @@ See the [Makefile](./Makefile).
 -   :white_check_mark: Use `a-h/templ` and `HTMX` instead of `Svelte`.
 -   Use Go standard `net/http` instead of `fiber`.
 -   :white_check_mark: Accept I2P nodes.
+-   :white_check_mark: Support Tor hidden service (beta, inform via HTTP header).
 
 ## Acknowledgement
 
