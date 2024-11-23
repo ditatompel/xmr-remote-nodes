@@ -206,10 +206,16 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								@cellHostPort(row.ID, row.Port, row.Hostname, row.IPAddresses, row.IsTor, row.IsI2P, row.IPv6Only)
 							</td>
 							<td>
-								@cellNettype(row.Nettype, row.Height)
+								@fmtNettype(row.Nettype)
+								<br/>
+								{ fmt.Sprintf("%d", row.Height) }
 							</td>
 							<td>
-								@cellProtocol(row.Protocol, row.CORSCapable)
+								@fmtProtocol(row.Protocol)
+								if row.CORSCapable {
+									<br/>
+									(CORS 💪)
+								}
 							</td>
 							<td>
 								@cellCountry(row.CountryCode, row.CountryName, row.City, row.ASNName, row.ASN)
@@ -259,7 +265,12 @@ templ Node(data monero.Node) {
 			</dt>
 			<dd>
 				<ul>
-					<li class="uppercase">{ data.Protocol }</li>
+					<li class="uppercase">
+						@fmtProtocol(data.Protocol)
+						if data.CORSCapable {
+							<span class="ml-2">(CORS 💪)</span>
+						}
+					</li>
 				</ul>
 			</dd>
 		</dl>
@@ -270,7 +281,14 @@ templ Node(data monero.Node) {
 				</dt>
 				<dd>
 					<ul>
-						<li class="uppercase">{ data.Nettype }</li>
+						<li class="uppercase">
+							if data.IsI2P {
+								<span class="badge bg-green-600 mr-2">I2P</span>
+							} else if data.IsTor {
+								<span class="badge bg-purple-800 mr-2">TOR</span>
+							}
+							@fmtNettype(data.Nettype)
+						</li>
 					</ul>
 				</dd>
 			</dl>
@@ -287,6 +305,32 @@ templ Node(data monero.Node) {
 				</dd>
 			</dl>
 		}
+		if data.CountryCode != "" {
+			<dl class="flex flex-col sm:flex-row gap-1">
+				<dt class="min-w-40">
+					<span class="block text-white text-bold">Country:</span>
+				</dt>
+				<dd>
+					<ul>
+						<li class="whitespace-break-spaces">
+							@cellCountry(data.CountryCode, data.CountryName, data.City, data.ASNName, data.ASN)
+						</li>
+					</ul>
+				</dd>
+			</dl>
+		}
+		<dl class="flex flex-col sm:flex-row gap-1">
+			<dt class="min-w-40">
+				<span class="block text-white text-bold">Monitored Since:</span>
+			</dt>
+			<dd>
+				<ul>
+					<li class="whitespace-break-spaces">
+						{ time.Unix(data.DateEntered, 0).UTC().Format("Jan 2, 2006 15:04 MST") } (about { utils.TimeSince(data.DateEntered) })
+					</li>
+				</ul>
+			</dd>
+		</dl>
 	</div>
 }
 
@@ -413,6 +457,26 @@ templ TableLogs(hxPath string, data monero.FetchLogs, q monero.QueryLogs, p pagi
 	</div>
 }
 
+templ fmtNettype(nettype string) {
+	switch nettype {
+		case "stagenet":
+			<span class="font-semibold uppercase text-sky-500">{ nettype }</span>
+		case "testnet":
+			<span class="font-semibold uppercase text-rose-500">{ nettype }</span>
+		default:
+			<span class="font-semibold uppercase text-green-500">{ nettype }</span>
+	}
+}
+
+templ fmtProtocol(protocol string) {
+	switch protocol {
+		case "http":
+			<span class="font-semibold uppercase text-sky-500">{ protocol }</span>
+		default:
+			<span class="font-semibold uppercase text-green-500">{ protocol }</span>
+	}
+}
+
 templ cellHostPort(id, port uint, hostname, ips string, isTor, isI2P, ipv6Only bool) {
 	if isTor {
 		<button
@@ -447,7 +511,19 @@ templ cellHostPort(id, port uint, hostname, ips string, isTor, isI2P, ipv6Only b
 		.i2p:<span class="text-indigo-400">{ fmt.Sprintf("%d", port) }</span>
 		<span class="badge bg-green-600">I2P</span>
 	} else {
-		{ ip.FormatHostname(hostname) }:<span class="text-indigo-400">{ fmt.Sprintf("%d", port) }</span>
+		<button
+			class="text-orange-400 hover:brightness-125"
+			hx-get={ fmt.Sprintf("/remote-nodes/id/%d", id) }
+			hx-push-url="false"
+			hx-target="#modal-section"
+			aria-haspopup="dialog"
+			aria-expanded="false"
+			aria-controls="modal-section"
+			data-hs-overlay="#modal-section"
+		>
+			👁 { ip.FormatHostname(hostname) }
+		</button>
+		:<span class="text-indigo-400">{ fmt.Sprintf("%d", port) }</span>
 		<br/>
 		<div class="max-w-40 text-ellipsis overflow-x-auto md:overflow-hidden hover:overflow-visible">
 			<span class="whitespace-break-spaces text-gray-400">{ strings.ReplaceAll(ips, ",", " ") }</span>
@@ -455,32 +531,6 @@ templ cellHostPort(id, port uint, hostname, ips string, isTor, isI2P, ipv6Only b
 				<span class="text-rose-400">(IPv6 only)</span>
 			}
 		</div>
-	}
-}
-
-templ cellNettype(nettype string, height uint) {
-	switch nettype {
-		case "stagenet":
-			<span class="font-semibold uppercase text-sky-500">{ nettype }</span>
-		case "testnet":
-			<span class="font-semibold uppercase text-rose-500">{ nettype }</span>
-		default:
-			<span class="font-semibold uppercase text-green-500">{ nettype }</span>
-	}
-	<br/>
-	{ fmt.Sprintf("%d", height) }
-}
-
-templ cellProtocol(protocol string, cors bool) {
-	switch protocol {
-		case "http":
-			<span class="font-semibold uppercase text-sky-500">{ protocol }</span>
-		default:
-			<span class="font-semibold uppercase text-green-500">{ protocol }</span>
-	}
-	if cors {
-		<br/>
-		(CORS 💪)
 	}
 }
 
