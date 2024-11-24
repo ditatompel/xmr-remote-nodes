@@ -8,8 +8,9 @@ import (
 
 type fiberServer struct {
 	*fiber.App
-	db  *database.DB
-	url string
+	db     *database.DB
+	url    string
+	secret string
 }
 
 // NewServer returns a new fiber server

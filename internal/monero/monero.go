@@ -1,7 +1,9 @@
 package monero
 
 import (
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -54,6 +56,7 @@ type Node struct {
 	Latitude        float64        `json:"latitude" db:"lat"`
 	Longitude       float64        `json:"longitude" db:"lon"`
 	DateEntered     int64          `json:"date_entered,omitempty" db:"date_entered"`
+	SubmitterIPHash string         `json:"submitter_iphash,omitempty" db:"submitter_iphash"`
 	LastChecked     int64          `json:"last_checked" db:"last_checked"`
 	FailedCount     uint           `json:"failed_count,omitempty" db:"failed_count"`
 	LastCheckStatus types.JSONText `json:"last_check_statuses" db:"last_check_status"`
@@ -176,7 +179,35 @@ func (r *moneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 
 	query := fmt.Sprintf(`
 		SELECT
-			*
+			id,
+			hostname,
+			ip_addr,
+			port,
+			protocol,
+			is_tor,
+			is_i2p,
+			is_available,
+			nettype,
+			height,
+			adjusted_time,
+			database_size,
+			difficulty,
+			version,
+			uptime,
+			estimate_fee,
+			asn,
+			asn_name,
+			country,
+			country_name,
+			city,
+			lat,
+			lon,
+			date_entered,
+			last_checked,
+			last_check_status,
+			cors_capable,
+			ipv6_only,
+			ip_addresses
 		FROM
 			tbl_node
 		%s
@@ -190,7 +221,7 @@ func (r *moneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 	return nodes, err
 }
 
-func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
+func (r *moneroRepo) Add(submitterIP, salt, protocol, hostname string, port uint) error {
 	if protocol != "http" && protocol != "https" {
 		return errors.New("Invalid protocol, must one of or HTTP/HTTPS")
 	}
@@ -270,11 +301,13 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 			lat,
 			lon,
 			date_entered,
+			submitter_iphash,
 			last_checked,
 			last_check_status,
 			ip_addresses,
 			ipv6_only
 		) VALUES (
+			?,
 			?,
 			?,
 			?,
@@ -300,6 +333,7 @@ func (r *moneroRepo) Add(protocol string, hostname string, port uint) error {
 		0,
 		0,
 		time.Now().Unix(),
+		hashIPWithSalt(submitterIP, salt),
 		0,
 		string(statusDb),
 		ips,
@@ -395,6 +429,14 @@ func (r *moneroRepo) Countries() ([]Countries, error) {
 		ORDER BY
 			country ASC`)
 	return c, err
+}
+
+// hashIPWithSalt hashes IP address with salt designed for checksumming, but
+// still maintain user privacy, this is NOT cryptographic security.
+func hashIPWithSalt(ip, salt string) string {
+	hasher := sha256.New()
+	hasher.Write([]byte(salt + ip)) // Combine salt and IP
+	return hex.EncodeToString(hasher.Sum(nil))
 }
 
 // ParseNodeStatuses parses JSONText into [5]int

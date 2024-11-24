@@ -13,7 +13,8 @@ type App struct {
 	LogLevel string
 
 	// configuration for server
-	URL string // URL where user can access the web UI, don't put trailing slash
+	URL    string // URL where user can access the web UI, don't put trailing slash
+	Secret string // random 64-character hex string that give us 32 random bytes
 
 	// fiber specific config
 	Prefork     bool
@@ -61,6 +62,7 @@ func LoadApp() {
 
 	// server configuration
 	app.URL = os.Getenv("APP_URL")
+	app.Secret = os.Getenv("APP_SECRET")
 
 	// fiber specific config
 	app.Host = os.Getenv("APP_HOST")

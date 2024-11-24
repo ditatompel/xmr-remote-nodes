@@ -7,7 +7,7 @@ import (
 
 type migrateFn func(*DB) error
 
-var dbMigrate = [...]migrateFn{v1, v2, v3, v4}
+var dbMigrate = [...]migrateFn{v1, v2, v3, v4, v5}
 
 func MigrateDb(db *DB) error {
 	version := getSchemaVersion(db)
@@ -281,6 +281,21 @@ func v4(db *DB) error {
 	_, err := db.Exec(`
 		ALTER TABLE tbl_node
 		ADD COLUMN is_i2p TINYINT(1) UNSIGNED NOT NULL DEFAULT '0' AFTER is_tor;`)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func v5(db *DB) error {
+	// table: tbl_node
+	slog.Debug("[DB] Adding additional columns to tbl_node")
+	_, err := db.Exec(`
+		ALTER TABLE tbl_node
+		ADD COLUMN submitter_iphash CHAR(64) NOT NULL DEFAULT ''
+		COMMENT 'hashed IP address who submitted the node'
+		AFTER date_entered;`)
 	if err != nil {
 		return err
 	}

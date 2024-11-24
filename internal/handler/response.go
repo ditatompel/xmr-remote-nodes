@@ -66,7 +66,7 @@ func (s *fiberServer) addNodeHandler(c *fiber.Ctx) error {
 		}
 
 		moneroRepo := monero.New()
-		if err := moneroRepo.Add(f.Protocol, f.Hostname, uint(f.Port)); err != nil {
+		if err := moneroRepo.Add(c.IP(), s.secret, f.Protocol, f.Hostname, uint(f.Port)); err != nil {
 			handler := adaptor.HTTPHandler(templ.Handler(views.Alert("error", err.Error())))
 			return handler(c)
 		}
@@ -354,7 +354,7 @@ func (s *fiberServer) addNodeAPI(c *fiber.Ctx) error {
 	hostname := c.FormValue("hostname")
 
 	moneroRepo := monero.New()
-	if err := moneroRepo.Add(protocol, hostname, uint(port)); err != nil {
+	if err := moneroRepo.Add(c.IP(), s.secret, protocol, hostname, uint(port)); err != nil {
 		return c.JSON(fiber.Map{
 			"status":  "error",
 			"message": err.Error(),
