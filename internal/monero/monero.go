@@ -407,3 +407,28 @@ func ParseNodeStatuses(statuses types.JSONText) [5]int {
 
 	return s
 }
+
+// ParseCURLGetInfo generates curl command to get node info from given node
+//
+// Primarily used for Web UI to display example curl command.
+func ParseCURLGetInfo(node Node) string {
+	d := `'{"jsonrpc":"2.0","id":"0","method":"get_info"}' -H 'Content-Type: application/json'`
+
+	if node.IsI2P {
+		return fmt.Sprintf(
+			"curl -x socks5h://127.0.0.1:4447 %s://%s:%d/json_rpc -d %s -sL",
+			node.Protocol, node.Hostname, node.Port, d,
+		)
+	}
+	if node.IsTor {
+		return fmt.Sprintf(
+			"curl -x socks5h://127.0.0.1:9050 %s://%s:%d/json_rpc -d %s -sL",
+			node.Protocol, node.Hostname, node.Port, d,
+		)
+	}
+
+	return fmt.Sprintf(
+		"curl %s://%s:%d/json_rpc -d %s -sL",
+		node.Protocol, node.Hostname, node.Port, d,
+	)
+}

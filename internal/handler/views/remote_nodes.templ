@@ -331,6 +331,24 @@ templ Node(data monero.Node) {
 				</ul>
 			</dd>
 		</dl>
+		<dl class="flex flex-col sm:flex-row gap-1">
+			<dt class="min-w-40">
+				<span class="block text-white text-bold">cURL get_info Eg.:</span>
+			</dt>
+			<dd>
+				<ul>
+					<li>
+						<label for="curl-getinfo-eg" class="sr-only">cURL get_info Example</label>
+						<div class="flex rounded-lg shadow-sm">
+							<input type="text" id="curl-getinfo-eg" name="stagenet-ssl" class="py-1 px-2 block w-full text-neutral-400 bg-neutral-900 border-neutral-700 shadow-sm rounded-0 text-sm focus:z-10 focus:border-orange-500 focus:ring-orange-500" value={ monero.ParseCURLGetInfo(data) } readonly/>
+							<button class="clipboard copy-input" data-clipboard-target="#curl-getinfo-eg">
+								Copy
+							</button>
+						</div>
+					</li>
+				</ul>
+			</dd>
+		</dl>
 	</div>
 }
 
