@@ -27,24 +27,24 @@ clients.
 
 To build the executable binaries, you need:
 
--   Go >= 1.22
--   Bun >= 1.1.26
--   [a-h/templ][templ-repo] v0.2.778
+- Go >= 1.23
+- Bun >= 1.1.26
+- [a-h/templ][templ-repo] v0.2.778
 
 > **Note**:
 >
-> -   If you want to contribute to the code, please use exact templ version
->     (v0.2.778).
+> - If you want to contribute to the code, please use exact templ version
+>   (v0.2.778).
 
 ### Server & Prober requirements
 
--   Linux Machines (AMD64 or ARM64)
+- Linux Machines (AMD64 or ARM64)
 
 ### Server requirements
 
--   MySQL/MariaDB
--   [GeoIP Database][geoip-doc] (optional). Place it to `./assets/geoip`,
-    see [./internal/ip/geo/geoip.go](./internal/ip/geo/geoip.go).
+- MySQL/MariaDB
+- [GeoIP Database][geoip-doc] (optional). Place it to `./assets/geoip`,
+  see [./internal/ip/geo/geoip.go](./internal/ip/geo/geoip.go).
 
 ## Installation
 
@@ -81,24 +81,24 @@ See the [Makefile](./Makefile).
 
 ## ToDo's
 
--   :white_check_mark: Accept IPv6 nodes.
--   :white_check_mark: Use `a-h/templ` and `HTMX` instead of `Svelte`.
--   Use Go standard `net/http` instead of `fiber`.
--   :white_check_mark: Accept I2P nodes.
--   :white_check_mark: Support Tor hidden service (beta, inform via HTTP header).
+- :white_check_mark: Accept IPv6 nodes.
+- :white_check_mark: Use `a-h/templ` and `HTMX` instead of `Svelte`.
+- Use Go standard `net/http` instead of `fiber`.
+- :white_check_mark: Accept I2P nodes.
+- :white_check_mark: Support Tor hidden service (beta, inform via HTTP header).
 
 ## Acknowledgement
 
 The creators and contributors of these projects have provided valuable
 resources, which I am grateful for:
 
--   [jtgrassie/monero-pool][jtgrassie-monero-pool]
--   [rclone/rclone][rclone]
+- [jtgrassie/monero-pool][jtgrassie-monero-pool]
+- [rclone/rclone][rclone]
 
 ## Similar Projects
 
--   [lalanza808/monero.fail][monerofail-repo]
--   [cake-tech/upptime-monerocom][uptime-monerocom-repo]
+- [lalanza808/monero.fail][monerofail-repo]
+- [cake-tech/upptime-monerocom][uptime-monerocom-repo]
 
 ## Donation
 
