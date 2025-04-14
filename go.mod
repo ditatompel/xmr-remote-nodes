@@ -6,7 +6,7 @@ toolchain go1.24.1
 
 require (
 	github.com/a-h/templ v0.3.857
-	github.com/go-sql-driver/mysql v1.9.1
+	github.com/go-sql-driver/mysql v1.9.2
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/google/go-querystring v1.1.0
 	github.com/google/uuid v1.6.0
