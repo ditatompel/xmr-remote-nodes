@@ -14,7 +14,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/oschwald/geoip2-golang v1.11.0
 	github.com/spf13/cobra v1.9.1
-	golang.org/x/net v0.40.0
+	golang.org/x/net v0.41.0
 )
 
 require (
