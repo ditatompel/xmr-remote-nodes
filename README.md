@@ -29,12 +29,12 @@ To build the executable binaries, you need:
 
 - Go >= 1.23
 - Bun >= 1.1.26
-- [a-h/templ][templ-repo] v0.3.898
+- [a-h/templ][templ-repo] v0.3.906
 
 > **Note**:
 >
 > - If you want to contribute to the code, please use exact templ version
->   (v0.3.898).
+>   (v0.3.906).
 
 ### Server & Prober requirements
 
