@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/ditatompel/xmr-remote-nodes/internal/database"
+	"github.com/ditatompel/xmr-remote-nodes/internal/monero"
 )
 
 type cronRepo struct {
@@ -146,6 +147,11 @@ func (r *cronRepo) execCron(slug string) {
 	case "calculate_majority_fee":
 		slog.Info(fmt.Sprintf("[CRON] Start running task: %s", slug))
 		r.calculateMajorityFee()
+	case "fetch_rucknium_node_data":
+		slog.Info(fmt.Sprintf("[CRON] Start running task: %s", slug))
+		if err := monero.New().FetchRuckniumNodeData(); err != nil {
+			slog.Error(fmt.Sprintf("[CRON] Failed to fetch Rucknium's API: %s", err))
+		}
 	}
 }
 
