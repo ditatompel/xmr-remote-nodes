@@ -319,6 +319,7 @@ func v6(db *DB) error {
 			scan_date VARCHAR(100) NOT NULL,
 			connected_node_ip VARCHAR(200) NOT NULL,
 			is_spy_node TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+			rpc_domain TEXT NOT NULL DEFAULT 'None',
 			mrl_ban_list_enabled TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 			dns_ban_list_enabled TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
 			PRIMARY KEY (id)
@@ -330,8 +331,8 @@ func v6(db *DB) error {
 	slog.Debug("[DB] Adding unique key to table: tbl_rucknium_scan")
 	_, err = db.Exec(`
 		ALTER TABLE tbl_rucknium_scan
-		ADD UNIQUE KEY idx_daily (scan_date, connected_node_ip)
-		USING BTREE;`)
+		ADD UNIQUE KEY idx_daily (scan_date, connected_node_ip) USING BTREE,
+		ADD KEY scan_date (scan_date);`)
 	if err != nil {
 		return err
 	}

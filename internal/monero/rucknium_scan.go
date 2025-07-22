@@ -16,7 +16,8 @@ type RuckniumNodeData struct {
 	ID                uint   `json:"id,omitempty" db:"id"`
 	Date              string `json:"date" db:"scan_date"`
 	ConnectedNodeIP   string `json:"connected_node_ip" db:"connected_node_ip"`
-	IsSpyNode         int    `json:"is_spy_node" db:"is_spy_node"`                   // 0 = no, 1 = yes, 2 = not applied
+	IsSpyNode         int    `json:"is_spy_node" db:"is_spy_node"` // 0 = no, 1 = yes, 2 = not applied
+	RPCDomain         string `json:"rpc_domain" db:"rpc_domain"`
 	MRLBanListEnabled int    `json:"mrl_ban_list_enabled" db:"mrl_ban_list_enabled"` // 0 = no, 1 = yes, 2 = not applied
 	DNSBanListEnabled int    `json:"dns_ban_list_enabled" db:"dns_ban_list_enabled"` // 0 = no, 1 = yes, 2 = not applied
 }
@@ -55,21 +56,25 @@ func (r *moneroRepo) FetchRuckniumNodeData() error {
 			scan_date,
 			connected_node_ip,
 			is_spy_node,
+			rpc_domain,
 			mrl_ban_list_enabled,
 			dns_ban_list_enabled
 		) VALUES (
-			?, ?, ?, ?, ?
+			?, ?, ?, ?, ?, ?
 		)
 		ON DUPLICATE KEY UPDATE
 			is_spy_node = ?,
+			rpc_domain = ?,
 			mrl_ban_list_enabled = ?,
 			dns_ban_list_enabled = ?`,
 			node.Date,
 			node.ConnectedNodeIP,
 			node.IsSpyNode,
+			node.RPCDomain,
 			node.MRLBanListEnabled,
 			node.DNSBanListEnabled,
 			node.IsSpyNode,
+			node.RPCDomain,
 			node.MRLBanListEnabled,
 			node.DNSBanListEnabled)
 		if err != nil {
@@ -88,6 +93,7 @@ func (r *moneroRepo) GetRuckniumData(date string) ([]RuckniumNodeData, error) {
 	SELECT
 		connected_node_ip,
 		is_spy_node,
+		rpc_domain,
 		mrl_ban_list_enabled,
 		dns_ban_list_enabled
 	FROM
