@@ -152,6 +152,12 @@ func (r *cronRepo) execCron(slug string) {
 		if err := monero.New().FetchRuckniumNodeData(); err != nil {
 			slog.Error(fmt.Sprintf("[CRON] Failed to fetch Rucknium's API: %s", err))
 		}
+	case "check_mrl_ban_list":
+		slog.Info(fmt.Sprintf("[CRON] Start running task: %s", slug))
+		if err := monero.New().CheckMRLBan(); err != nil {
+			slog.Error(fmt.Sprintf("[CRON] Error when running MRL check ban list: %s", err))
+		}
+
 	}
 }
 
