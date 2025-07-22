@@ -83,9 +83,11 @@ See the [Makefile](./Makefile).
 
 - :white_check_mark: Accept IPv6 nodes.
 - :white_check_mark: Use `a-h/templ` and `HTMX` instead of `Svelte`.
-- Use Go standard `net/http` instead of `fiber`.
 - :white_check_mark: Accept I2P nodes.
 - :white_check_mark: Support Tor hidden service (beta, inform via HTTP header).
+- :hourglass: Integrate with [Rucknium's Monero Network Scan][rucknium-network-scan]
+- :hourglass: Implement ban by IP address using [Boog900's Monero Ban List][boog900-ban-list]
+- Use Go standard `net/http` instead of `fiber`.
 
 ## Acknowledgement
 
@@ -93,6 +95,9 @@ The creators and contributors of these projects have provided valuable
 resources, which I am grateful for:
 
 - [jtgrassie/monero-pool][jtgrassie-monero-pool]
+- [Rucknium/xmrnetscan][rucknium-network-scan-repo]
+- [Boog900/monero-ban-list][boog900-ban-list]
+- [Boog900/p2p-proxy-checker][boog900-p2p-proxy-checker]
 - [rclone/rclone][rclone]
 
 ## Similar Projects
@@ -131,3 +136,7 @@ This project is licensed under [BSD-3-Clause](./LICENSE) license.
 [rclone]: https://github.com/rclone/rclone "rclone GitHub repository"
 [monerofail-repo]: https://github.com/lalanza808/monero.fail "Lalanza808's monero.fail GitHub repository"
 [uptime-monerocom-repo]: https://github.com/cake-tech/upptime-monerocom "monero.com uptime GitHub repository"
+[rucknium-network-scan]: https://moneronet.info/ "Rucknium's Monero Network Scan"
+[rucknium-network-scan-repo]: https://github.com/Rucknium/xmrnetscan "Rucknium's Monero Network Scan Source Code"
+[boog900-ban-list]: https://github.com/Boog900/monero-ban-list "Boog900's Monero Ban List"
+[boog900-p2p-proxy-checker]: https://github.com/Boog900/p2p-proxy-checker "Boog900's P2P Proxy Checker"

@@ -7,7 +7,7 @@ import (
 
 type migrateFn func(*DB) error
 
-var dbMigrate = [...]migrateFn{v1, v2, v3, v4, v5}
+var dbMigrate = [...]migrateFn{v1, v2, v3, v4, v5, v6}
 
 func MigrateDb(db *DB) error {
 	version := getSchemaVersion(db)
@@ -289,6 +289,8 @@ func v4(db *DB) error {
 }
 
 func v5(db *DB) error {
+	slog.Debug("[DB] Migrating database schema version 5")
+
 	// table: tbl_node
 	slog.Debug("[DB] Adding additional columns to tbl_node")
 	_, err := db.Exec(`
@@ -296,6 +298,110 @@ func v5(db *DB) error {
 		ADD COLUMN submitter_iphash CHAR(64) NOT NULL DEFAULT ''
 		COMMENT 'hashed IP address who submitted the node'
 		AFTER date_entered;`)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func v6(db *DB) error {
+	slog.Debug("[DB] Migrating database schema version 6")
+
+	// table: tbl_rucknium_scan
+	// Data from rucknium's Monero Network Scan API
+	// Adapted from https://github.com/Rucknium/xmrnetscan/blob/c54748b7835f2f7ecf4673ab699950f9fc6afcdf/R/utils_update_database.R#L367-L385
+	// Added ID as primary key and only store neccessary columns for this project
+	slog.Debug("[DB] Creating table: tbl_rucknium_scan")
+	_, err := db.Exec(`
+		CREATE TABLE tbl_rucknium_scan (
+			id BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+			scan_date VARCHAR(100) NOT NULL,
+			connected_node_ip VARCHAR(200) NOT NULL,
+			is_spy_node TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+			mrl_ban_list_enabled TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+			dns_ban_list_enabled TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
+			PRIMARY KEY (id)
+		)`)
+	if err != nil {
+		return err
+	}
+
+	slog.Debug("[DB] Adding unique key to table: tbl_rucknium_scan")
+	_, err = db.Exec(`
+		ALTER TABLE tbl_rucknium_scan
+		ADD UNIQUE KEY idx_daily (scan_date, connected_node_ip)
+		USING BTREE;`)
+	if err != nil {
+		return err
+	}
+
+	// table: tbl_node
+	// Add new columns for Rucknium's MRL data. All submitted node data will be
+	// kept and the `is_archived` column will be used as a query parameter.
+	slog.Debug("[DB] Adding additional columns to tbl_node")
+	_, err = db.Exec(`
+		ALTER TABLE tbl_node
+		ADD COLUMN dns_ban_list_enabled TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 AFTER ipv6_only,
+		ADD COLUMN mrl_ban_list_enabled TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 AFTER ipv6_only,
+		ADD COLUMN is_spy_node TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 AFTER ipv6_only,
+		ADD COLUMN is_archived TINYINT(1) UNSIGNED NOT NULL DEFAULT 0 AFTER ipv6_only
+		;`)
+	if err != nil {
+		return err
+	}
+
+	// Since the ban lists is not (yet) applicable for ipv6, node from i2p and
+	// tor network, set all nodes to initial state (2, not applied).
+	slog.Debug("[DB] Updating nodes record to initial state of `not applied (2)`")
+	_, err = db.Exec(`
+		UPDATE tbl_node
+		SET
+			dns_ban_list_enabled = 2,
+			mrl_ban_list_enabled = 2,
+			is_spy_node = 2
+		;`)
+	if err != nil {
+		return err
+	}
+
+	// table: tbl_ban_list
+	// A table for list of banned IP addresses (support subnets). It's
+	// recommended to use Boog900's Monero Ban List:
+	// https://github.com/Boog900/monero-ban-list
+	slog.Debug("[DB] Creating table: tbl_rucknium_scan")
+	_, err = db.Exec(`
+		CREATE TABLE tbl_ban_list (
+			ip_addr VARCHAR(200) NOT NULL COMMENT 'IP address with subnet is supported',
+			PRIMARY KEY (ip_addr)
+		)`)
+	if err != nil {
+		return err
+	}
+
+	slog.Debug("[DB] Adding cron jobs for MRL and DNS ban list to tbl_cron")
+	_, err = db.Exec(`
+		INSERT INTO tbl_cron (
+			title,
+			slug,
+			description,
+			run_every
+		) VALUES (
+			'Fetch Rucknium\'s Node Data',
+			'fetch_rucknium_node_data',
+			'Fetch and store Rucknium\'s individual_node_data to database',
+			43200
+		), (
+			'Check MRL ban list',
+			'check_mrl_ban_list',
+			'Check monitored node IP addresses with Rucknium\'s node data',
+			300
+		), (
+			'Fetch static MRL ban list',
+			'fetch_static mrl_ban_list',
+			'Fetch and store MRL ban list to database',
+			172800
+		);`)
 	if err != nil {
 		return err
 	}

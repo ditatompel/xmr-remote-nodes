@@ -63,6 +63,11 @@ type Node struct {
 	CORSCapable     bool           `json:"cors" db:"cors_capable"`
 	IPv6Only        bool           `json:"ipv6_only" db:"ipv6_only"`
 	IPAddresses     string         `json:"ip_addresses" db:"ip_addresses"`
+	IsArchived      int            `json:"is_archived" db:"is_archived"`
+	// Rucknium's node data
+	IsSpyNode         int `json:"is_spy_node" db:"is_spy_node"`                   // 0 = no, 1 = yes, 2 = not applied
+	MRLBanListEnabled int `json:"mrl_ban_list_enabled" db:"mrl_ban_list_enabled"` // 0 = no, 1 = yes, 2 = not applied
+	DNSBanListEnabled int `json:"dns_ban_list_enabled" db:"dns_ban_list_enabled"` // 0 = no, 1 = yes, 2 = not applied
 }
 
 // Get node from database by id
@@ -207,7 +212,11 @@ func (r *moneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 			last_check_status,
 			cors_capable,
 			ipv6_only,
-			ip_addresses
+			ip_addresses,
+			is_archived,
+			is_spy_node,
+			mrl_ban_list_enabled,
+			dns_ban_list_enabled
 		FROM
 			tbl_node
 		%s
