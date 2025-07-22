@@ -93,6 +93,8 @@ type QueryNodes struct {
 	CC       string `url:"cc,omitempty"`       // 2 letter country code
 	Status   int    `url:"status"`
 	CORS     string `url:"cors,omitempty"`
+	MRLBan   string `url:"mrlban,omitempty"`
+	DNSBan   string `url:"dnsban,omitempty"`
 }
 
 // toSQL generates SQL query from query parameters
@@ -134,6 +136,14 @@ func (q *QueryNodes) toSQL() (args []interface{}, where string) {
 	}
 	if q.CORS == "on" || q.CORS == "1" { // DEPRECATED: CORS = int is deprecated, use CORS = on" instead
 		wq = append(wq, "cors_capable = ?")
+		args = append(args, 1)
+	}
+	if q.MRLBan == "on" {
+		wq = append(wq, "mrl_ban_list_enabled = ?")
+		args = append(args, 1)
+	}
+	if q.DNSBan == "on" {
+		wq = append(wq, "dns_ban_list_enabled = ?")
 		args = append(args, 1)
 	}
 
