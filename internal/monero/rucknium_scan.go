@@ -173,7 +173,7 @@ func (r *moneroRepo) CheckMRLBan() error {
 			c := net.ParseIP(ip)
 			if c != nil && c.To4() == nil {
 				slog.Debug(fmt.Sprintf("[MRL] Skipping IPv6 address: %s", ip))
-				break
+				continue
 			}
 
 			if spyIPMap[ip] {
