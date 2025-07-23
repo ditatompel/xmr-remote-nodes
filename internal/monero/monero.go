@@ -87,14 +87,15 @@ func (r *moneroRepo) Node(id int) (Node, error) {
 // QueryNodes represents database query parameters
 type QueryNodes struct {
 	paging.Paging
-	Host     string `url:"host,omitempty"`
-	Nettype  string `url:"nettype,omitempty"`  // Can be empty string, "any", mainnet, stagenet, testnet.
-	Protocol string `url:"protocol,omitempty"` // Can be "any", tor, http, https. Default: "any"
-	CC       string `url:"cc,omitempty"`       // 2 letter country code
-	Status   int    `url:"status"`
-	CORS     string `url:"cors,omitempty"`
-	MRLBan   string `url:"mrlban,omitempty"`
-	DNSBan   string `url:"dnsban,omitempty"`
+	Host       string `url:"host,omitempty"`
+	Nettype    string `url:"nettype,omitempty"`  // Can be empty string, "any", mainnet, stagenet, testnet.
+	Protocol   string `url:"protocol,omitempty"` // Can be "any", tor, http, https. Default: "any"
+	CC         string `url:"cc,omitempty"`       // 2 letter country code
+	Status     int    `url:"status"`
+	CORS       string `url:"cors,omitempty"`
+	IsArchived int    `url:"archived,omitempty"`
+	MRLBan     string `url:"mrlban,omitempty"`
+	DNSBan     string `url:"dnsban,omitempty"`
 }
 
 // toSQL generates SQL query from query parameters
@@ -137,6 +138,10 @@ func (q *QueryNodes) toSQL() (args []interface{}, where string) {
 	if q.CORS == "on" || q.CORS == "1" { // DEPRECATED: CORS = int is deprecated, use CORS = on" instead
 		wq = append(wq, "cors_capable = ?")
 		args = append(args, 1)
+	}
+	if q.IsArchived != -1 {
+		wq = append(wq, "is_archived = ?")
+		args = append(args, q.IsArchived)
 	}
 	if q.MRLBan == "on" {
 		wq = append(wq, "mrl_ban_list_enabled = ?")
@@ -301,7 +306,7 @@ func (r *moneroRepo) Add(submitterIP, salt, protocol, hostname string, port uint
 
 	row, err := r.db.Query(`
 		SELECT
-			id
+			id, is_archived
 		FROM
 			tbl_node
 		WHERE
@@ -315,8 +320,24 @@ func (r *moneroRepo) Add(submitterIP, salt, protocol, hostname string, port uint
 	defer row.Close()
 
 	if row.Next() {
+		var (
+			id         int
+			isArchived int
+		)
+		if err := row.Scan(&id, &isArchived); err != nil {
+			return err
+		}
+
+		if isArchived == 1 {
+			_, err := r.db.Exec(`UPDATE tbl_node SET is_archived = 0 WHERE id = ?`, id)
+			if err != nil {
+				return errors.New("failed to update node status")
+			}
+			return nil
+		}
 		return errors.New("Node already monitored")
 	}
+
 	statusDb, _ := json.Marshal([5]int{2, 2, 2, 2, 2})
 	_, err = r.db.Exec(`
 		INSERT INTO tbl_node (
@@ -407,6 +428,17 @@ func (r *moneroRepo) Delete(id uint) error {
 		return err
 	}
 	if _, err := r.db.Exec(`DELETE FROM tbl_probe_log WHERE node_id = ?`, id); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// Archive node instead of deleteing the records (especially for spy nodes)
+// it could be useful somehow in the future.
+// https://github.com/ditatompel/xmr-remote-nodes/issues/191#issuecomment-3090599618
+func (r *moneroRepo) Archive(id uint) error {
+	if _, err := r.db.Exec(`UPDATE tbl_node SET is_archived = ? WHERE id = ?`, 1, id); err != nil {
 		return err
 	}
 

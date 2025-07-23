@@ -127,6 +127,10 @@ func (r *moneroRepo) GiveJob(acceptTor, acceptI2P, acceptIPv6 int) (Node, error)
 		args = append(args, 0)
 	}
 
+	// do not include archived node
+	wq = append(wq, "is_archived = ?")
+	args = append(args, 0)
+
 	if len(wq) > 0 {
 		where = "WHERE " + strings.Join(wq, " AND ")
 	}
@@ -363,8 +367,8 @@ func (r *moneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 	}
 
 	if avgUptime <= 0 && stats.TotalFetched > 300 {
-		fmt.Println("Deleting Monero node (0% uptime from > 300 records)")
-		if err := r.Delete(report.Node.ID); err != nil {
+		fmt.Println("Archiving Monero node (0% uptime from > 300 records)")
+		if err := r.Archive(report.Node.ID); err != nil {
 			slog.Warn(err.Error())
 		}
 	}

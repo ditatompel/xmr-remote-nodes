@@ -60,7 +60,7 @@ templ RemoteNodes(data monero.Nodes, countries []monero.Countries, q monero.Quer
 							<li><strong>Est. Fee</strong> here is just fee estimation / byte from <code class="code text-green-500 font-bold">get_fee_estimate</code> RPC call method.</li>
 							<li>Malicious actors who are running remote nodes <a href="/assets/img/node-tx-fee.jpg" rel="noopener" class="link" hx-boost="false">can still return a high fee if you are about to create a transaction.</a>.</li>
 							<li><strong class="font-extrabold text-2xl underline decoration-double decoration-2 decoration-pink-500">The best and safest way is running your own node!</strong></li>
-							<li>Nodes with 0% uptime within 1 month with more than 300 check attempts will be removed. You can always add your node again later.</li>
+							<li>Nodes with 0% uptime within 1 month with more than 300 check attempts will be archived. You can always add your node again later.</li>
 							<li>You can filter remote nodes by selecting <strong>nettype</strong>, <strong>protocol</strong>, <strong>country</strong>, <strong>tor</strong>, and <strong>online-status</strong> options.</li>
 							<li>If you want to add more remote nodes, you can do so on the <a href="/add-node" class="link">/add-node</a> page.</li>
 							<li>I deliberately cut the long Tor and I2P addresses, click the <span class="text-orange-300">👁 hostname...</span> to open more detailed information about the Node.</li>
@@ -494,6 +494,9 @@ templ NodeDetails(data monero.Node, logs monero.FetchLogs, q monero.QueryLogs, p
 					<div class="mt-5">
 						<h1 class="block font-extrabold text-4xl md:text-5xl lg:text-6xl text-neutral-200">
 							Monero Node #{ fmt.Sprintf("%d", data.ID) }
+							if data.IsArchived == 1 {
+								(Archived)
+							}
 						</h1>
 					</div>
 					<hr class="mt-6 border-orange-400"/>
