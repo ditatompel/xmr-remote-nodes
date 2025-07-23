@@ -157,6 +157,11 @@ func (r *cronRepo) execCron(slug string) {
 		if err := monero.New().CheckMRLBan(); err != nil {
 			slog.Error(fmt.Sprintf("[CRON] Error when running MRL check ban list: %s", err))
 		}
+	case "fetch_static_mrl_ban_list":
+		slog.Info(fmt.Sprintf("[CRON] Start running task: %s", slug))
+		if err := monero.New().FetchBoog900BanList(); err != nil {
+			slog.Error(fmt.Sprintf("[CRON] Failed to fetch static MRL ban list: %s", err))
+		}
 
 	}
 }
