@@ -270,6 +270,7 @@ func (r *moneroRepo) Add(submitterIP, salt, protocol, hostname string, port uint
 	ipv6_only := false
 
 	if !is_tor && !is_i2p {
+		// TODO: Find alt solution that return lookup IP to `netip.Addr` instead of `net.IP`.
 		hostIps, err := net.LookupIP(hostname)
 		if err != nil {
 			return err
@@ -287,6 +288,15 @@ func (r *moneroRepo) Add(submitterIP, salt, protocol, hostname string, port uint
 
 		ipAddr = hostIp.String()
 		ips = ip.SliceToString(hostIps)
+
+		banList, err := r.banList()
+		if err != nil {
+			return errors.New("Error finding ban list")
+		}
+
+		if isBannedIP(banList, hostIps) {
+			return errors.New("Cannot add node: host is in our ban list")
+		}
 	}
 
 	row, err := r.db.Query(`
