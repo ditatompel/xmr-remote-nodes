@@ -31,7 +31,7 @@ templ RemoteNodes(data monero.Nodes, countries []monero.Countries, q monero.Quer
 						<div class="flex">
 							<div class="ms-3">
 								<ul class="list-disc space-y-1 ps-5">
-									<li><strong>The MRL and DNS ban list</strong> features are still experimental and data is provided by <a href="https://moneronet.info/" target="_blank" class="external">Rucknium's Monero Network Scan</a>.</li>
+									<li><strong>The MRL and DNS ban list</strong> features are still experimental and data is provided by <a href="https://moneronet.info/" target="_blank" class="external">Rucknium's Monero Network Scan</a> and <a href="https://github.com/Boog900/monero-ban-list" target="_blank" rel="noopener" class="external">Boog900's Monero Ban List</a>.</li>
 									<li>Using a remote node with both MRL and DNS ban list enabled is better than using a remote node that does not have MRL and DNS ban list enabled.</li>
 									<li>If you find it difficult to choose a remote node from the list below, using the <a href="https://github.com/feather-wallet/feather-nodes/blob/master/nodes.yaml" target="_blank" rel="noopener" class="external">remote node used by Feather Wallet</a> is a good choice.</li>
 								</ul>
@@ -252,9 +252,16 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 				</thead>
 				<tbody>
 					for _, row := range data.Items {
-						<tr>
+						<tr
+							if row.IsSpyNode == 1 {
+								class="!bg-rose-900"
+							}
+						>
 							<td>
 								@cellHostPort(row.ID, row.Port, row.Hostname, row.IPAddresses, row.IsTor, row.IsI2P, row.IPv6Only)
+								if row.IsSpyNode == 1 {
+									<span class="font-bold text-white">⚠️Possibly Spy Node</span>
+								}
 							</td>
 							<td>
 								@fmtNettype(row.Nettype)
@@ -265,7 +272,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								@fmtProtocol(row.Protocol)
 								if row.CORSCapable {
 									<br/>
-									(CORS 💪)
+									(CORS)
 								}
 							</td>
 							if row.IsTor || row.IsI2P || row.IPv6Only || row.Nettype != "mainnet" {
@@ -358,6 +365,20 @@ templ Node(data monero.Node) {
 								<span class="badge bg-purple-800 mr-2">TOR</span>
 							}
 							@fmtNettype(data.Nettype)
+						</li>
+					</ul>
+				</dd>
+			</dl>
+		}
+		if data.IsSpyNode == 1 {
+			<dl class="flex flex-col sm:flex-row gap-1">
+				<dt class="min-w-40">
+					<span class="block text-white text-bold">Is Spy Node:</span>
+				</dt>
+				<dd>
+					<ul>
+						<li class="uppercase">
+							<span class="badge bg-rose-600 mr-2">YES</span>⚠️
 						</li>
 					</ul>
 				</dd>
@@ -457,6 +478,9 @@ templ Node(data monero.Node) {
 				</ul>
 			</dd>
 		</dl>
+		<div class="mt-2 bg-teal-800/30 text-sm text-white rounded-lg p-4">
+			Ban list data provided by <a href="https://moneronet.info/" target="_blank" class="external">Rucknium's Monero Network Scan</a> and <a href="https://github.com/Boog900/monero-ban-list" target="_blank" rel="noopener" class="external">Boog900's Monero Ban List</a>.
+		</div>
 	</div>
 }
 
