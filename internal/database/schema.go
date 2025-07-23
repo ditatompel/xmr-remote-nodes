@@ -399,7 +399,7 @@ func v6(db *DB) error {
 			300
 		), (
 			'Fetch static MRL ban list',
-			'fetch_static mrl_ban_list',
+			'fetch_static_mrl_ban_list',
 			'Fetch and store MRL ban list to database',
 			172800
 		);`)
