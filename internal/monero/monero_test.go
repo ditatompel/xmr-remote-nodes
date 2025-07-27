@@ -87,7 +87,7 @@ func TestQueryNodes_toSQL(t *testing.T) {
 				CORS:       "",
 			},
 			wantArgs:    []interface{}{"%test%", "%test%"},
-			wantWhere:   "WHERE (hostname LIKE ? OR ip_addr LIKE ?)",
+			wantWhere:   "WHERE (hostname LIKE ? OR ip_addresses LIKE ?)",
 			wantSortBy:  "last_checked",
 			wantSortDir: "DESC",
 		},
