@@ -103,7 +103,7 @@ func (q *QueryNodes) toSQL() (args []interface{}, where string) {
 	wq := []string{}
 
 	if q.Host != "" {
-		wq = append(wq, "(hostname LIKE ? OR ip_addr LIKE ?)")
+		wq = append(wq, "(hostname LIKE ? OR ip_addresses LIKE ?)")
 		args = append(args, "%"+q.Host+"%", "%"+q.Host+"%")
 	}
 	if slices.Contains([]string{"mainnet", "stagenet", "testnet"}, q.Nettype) {
