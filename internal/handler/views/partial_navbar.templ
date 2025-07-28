@@ -34,6 +34,13 @@ templ navbar(pageIdentifier string) {
 						}
 					>Remote Nodes</a>
 					<a
+						href="/remote-nodes/ban-list-enabled"
+						if pageIdentifier == "/remote-nodes/ban-list-enabled" {
+							class="active"
+							aria-current="page"
+						}
+					>Ban List Enabled 💪</a>
+					<a
 						href="/add-node"
 						if pageIdentifier == "/add-node" {
 							class="active"

@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-templ RemoteNodes(data monero.Nodes, countries []monero.Countries, q monero.QueryNodes, p paging.Pagination) {
+templ RemoteNodes(meta Meta, data monero.Nodes, countries []monero.Countries, q monero.QueryNodes, p paging.Pagination) {
 	<!-- Hero -->
 	<section class="relative overflow-hidden pt-6">
 		@heroGradient()
@@ -19,7 +19,7 @@ templ RemoteNodes(data monero.Nodes, countries []monero.Countries, q monero.Quer
 				<div class="text-center">
 					<!-- Title -->
 					<div class="mt-5">
-						<h1 class="block font-extrabold text-4xl md:text-5xl lg:text-6xl text-neutral-200">Public Monero Remote Nodes List</h1>
+						<h1 class="block font-extrabold text-4xl md:text-5xl lg:text-6xl text-neutral-200">{ meta.Title }</h1>
 					</div>
 					<!-- End Title -->
 					<div class="mt-5">
@@ -32,7 +32,7 @@ templ RemoteNodes(data monero.Nodes, countries []monero.Countries, q monero.Quer
 							<div class="ms-3">
 								<ul class="list-disc space-y-1 ps-5">
 									<li><strong>The MRL and DNS ban list</strong> features are still experimental and data is provided by <a href="https://moneronet.info/" target="_blank" class="external">Rucknium's Monero Network Scan</a> and <a href="https://github.com/Boog900/monero-ban-list" target="_blank" rel="noopener" class="external">Boog900's Monero Ban List</a>.</li>
-									<li>Using a remote node with both MRL and DNS ban list enabled is better than using a remote node that does not have MRL and DNS ban list enabled.</li>
+									<li>Using a <a href="/remote-nodes/ban-list-enabled" class="link">remote node with both MRL and DNS ban list enabled</a> is better than using a remote node that does not have MRL and DNS ban list enabled.</li>
 									<li>If you find it difficult to choose a remote node from the list below, using the <a href="https://github.com/feather-wallet/feather-nodes/blob/master/nodes.yaml" target="_blank" rel="noopener" class="external">remote node used by Feather Wallet</a> is a good choice.</li>
 									<li>If you are a <strong class="font-bold text-white">node operator</strong>, <a href="https://github.com/monero-project/meta/issues/1124" target="_blank" rel="noopener" class="external">Monero Research Lab (MRL) recommends</a> enabling <a href="https://github.com/Boog900/monero-ban-list" target="_blank" rel="noopener" class="external">the ban list</a> of suspected spy node IP addresses (see the <a href="https://raw.githubusercontent.com/Boog900/monero-ban-list/main/ban_list.txt" target="_blank" rel="noopener" class="external">ban_list.txt</a> file). And, don't forget to use <code class="code text-green-500 font-bold">--enable-dns-blocklist</code> flag (or <code class="code text-green-500 font-bold">enable-dns-blocklist=1</code> { "if" } using config file)  when starting <code class="code">monerod</code> 👌.</li>
 								</ul>
@@ -46,7 +46,7 @@ templ RemoteNodes(data monero.Nodes, countries []monero.Countries, q monero.Quer
 	<!-- End Hero -->
 	<section class="flex flex-col max-w-6xl mx-auto mb-10">
 		<div class="min-w-full inline-block align-middle">
-			@TableNodes(data, countries, q, p)
+			@TableNodes(meta, data, countries, q, p)
 		</div>
 	</section>
 	<section id="page-info" class="max-w-4xl mx-auto px-4 mb-10">
@@ -79,14 +79,53 @@ templ RemoteNodes(data monero.Nodes, countries []monero.Countries, q monero.Quer
 	</div>
 }
 
-templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.QueryNodes, p paging.Pagination) {
+templ BanListEnabledNodes(meta Meta, data monero.Nodes, countries []monero.Countries, q monero.QueryNodes, p paging.Pagination) {
+	<!-- Hero -->
+	<section class="relative overflow-hidden pt-6">
+		@heroGradient()
+		<div class="relative z-10">
+			<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+				<div class="text-center">
+					<!-- Title -->
+					<div class="mt-5">
+						<h1 class="block font-extrabold text-4xl md:text-5xl lg:text-6xl text-neutral-200">{ meta.Title }</h1>
+					</div>
+					<!-- End Title -->
+					<div class="mt-5">
+						<p class="text-lg text-neutral-300">Monero remote nodes that <a href="https://github.com/monero-project/meta/issues/1124" target="_blank" rel="noopener" class="external">follow the Monero Research Lab (MRL) recommendations</a> by banning spy node IP addresses from connecting to their node and enabling DNS blocklist. These nodes are <strong>preferred over other nodes on the clearnet</strong> that do not enable MRL and DNS ban at all.</p>
+					</div>
+				</div>
+				<div class="space-y-5 mt-5">
+					<div class="bg-teal-800/30 border-t-2 border-teal-500 rounded-lg p-4">
+						<div class="flex">
+							<div class="ms-3">
+								<ul class="list-disc space-y-1 ps-5">
+									<li><strong>The MRL and DNS ban list</strong> features are still experimental and data is provided by <a href="https://moneronet.info/" target="_blank" class="external">Rucknium's Monero Network Scan</a> and <a href="https://github.com/Boog900/monero-ban-list" target="_blank" rel="noopener" class="external">Boog900's Monero Ban List</a>.</li>
+									<li>MRL and DNS ban list information currently applies only to mainnet nodes using IPv4. These indicators are not applied for nodes from I2P or Tor network.</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<!-- End Hero -->
+	<section class="flex flex-col max-w-6xl mx-auto mb-10">
+		<div class="min-w-full inline-block align-middle">
+			@TableNodes(meta, data, countries, q, p)
+		</div>
+	</section>
+}
+
+templ TableNodes(meta Meta, data monero.Nodes, countries []monero.Countries, q monero.QueryNodes, p paging.Pagination) {
 	<div id="tbl_nodes" class="bg-neutral-800 border border-neutral-700 rounded-xl shadow-sm overflow-hidden">
 		<div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-neutral-700">
-			@DtRowPerPage("/remote-nodes", "#tbl_nodes", q.Limit, q)
+			@DtRowPerPage(meta.Identifier, "#tbl_nodes", q.Limit, q)
 			<div>
-				@DtRefreshInterval("/remote-nodes", "#tbl_nodes", q.Refresh, q)
+				@DtRefreshInterval(meta.Identifier, "#tbl_nodes", q.Refresh, q)
 			</div>
-			@DtReload("/remote-nodes", "#tbl_nodes", q)
+			@DtReload(meta.Identifier, "#tbl_nodes", q)
 		</div>
 		<div class="overflow-x-auto">
 			<table class="dt">
@@ -100,8 +139,8 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 						<th scope="col">Country</th>
 						<th scope="col">Status</th>
 						<th scope="col">Estimate Fee</th>
-						@DtThSort("/remote-nodes", "#tbl_nodes", "Uptime", "uptime", q.SortBy, q.SortDirection, q)
-						@DtThSort("/remote-nodes", "#tbl_nodes", "Check", "last_checked", q.SortBy, q.SortDirection, q)
+						@DtThSort(meta.Identifier, "#tbl_nodes", "Uptime", "uptime", q.SortBy, q.SortDirection, q)
+						@DtThSort(meta.Identifier, "#tbl_nodes", "Check", "last_checked", q.SortBy, q.SortDirection, q)
 					</tr>
 					<tr>
 						<td>
@@ -113,7 +152,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								autocomplete="off"
 								class="frameless"
 								placeholder="Filter Host / IP"
-								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"host"})) }
+								hx-get={ fmt.Sprintf("%s?%s", meta.Identifier, paging.EncodedQuery(q, []string{"host"})) }
 								hx-push-url="false"
 								hx-trigger="keyup changed delay:0.4s"
 								hx-target="#tbl_nodes"
@@ -126,7 +165,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								name="nettype"
 								class="frameless"
 								autocomplete="off"
-								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"nettype"})) }
+								hx-get={ fmt.Sprintf("%s?%s", meta.Identifier, paging.EncodedQuery(q, []string{"nettype"})) }
 								hx-trigger="change"
 								hx-push-url="false"
 								hx-target="#tbl_nodes"
@@ -144,7 +183,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								name="protocol"
 								class="frameless"
 								autocomplete="off"
-								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"protocol"})) }
+								hx-get={ fmt.Sprintf("%s?%s", meta.Identifier, paging.EncodedQuery(q, []string{"protocol"})) }
 								hx-trigger="change"
 								hx-push-url="false"
 								hx-target="#tbl_nodes"
@@ -162,11 +201,12 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								name="spynode"
 								class="frameless"
 								autocomplete="off"
-								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"spynode"})) }
+								hx-get={ fmt.Sprintf("%s?%s", meta.Identifier, paging.EncodedQuery(q, []string{"spynode"})) }
 								hx-trigger="change"
 								hx-push-url="false"
 								hx-target="#tbl_nodes"
 								hx-swap="outerHTML"
+								disabled?={ meta.Identifier == "/remote-nodes/ban-list-enabled" }
 							>
 								for _, opt := range spyNodeOpts {
 									<option value={ fmt.Sprintf("%d", opt.Code) } selected?={ opt.Code == q.IsSpyNode }>{ opt.Text }</option>
@@ -181,12 +221,13 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 									name="mrlban"
 									autocomplete="off"
 									checked?={ q.MRLBan == "on" }
-									hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"mrlban"})) }
+									hx-get={ fmt.Sprintf("%s?%s", meta.Identifier, paging.EncodedQuery(q, []string{"mrlban"})) }
 									hx-trigger="change"
 									hx-push-url="false"
 									hx-target="#tbl_nodes"
 									hx-swap="outerHTML"
 									class="shrink-0 mt-0.5 text-orange-400 bg-neutral-800 border-neutral-700 rounded focus:ring-0 checked:bg-orange-400 checked:border-orange-400 focus:ring-offset-orange-500"
+									disabled?={ meta.Identifier == "/remote-nodes/ban-list-enabled" }
 								/>
 								<label for="mrlban" class="text-sm ms-1 text-neutral-400">MRL</label>
 							</div>
@@ -199,12 +240,13 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 									name="dnsban"
 									autocomplete="off"
 									checked?={ q.DNSBan == "on" }
-									hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"dnsban"})) }
+									hx-get={ fmt.Sprintf("%s?%s", meta.Identifier, paging.EncodedQuery(q, []string{"dnsban"})) }
 									hx-trigger="change"
 									hx-push-url="false"
 									hx-target="#tbl_nodes"
 									hx-swap="outerHTML"
 									class="shrink-0 mt-0.5 text-orange-400 bg-neutral-800 border-neutral-700 rounded focus:ring-0 checked:bg-orange-400 checked:border-orange-400 focus:ring-offset-orange-500"
+									disabled?={ meta.Identifier == "/remote-nodes/ban-list-enabled" }
 								/>
 								<label for="dnsban" class="text-sm ms-1 text-neutral-400">DNS</label>
 							</div>
@@ -215,11 +257,12 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								name="cc"
 								class="frameless"
 								autocomplete="off"
-								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"cc"})) }
+								hx-get={ fmt.Sprintf("%s?%s", meta.Identifier, paging.EncodedQuery(q, []string{"cc"})) }
 								hx-trigger="change"
 								hx-push-url="false"
 								hx-target="#tbl_nodes"
 								hx-swap="outerHTML"
+								disabled?={ meta.Identifier == "/remote-nodes/ban-list-enabled" }
 							>
 								<option value="any">ANY</option>
 								for _, country := range countries {
@@ -237,7 +280,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								name="status"
 								class="frameless"
 								autocomplete="off"
-								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"status"})) }
+								hx-get={ fmt.Sprintf("%s?%s", meta.Identifier, paging.EncodedQuery(q, []string{"status"})) }
 								hx-trigger="change"
 								hx-push-url="false"
 								hx-target="#tbl_nodes"
@@ -256,7 +299,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 									name="cors"
 									autocomplete="off"
 									checked?={ q.CORS == "on" }
-									hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"cors"})) }
+									hx-get={ fmt.Sprintf("%s?%s", meta.Identifier, paging.EncodedQuery(q, []string{"cors"})) }
 									hx-trigger="change"
 									hx-push-url="false"
 									hx-target="#tbl_nodes"
@@ -341,7 +384,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 		</div>
 		<div class="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-neutral-700">
 			@DtRowCount(p.CurrentPage, data.RowsPerPage, data.TotalRows)
-			@DtPagination("/remote-nodes", "#tbl_nodes", q, p)
+			@DtPagination(meta.Identifier, "#tbl_nodes", q, p)
 		</div>
 	</div>
 }

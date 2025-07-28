@@ -22,7 +22,7 @@ type Meta struct {
 	Keywords    string
 	Robots      string
 	Permalink   string
-	Identifier  string
+	Identifier  string // The value SHOULD the same as URL path
 }
 
 func base(m Meta) templ.Component {

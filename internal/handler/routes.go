@@ -5,6 +5,7 @@ func (s *fiberServer) Routes() {
 	s.App.Get("/robots.txt", s.robotsTxtHandler)
 	s.App.Get("/remote-nodes", s.remoteNodesHandler)
 	s.App.Get("/remote-nodes/id/:id", s.nodeHandler)
+	s.App.Get("/remote-nodes/ban-list-enabled", s.banListEnabledHandler)
 	s.App.Get("/add-node", s.addNodeHandler)
 	s.App.Put("/add-node", s.addNodeHandler)
 

@@ -180,13 +180,79 @@ func (s *fiberServer) remoteNodesHandler(c *fiber.Ctx) error {
 
 	// handle request from HTMX
 	if c.Get("HX-Target") == "tbl_nodes" {
-		cmp := views.BlankLayout(views.TableNodes(nodes, countries, query, pagination))
+		cmp := views.BlankLayout(views.TableNodes(p, nodes, countries, query, pagination))
 		handler := adaptor.HTTPHandler(templ.Handler(cmp))
 		return handler(c)
 	}
 
 	c.Set("Link", fmt.Sprintf(`<%s>; rel="canonical"`, p.Permalink))
-	home := views.BaseLayout(p, views.RemoteNodes(nodes, countries, query, pagination))
+	home := views.BaseLayout(p, views.RemoteNodes(p, nodes, countries, query, pagination))
+	handler := adaptor.HTTPHandler(templ.Handler(home))
+
+	return handler(c)
+}
+
+// Render Remote Node With Ban List Enabled
+func (s *fiberServer) banListEnabledHandler(c *fiber.Ctx) error {
+	p := views.Meta{
+		Title:       "Ban List Enabled Nodes",
+		Description: "Monero remote nodes that follow the Monero Research Lab (MRL) recommendations by banning spy node IP addresses from connecting to their node and enabling DNS blocklist.",
+		Keywords:    "monero remote nodes,public monero nodes,monero public nodes,monero wallet,tor monero node,monero cors rpc",
+		Robots:      "INDEX,FOLLOW",
+		Permalink:   s.url + "/remote-nodes/ban-list-enabled",
+		Identifier:  "/remote-nodes/ban-list-enabled",
+	}
+
+	moneroRepo := monero.New()
+	query := monero.QueryNodes{
+		Paging: paging.Paging{
+			Limit:         c.QueryInt("limit", 10), // rows per page
+			Page:          c.QueryInt("page", 1),
+			SortBy:        c.Query("sort_by", "last_checked"),
+			SortDirection: c.Query("sort_direction", "desc"),
+			Refresh:       c.Query("refresh"),
+		},
+		Host:       c.Query("host"),
+		Nettype:    c.Query("nettype", "any"),
+		Protocol:   c.Query("protocol", "any"),
+		CC:         c.Query("cc", "any"),
+		Status:     c.QueryInt("status", -1),
+		CORS:       c.Query("cors"),
+		IsArchived: c.QueryInt("archived", 0),
+		IsSpyNode:  0,
+		MRLBan:     "on",
+		DNSBan:     "on",
+	}
+
+	nodes, err := moneroRepo.Nodes(query)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
+
+	countries, err := moneroRepo.Countries()
+	if err != nil {
+		return c.JSON(fiber.Map{
+			"status":  "error",
+			"message": err.Error(),
+			"data":    nil,
+		})
+	}
+
+	pagination := paging.NewPagination(query.Page, nodes.TotalPages)
+
+	// handle request from HTMX
+	if c.Get("HX-Target") == "tbl_nodes" {
+		cmp := views.BlankLayout(views.TableNodes(p, nodes, countries, query, pagination))
+		handler := adaptor.HTTPHandler(templ.Handler(cmp))
+		return handler(c)
+	}
+
+	c.Set("Link", fmt.Sprintf(`<%s>; rel="canonical"`, p.Permalink))
+	home := views.BaseLayout(p, views.BanListEnabledNodes(p, nodes, countries, query, pagination))
 	handler := adaptor.HTTPHandler(templ.Handler(home))
 
 	return handler(c)
