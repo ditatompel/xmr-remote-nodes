@@ -16,7 +16,7 @@ var communityLinks = []link{
 	{Text: "sethforprivacy.com", URI: "https://sethforprivacy.com"},
 }
 
-type nodeStatus struct {
+type selectOpts struct {
 	Code int
 	Text string
 }
@@ -24,10 +24,20 @@ type nodeStatus struct {
 // nodeStatuses is a list of status and their text representation in the UI
 //
 // The "Status" filter select option in the UI is populated from this list.
-var nodeStatuses = []nodeStatus{
+var nodeStatuses = []selectOpts{
 	{-1, "ANY"},
 	{1, "Online"},
 	{0, "Offline"},
+}
+
+// spyNodeOpts is a list of possible spy node representation in the UI
+//
+// The "Spy Node" filter select option in the UI is populated from this list.
+var spyNodeOpts = []selectOpts{
+	{-1, "ANY"},
+	{0, "NO"},
+	{1, "YES"},
+	{2, "N/A"},
 }
 
 // refreshIntevals, nettypes, and protocols are used to populate the refresh

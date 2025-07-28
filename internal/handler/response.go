@@ -153,6 +153,7 @@ func (s *fiberServer) remoteNodesHandler(c *fiber.Ctx) error {
 		Status:     c.QueryInt("status", -1),
 		CORS:       c.Query("cors"),
 		IsArchived: c.QueryInt("archived", 0),
+		IsSpyNode:  c.QueryInt("spynode", -1),
 		MRLBan:     c.Query("mrlban"),
 		DNSBan:     c.Query("dnsban"),
 	}
@@ -290,6 +291,7 @@ func (s *fiberServer) nodesAPI(c *fiber.Ctx) error {
 		Status:     c.QueryInt("status", -1),
 		CORS:       c.Query("cors"),
 		IsArchived: c.QueryInt("archived", 0),
+		IsSpyNode:  c.QueryInt("spynode", -1),
 		MRLBan:     c.Query("mrlban"),
 		DNSBan:     c.Query("dnsban"),
 	}

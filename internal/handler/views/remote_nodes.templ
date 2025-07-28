@@ -95,6 +95,7 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 						<th scope="col">Host:Port</th>
 						<th scope="col">Nettype</th>
 						<th scope="col">Protocol</th>
+						<th scope="col">Spy Node</th>
 						<th scope="col">MRL Ban</th>
 						<th scope="col">DNS Ban</th>
 						<th scope="col">Country</th>
@@ -153,6 +154,23 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								<option value="">ANY</option>
 								for _, protocol := range protocols {
 									<option value={ fmt.Sprintf("%s", protocol) } selected?={ protocol == q.Protocol }>{ protocol }</option>
+								}
+							</select>
+						</td>
+						<td>
+							<select
+								id="spynode"
+								name="spynode"
+								class="frameless"
+								autocomplete="off"
+								hx-get={ fmt.Sprintf("%s?%s", "/remote-nodes", paging.EncodedQuery(q, []string{"spynode"})) }
+								hx-trigger="change"
+								hx-push-url="false"
+								hx-target="#tbl_nodes"
+								hx-swap="outerHTML"
+							>
+								for _, opt := range spyNodeOpts {
+									<option value={ fmt.Sprintf("%d", opt.Code) } selected?={ opt.Code == q.IsSpyNode }>{ opt.Text }</option>
 								}
 							</select>
 						</td>
@@ -274,6 +292,15 @@ templ TableNodes(data monero.Nodes, countries []monero.Countries, q monero.Query
 								if row.CORSCapable {
 									<br/>
 									(CORS)
+								}
+							</td>
+							<td>
+								if row.IsSpyNode == 1 {
+									<span class="font-semibold uppercase text-rose-500">YES</span>
+								} else if row.IsSpyNode == 0 {
+									<span class="font-semibold uppercase text-green-500">NO</span>
+								} else {
+									N/A
 								}
 							</td>
 							if row.IsTor || row.IsI2P || row.IPv6Only || row.Nettype != "mainnet" {

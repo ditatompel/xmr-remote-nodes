@@ -94,6 +94,7 @@ type QueryNodes struct {
 	Status     int    `url:"status"`
 	CORS       string `url:"cors,omitempty"`
 	IsArchived int    `url:"archived,omitempty"`
+	IsSpyNode  int    `url:"spynode"`
 	MRLBan     string `url:"mrlban,omitempty"`
 	DNSBan     string `url:"dnsban,omitempty"`
 }
@@ -142,6 +143,10 @@ func (q *QueryNodes) toSQL() (args []interface{}, where string) {
 	if q.IsArchived != -1 {
 		wq = append(wq, "is_archived = ?")
 		args = append(args, q.IsArchived)
+	}
+	if q.IsSpyNode != -1 {
+		wq = append(wq, "is_spy_node = ?")
+		args = append(args, q.IsSpyNode)
 	}
 	if q.MRLBan == "on" {
 		wq = append(wq, "mrl_ban_list_enabled = ?")
