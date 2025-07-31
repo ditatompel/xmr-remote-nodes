@@ -115,12 +115,32 @@ website and **my** `stagenet` and `testnet` public remote nodes.
 XMR Donation address:
 
 ```plain
-8BWYe6GzbNKbxe3D8mPkfFMQA2rViaZJFhWShhZTjJCNG6EZHkXRZCKHiuKmwwe4DXDYF8KKcbGkvNYaiRG3sNt7JhnVp7D
+82ez97EPriX6tnkL5fSv7u93aZV2gHWeMUc9hS3a8Dd6NxGWPZWhruGTFnNyJ4z1yWQMHgtA81i9h9vq7HWoKZLk9EzWryD
 ```
 
 ![](./internal/handler/views/assets/img/monerotip.png)
 
 Thank you!
+
+### View Only Wallet Details
+
+Primary Address:
+
+```
+48D1TAcsq4vMoRu8CNaDsPgvUR7SQ1B6TCXfBsJXAbPb7TjeNZbMhAMKatSA64XRTzFckyMcaF19U8Ejr9wy8iwnTCAUU8x
+```
+
+View Key:
+
+```
+f26d16b3ab8265a8ddd9db99f69cafeee9081555e67eb03a34778f0391962803
+```
+
+Restore height:
+
+```
+3457614 (2025-07-18)
+```
 
 ## License
 

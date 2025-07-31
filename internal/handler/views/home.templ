@@ -196,11 +196,12 @@ templ Home() {
 	<hr class="border-orange-400 mx-auto max-w-3xl"/>
 	<!-- Monero Donation Section -->
 	<section id="monero-donation" class="max-w-5xl px-4 py-10 sm:px-6 lg:px-8 mx-auto text-center">
+		<h2 class="font-semibold text-neutral-200 text-3xl">Donation</h2>
 		<div class="mx-auto flex w-full max-w-4xl flex-col md:flex-row items-center gap-2 md:gap-10">
 			<div class="md:basis-3/4">
 				<p>If you find this project useful, please consider making a donation to help cover the ongoing expenses. Your contribution will go towards ensuring the continued availability of <strong>this website</strong>, my <strong>stagenet</strong> and <strong>testnet</strong> public nodes.</p>
 				<label for="donate" class="block text-sm text-white font-medium my-2">XMR Donation address:</label>
-				<textarea id="donate" class="py-3 px-4 block w-full text-neutral-400 bg-neutral-900 border-neutral-700 rounded-lg text-sm focus:border-neutral-500 focus:ring-neutral-600" rows="3" readonly>8BWYe6GzbNKbxe3D8mPkfFMQA2rViaZJFhWShhZTjJCNG6EZHkXRZCKHiuKmwwe4DXDYF8KKcbGkvNYaiRG3sNt7JhnVp7D</textarea>
+				<textarea id="donate" class="py-3 px-4 block w-full text-neutral-400 bg-neutral-900 border-neutral-700 rounded-lg text-sm focus:border-neutral-500 focus:ring-neutral-600" rows="3" readonly>82ez97EPriX6tnkL5fSv7u93aZV2gHWeMUc9hS3a8Dd6NxGWPZWhruGTFnNyJ4z1yWQMHgtA81i9h9vq7HWoKZLk9EzWryD</textarea>
 				<button type="button" class="clipboard mt-2 py-2 px-3 inline-flex items-center gap-x-2 text-sm font-bold rounded-full border border-transparent bg-orange-600 text-white hover:bg-orange-500 focus:outline-none disabled:bg-green-600 disabled:opacity-60 disabled:pointer-events-none" data-clipboard-target="#donate" data-success-text="Donation Address Copied! 🤩">
 					Copy Donation Address
 				</button>
@@ -208,6 +209,45 @@ templ Home() {
 			<div class="md:basis-1/4">
 				<img src="/assets/img/monerotip.png" class="w-full pb-2" alt="ditatompel's monero address"/>
 				<p>Thank you so much! It means a lot to me. 🥰</p>
+			</div>
+		</div>
+		<div class="group flex flex-col text-center gap-2 mt-4">
+			<h3 class="font-semibold text-neutral-200 text-xl">View Only Wallet Details</h3>
+			<div>
+				<label for="primary-address" class="sr-only">Primary Address</label>
+				<div class="flex rounded-lg shadow-sm">
+					<span class="px-4 inline-flex items-center min-w-fit rounded-s-md border border-e-0 border-neutral-700 bg-neutral-700 text-sm">
+						<span class="text-sm text-neutral-400">Primary Address</span>
+					</span>
+					<input type="text" id="primary-address" name="primary-address" class="py-3 px-4 block w-full text-neutral-400 bg-neutral-900 border-neutral-700 shadow-sm rounded-0 text-sm focus:z-10 focus:border-orange-500 focus:ring-orange-500" value="48D1TAcsq4vMoRu8CNaDsPgvUR7SQ1B6TCXfBsJXAbPb7TjeNZbMhAMKatSA64XRTzFckyMcaF19U8Ejr9wy8iwnTCAUU8x" readonly/>
+					<button class="clipboard copy-input" data-clipboard-target="#primary-address">
+						Copy
+					</button>
+				</div>
+			</div>
+			<div>
+				<label for="view-key" class="sr-only">View Key</label>
+				<div class="flex rounded-lg shadow-sm">
+					<span class="px-4 inline-flex items-center min-w-fit rounded-s-md border border-e-0 border-neutral-700 bg-neutral-700 text-sm">
+						<span class="text-sm text-neutral-400">View Key</span>
+					</span>
+					<input type="text" id="view-key" name="view-key" class="py-3 px-4 block w-full text-neutral-400 bg-neutral-900 border-neutral-700 shadow-sm rounded-0 text-sm focus:z-10 focus:border-orange-500 focus:ring-orange-500" value="f26d16b3ab8265a8ddd9db99f69cafeee9081555e67eb03a34778f0391962803" readonly/>
+					<button class="clipboard copy-input" data-clipboard-target="#view-key">
+						Copy
+					</button>
+				</div>
+			</div>
+			<div>
+				<label for="restore-height" class="sr-only">Restore height</label>
+				<div class="flex rounded-lg shadow-sm">
+					<span class="px-4 inline-flex items-center min-w-fit rounded-s-md border border-e-0 border-neutral-700 bg-neutral-700 text-sm">
+						<span class="text-sm text-neutral-400">Restore Height</span>
+					</span>
+					<input type="text" id="restore-height" name="restore-height" class="py-3 px-4 block w-full text-neutral-400 bg-neutral-900 border-neutral-700 shadow-sm rounded-0 text-sm focus:z-10 focus:border-orange-500 focus:ring-orange-500" value="3457614" readonly/>
+					<button class="clipboard copy-input" data-clipboard-target="#restore-height">
+						Copy
+					</button>
+				</div>
 			</div>
 		</div>
 	</section>
