@@ -142,6 +142,8 @@ Restore height:
 3457614 (2025-07-18)
 ```
 
+> View only old wallet address can be found in [PR #201](https://github.com/ditatompel/xmr-remote-nodes/pull/201).
+
 ## License
 
 This project is licensed under [BSD-3-Clause](./LICENSE) license.
