@@ -85,8 +85,8 @@ See the [Makefile](./Makefile).
 - :white_check_mark: Use `a-h/templ` and `HTMX` instead of `Svelte`.
 - :white_check_mark: Accept I2P nodes.
 - :white_check_mark: Support Tor hidden service (beta, inform via HTTP header).
-- :hourglass: Integrate with [Rucknium's Monero Network Scan][rucknium-network-scan]
-- :hourglass: Implement ban by IP address using [Boog900's Monero Ban List][boog900-ban-list]
+- :white_check_mark: Integrate with [Rucknium's Monero Network Scan][rucknium-network-scan]
+- :white_check_mark: Implement ban by IP address using [Boog900's Monero Ban List][boog900-ban-list]
 - Use Go standard `net/http` instead of `fiber`.
 
 ## Acknowledgement
