@@ -360,8 +360,14 @@ func (r *moneroRepo) Add(submitterIP, salt, protocol, hostname string, port uint
 			last_checked,
 			last_check_status,
 			ip_addresses,
-			ipv6_only
+			ipv6_only,
+			is_spy_node,
+			mrl_ban_list_enabled,
+			dns_ban_list_enabled
 		) VALUES (
+			?,
+			?,
+			?,
 			?,
 			?,
 			?,
@@ -392,7 +398,10 @@ func (r *moneroRepo) Add(submitterIP, salt, protocol, hostname string, port uint
 		0,
 		string(statusDb),
 		ips,
-		ipv6_only)
+		ipv6_only,
+		2,
+		2,
+		2)
 	if err != nil {
 		return err
 	}
