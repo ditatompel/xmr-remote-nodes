@@ -13,7 +13,7 @@ require (
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/joho/godotenv v1.5.1
 	github.com/oschwald/geoip2-golang v1.13.0
-	github.com/spf13/cobra v1.9.1
+	github.com/spf13/cobra v1.10.1
 	golang.org/x/net v0.43.0
 )
 
@@ -27,7 +27,7 @@ require (
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/oschwald/maxminddb-golang v1.13.0 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/spf13/pflag v1.0.6 // indirect
+	github.com/spf13/pflag v1.0.9 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
