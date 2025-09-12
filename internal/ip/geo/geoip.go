@@ -30,28 +30,28 @@ type IPInfo struct {
 func Info(ipAddr string) (*IPInfo, error) {
 	ip := net.ParseIP(ipAddr)
 	if ip == nil {
-		return nil, errors.New("Invalid IP address")
+		return nil, errors.New("invalid IP address")
 	}
 	dbCity, err := geoip2.Open("./assets/geoip/GeoLite2-City.mmdb")
 	if err != nil {
-		return nil, errors.New("Cannot open GeoIP City database")
+		return nil, errors.New("cannot open GeoIP City database")
 	}
 	defer dbCity.Close()
 
 	dbAsn, err := geoip2.Open("./assets/geoip/GeoLite2-ASN.mmdb")
 	if err != nil {
-		return nil, errors.New("Cannot open GeoIP ASN database")
+		return nil, errors.New("cannot open GeoIP ASN database")
 	}
 	defer dbAsn.Close()
 
 	city, err := dbCity.City(ip)
 	if err != nil {
-		return nil, errors.New("Cannot read GeoIP City database")
+		return nil, errors.New("cannot read GeoIP City database")
 	}
 
 	asn, err := dbAsn.ASN(ip)
 	if err != nil {
-		return nil, errors.New("Cannot read GeoIP ASN database")
+		return nil, errors.New("cannot read GeoIP ASN database")
 	}
 
 	qip := IPInfo{

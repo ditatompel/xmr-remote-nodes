@@ -76,10 +76,10 @@ func (r *moneroRepo) Node(id int) (Node, error) {
 	err := r.db.Get(&node, `SELECT * FROM tbl_node WHERE id = ?`, id)
 	if err != nil && err != sql.ErrNoRows {
 		slog.Error(err.Error())
-		return node, errors.New("Can't get node information")
+		return node, errors.New("can't get node information")
 	}
 	if err == sql.ErrNoRows {
-		return node, errors.New("Node not found")
+		return node, errors.New("node not found")
 	}
 	return node, err
 }
@@ -252,17 +252,17 @@ func (r *moneroRepo) Nodes(q QueryNodes) (Nodes, error) {
 
 func (r *moneroRepo) Add(submitterIP, salt, protocol, hostname string, port uint) error {
 	if protocol != "http" && protocol != "https" {
-		return errors.New("Invalid protocol, must one of or HTTP/HTTPS")
+		return errors.New("invalid protocol, must one of or HTTP/HTTPS")
 	}
 
 	if port > 65535 || port < 1 {
-		return errors.New("Invalid port number")
+		return errors.New("invalid port number")
 	}
 
 	is_tor := false
 	if strings.HasSuffix(hostname, ".onion") {
 		if !validTorHostname(hostname) {
-			return errors.New("Invalid TOR v3 .onion hostname")
+			return errors.New("invalid TOR v3 .onion hostname")
 		}
 		is_tor = true
 	}
@@ -270,7 +270,7 @@ func (r *moneroRepo) Add(submitterIP, salt, protocol, hostname string, port uint
 	is_i2p := false
 	if strings.HasSuffix(hostname, ".i2p") {
 		if !validI2PHostname(hostname) {
-			return errors.New("Invalid I2P hostname")
+			return errors.New("invalid I2P hostname")
 		}
 		is_i2p = true
 	}
@@ -301,11 +301,11 @@ func (r *moneroRepo) Add(submitterIP, salt, protocol, hostname string, port uint
 
 		banList, err := r.banList()
 		if err != nil {
-			return errors.New("Error finding ban list")
+			return errors.New("error finding ban list")
 		}
 
 		if isBannedIP(banList, hostIps) {
-			return errors.New("Cannot add node: host is in our ban list")
+			return errors.New("cannot add node: host is in our ban list")
 		}
 	}
 
@@ -340,7 +340,7 @@ func (r *moneroRepo) Add(submitterIP, salt, protocol, hostname string, port uint
 			}
 			return nil
 		}
-		return errors.New("Node already monitored")
+		return errors.New("node already monitored")
 	}
 
 	statusDb, _ := json.Marshal([5]int{2, 2, 2, 2, 2})

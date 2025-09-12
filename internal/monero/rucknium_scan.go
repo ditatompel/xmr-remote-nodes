@@ -38,7 +38,7 @@ func (r *moneroRepo) FetchRuckniumNodeData() error {
 
 	if resp.StatusCode != 200 {
 		slog.Error("[MRL] Failed to fetch Rucknium's API")
-		return errors.New("Failed to fetch Rucknium's API")
+		return errors.New("failed to fetch Rucknium's API")
 	}
 
 	body, err := io.ReadAll(resp.Body)
@@ -126,7 +126,7 @@ func (r *moneroRepo) CheckMRLBan() error {
 	}
 
 	if len(mrlData) == 0 {
-		return errors.New("No Rucknium data found")
+		return errors.New("no Rucknium data found")
 	}
 
 	var nodes []Node

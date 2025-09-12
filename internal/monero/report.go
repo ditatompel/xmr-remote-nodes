@@ -213,7 +213,7 @@ func (p *ProbeReport) parseStatuses() string {
 // Process report data from probers
 func (r *moneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 	if report.Node.ID == 0 {
-		return errors.New("Invalid node")
+		return errors.New("invalid node")
 	}
 
 	now := time.Now()
