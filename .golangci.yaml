@@ -1,11 +1,26 @@
-linters-settings:
-  errcheck:
-    ignore: ""
-
-issues:
-  exclude-rules:
-    - path: frontend/embed.go
-      text: "pattern build/\\*: no matching files found"
-    - path: _test.go
-      linters:
-        - errcheck
+version: "2"
+linters:
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    rules:
+      - path: frontend/embed.go
+        text: 'pattern build/\*: no matching files found'
+      - linters:
+          - errcheck
+        path: _test.go
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

@@ -27,7 +27,7 @@ clients.
 
 To build the executable binaries, you need:
 
-- Go >= 1.23
+- Go >= 1.25
 - Bun >= 1.1.26
 - [a-h/templ][templ-repo] v0.3.924
 
