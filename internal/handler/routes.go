@@ -1,20 +1,20 @@
 package handler
 
 func (s *fiberServer) Routes() {
-	s.App.Get("/", s.homeHandler)
-	s.App.Get("/robots.txt", s.robotsTxtHandler)
-	s.App.Get("/remote-nodes", s.remoteNodesHandler)
-	s.App.Get("/remote-nodes/id/:id", s.nodeHandler)
-	s.App.Get("/remote-nodes/ban-list-enabled", s.banListEnabledHandler)
-	s.App.Get("/add-node", s.addNodeHandler)
-	s.App.Put("/add-node", s.addNodeHandler)
+	s.Get("/", s.homeHandler)
+	s.Get("/robots.txt", s.robotsTxtHandler)
+	s.Get("/remote-nodes", s.remoteNodesHandler)
+	s.Get("/remote-nodes/id/:id", s.nodeHandler)
+	s.Get("/remote-nodes/ban-list-enabled", s.banListEnabledHandler)
+	s.Get("/add-node", s.addNodeHandler)
+	s.Put("/add-node", s.addNodeHandler)
 
 	// This is temporary route to redirect old path to new one. Once search
 	// engine results updated to the new path, this route should be removed.
-	s.App.Get("/remote-nodes/logs", s.redirectLogs)
+	s.Get("/remote-nodes/logs", s.redirectLogs)
 
 	// V1 API routes
-	v1 := s.App.Group("/api/v1")
+	v1 := s.Group("/api/v1")
 
 	// these routes are public, they don't require a prober api key
 	v1.Get("/nodes", s.nodesAPI)
