@@ -3,6 +3,8 @@ package client
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -21,7 +23,7 @@ import (
 	"golang.org/x/net/proxy"
 )
 
-const RPCUserAgent = "ditatombot/0.0.2 (Monero RPC Monitoring; https://github.com/ditatompel/xmr-remote-nodes)"
+const RPCUserAgent = "ditatombot/0.0.3 (Monero RPC Monitoring; https://github.com/ditatompel/xmr-remote-nodes)"
 
 const (
 	errNoEndpoint         = errProber("no SERVER_ENDPOINT was provided")
@@ -217,7 +219,32 @@ func (p *proberClient) fetchNode(node monero.Node) (monero.Node, error) {
 	req.Header.Set("User-Agent", RPCUserAgent)
 	req.Header.Set("Origin", "https://xmr.ditatompel.com")
 
-	var client http.Client
+	sslIsInvalid := false
+
+	tlsConfig := &tls.Config{
+		InsecureSkipVerify: true,
+		VerifyConnection: func(c tls.ConnectionState) error {
+			opts := x509.VerifyOptions{
+				DNSName:       c.ServerName,
+				Intermediates: x509.NewCertPool(),
+			}
+			for _, cert := range c.PeerCertificates[1:] {
+				opts.Intermediates.AddCert(cert)
+			}
+			_, err := c.PeerCertificates[0].Verify(opts)
+			if err != nil {
+				// if verification fails, mark as invalid but do not terminate the connection
+				sslIsInvalid = true
+			}
+			return nil
+		},
+	}
+
+	transport := &http.Transport{
+		TLSClientConfig:   tlsConfig,
+		DisableKeepAlives: true,
+	}
+
 	var socks5 string
 
 	if p.acceptTor && node.IsTor {
@@ -231,15 +258,14 @@ func (p *proberClient) fetchNode(node monero.Node) (monero.Node, error) {
 		if err != nil {
 			return node, err
 		}
-		dialContext := func(ctx context.Context, network, addr string) (net.Conn, error) {
+		transport.DialContext = func(ctx context.Context, network, addr string) (net.Conn, error) {
 			return dialer.Dial(network, addr)
 		}
-		transport := &http.Transport{
-			DialContext:       dialContext,
-			DisableKeepAlives: true,
-		}
-		client.Transport = transport
-		client.Timeout = 60 * time.Second
+	}
+
+	client := http.Client{
+		Transport: transport,
+		Timeout:   60 * time.Second,
 	}
 
 	// reset the default node struct
@@ -292,7 +318,7 @@ func (p *proberClient) fetchNode(node monero.Node) (monero.Node, error) {
 	node.Height = reportNode.Height
 	node.Version = reportNode.Version
 
-	if resp.Header.Get("Access-Control-Allow-Origin") == "*" || resp.Header.Get("Access-Control-Allow-Origin") == "https://xmr.ditatompel.com" {
+	if !sslIsInvalid && (resp.Header.Get("Access-Control-Allow-Origin") == "*" || resp.Header.Get("Access-Control-Allow-Origin") == "https://xmr.ditatompel.com") {
 		node.CORSCapable = true
 	}
 
