@@ -80,6 +80,23 @@ func TestParseIPCIDRToPrefix(t *testing.T) {
 	}
 }
 
+// Single bench test:
+// go test ./internal/monero -bench parseIPCIDRToPrefix -benchmem -run=^$ -v
+func Benchmark_parseIPCIDRToPrefix(b *testing.B) {
+	inputs := []string{
+		"192.168.1.1",
+		"192.168.0.0/16",
+		"2001:db8::1",
+		"2001:db8::/32",
+	}
+
+	for i := 0; i < b.N; i++ {
+		for _, in := range inputs {
+			_, _ = parseIPCIDRToPrefix(in)
+		}
+	}
+}
+
 // Single test:
 // go test -race ./internal/monero -run=TestIsBannedIP -v
 func TestIsBannedIP(t *testing.T) {
