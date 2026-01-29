@@ -2,10 +2,84 @@ package monero
 
 import (
 	"net"
+	"net/netip"
 	"testing"
 )
 
-// Create test for func isBannedIP(banList []string, ips []net.IP) bool
+// Single test:
+// go test -race ./internal/monero -run=TestParseIPCIDRToPrefix -v
+func TestParseIPCIDRToPrefix(t *testing.T) {
+	tests := []struct {
+		name     string
+		input    string
+		wantOK   bool
+		wantPref netip.Prefix
+	}{
+		{
+			name:     "Plain IPv4",
+			input:    "192.168.1.1",
+			wantOK:   true,
+			wantPref: netip.MustParsePrefix("192.168.1.1/32"),
+		},
+		{
+			name:     "IPv4 CIDR",
+			input:    "192.168.1.0/24",
+			wantOK:   true,
+			wantPref: netip.MustParsePrefix("192.168.1.0/24"),
+		},
+		{
+			name:     "Plain IPv6",
+			input:    "2001:db8::1",
+			wantOK:   true,
+			wantPref: netip.MustParsePrefix("2001:db8::1/128"),
+		},
+		{
+			name:     "IPv6 CIDR",
+			input:    "2001:db8::/32",
+			wantOK:   true,
+			wantPref: netip.MustParsePrefix("2001:db8::/32"),
+		},
+		{
+			name:   "Invalid IP",
+			input:  "999.1.1.1",
+			wantOK: false,
+		},
+		{
+			name:   "Invalid CIDR",
+			input:  "192.168.1.1/33",
+			wantOK: false,
+		},
+		{
+			name:   "Commented string",
+			input:  "# Monero Research Lab spy node ban list",
+			wantOK: false,
+		},
+		{
+			name:   "Empty string",
+			input:  "",
+			wantOK: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, ok := parseIPCIDRToPrefix(tt.input)
+
+			if ok != tt.wantOK {
+				t.Fatalf("expected ok=%v, got %v", tt.wantOK, ok)
+			}
+
+			if !ok {
+				return
+			}
+
+			if got != tt.wantPref {
+				t.Errorf("expected prefix %v, got %v", tt.wantPref, got)
+			}
+		})
+	}
+}
+
 // Single test:
 // go test -race ./internal/monero -run=TestIsBannedIP -v
 func TestIsBannedIP(t *testing.T) {
@@ -15,6 +89,12 @@ func TestIsBannedIP(t *testing.T) {
 		inputIPs []net.IP
 		want     bool
 	}{
+		{
+			name:     "Commented string",
+			banList:  []string{"# Monero Research Lab spy node ban list"},
+			inputIPs: []net.IP{net.ParseIP("192.168.1.123")},
+			want:     false,
+		},
 		{
 			name:     "Empty ban list",
 			banList:  []string{},

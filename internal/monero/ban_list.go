@@ -30,6 +30,11 @@ func (r *moneroRepo) FetchBoog900BanList() error {
 	scanner := bufio.NewScanner(resp.Body)
 	for scanner.Scan() {
 		ip := scanner.Text()
+
+		if _, ok := parseIPCIDRToPrefix(ip); !ok {
+			continue
+		}
+
 		_, err := r.db.Exec(`INSERT INTO tbl_ban_list (ip_addr) VALUES (?)`, ip)
 		if err != nil {
 			slog.Error(fmt.Sprintf("[MRL] Failed to insert ip: %s", err))
@@ -74,14 +79,8 @@ func isBannedIP(banList []string, ips []net.IP) bool {
 	var prefixes []netip.Prefix
 
 	for _, entry := range banList {
-		// Try parsing as prefix first
-		if prefix, err := netip.ParsePrefix(entry); err == nil {
-			prefixes = append(prefixes, prefix)
-			continue
-		}
-
-		if addr, err := netip.ParseAddr(entry); err == nil {
-			prefixes = append(prefixes, netip.PrefixFrom(addr, addr.BitLen()))
+		if p, ok := parseIPCIDRToPrefix(entry); ok {
+			prefixes = append(prefixes, p)
 		}
 	}
 
@@ -108,4 +107,22 @@ func isBannedIP(banList []string, ips []net.IP) bool {
 	}
 
 	return false
+}
+
+// parseIPOrCIDRToPrefix parses a string as either:
+// - CIDR (IPv4 or IPv6)
+// - Plain IP (converted to /32 or /128)
+// Returns (prefix, true) if valid, otherwise (0, false)
+func parseIPCIDRToPrefix(s string) (netip.Prefix, bool) {
+	// Try parsing as prefix first
+	if p, err := netip.ParsePrefix(s); err == nil {
+		return p, true
+	}
+
+	// Try plain IP
+	if addr, err := netip.ParseAddr(s); err == nil {
+		return netip.PrefixFrom(addr, addr.BitLen()), true
+	}
+
+	return netip.Prefix{}, false
 }
