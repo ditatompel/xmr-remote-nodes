@@ -33,6 +33,7 @@ templ RemoteNodes(meta Meta, data monero.Nodes, countries []monero.Countries, q 
 								<ul class="list-disc space-y-1 ps-5">
 									<li><strong>The MRL and DNS ban list</strong> features are still experimental and data is provided by <a href="https://moneronet.info/" target="_blank" class="external">Rucknium's Monero Network Scan</a> and <a href="https://github.com/Boog900/monero-ban-list" target="_blank" rel="noopener" class="external">Boog900's Monero Ban List</a>.</li>
 									<li>Using a <a href="/remote-nodes/ban-list-enabled" class="link">remote node with both MRL and DNS ban list enabled</a> is better than using a remote node that does not have MRL and DNS ban list enabled.</li>
+									<li>MRL and DNS ban list information currently applies <strong>only to mainnet nodes using IPv4</strong>.</li>
 									<li>If you find it difficult to choose a remote node from the list below, using the <a href="https://github.com/feather-wallet/feather-nodes/blob/master/nodes.yaml" target="_blank" rel="noopener" class="external">remote node used by Feather Wallet</a> is a good choice.</li>
 									<li>If you are a <strong class="font-bold text-white">node operator</strong>, <a href="https://github.com/monero-project/meta/issues/1124" target="_blank" rel="noopener" class="external">Monero Research Lab (MRL) recommends</a> enabling <a href="https://github.com/Boog900/monero-ban-list" target="_blank" rel="noopener" class="external">the ban list</a> of suspected spy node IP addresses (see the <a href="https://raw.githubusercontent.com/Boog900/monero-ban-list/main/ban_list.txt" target="_blank" rel="noopener" class="external">ban_list.txt</a> file). And, don't forget to use <code class="code text-green-500 font-bold">--enable-dns-blocklist</code> flag (or <code class="code text-green-500 font-bold">enable-dns-blocklist=1</code> { "if" } using config file)  when starting <code class="code">monerod</code> 👌.</li>
 								</ul>
@@ -101,7 +102,8 @@ templ BanListEnabledNodes(meta Meta, data monero.Nodes, countries []monero.Count
 							<div class="ms-3">
 								<ul class="list-disc space-y-1 ps-5">
 									<li><strong>The MRL and DNS ban list</strong> features are still experimental and data is provided by <a href="https://moneronet.info/" target="_blank" class="external">Rucknium's Monero Network Scan</a> and <a href="https://github.com/Boog900/monero-ban-list" target="_blank" rel="noopener" class="external">Boog900's Monero Ban List</a>.</li>
-									<li>MRL and DNS ban list information currently applies only to mainnet nodes using IPv4. These indicators are not applied for nodes from I2P or Tor network.</li>
+									<li>MRL and DNS ban list information currently applies <strong>only to mainnet nodes using IPv4</strong>.</li>
+									<li>Due to <a href="https://github.com/monero-project/meta/issues/1124#issuecomment-3763801853" target="_blank" class="external">technical limitations</a>, nodes on the Tor or I2P networks are not included in this list. This does not mean that there are no Tor or I2P nodes that enable MRL and DNS ban lists. A small number of onion and I2P remote nodes are known to have clearnet IP addresses and have enabled MRL and DNS ban lists <a href="https://github.com/feather-wallet/feather-nodes/blob/master/nodes.yaml" target="_blank" class="external">(Feather Wallet Nodes)</a>.</li>
 								</ul>
 							</div>
 						</div>
