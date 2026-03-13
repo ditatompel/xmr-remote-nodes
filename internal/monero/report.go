@@ -366,8 +366,8 @@ func (r *moneroRepo) ProcessJob(report ProbeReport, proberId int64) error {
 		}
 	}
 
-	if avgUptime <= 0 && stats.TotalFetched > 300 {
-		fmt.Println("Archiving Monero node (0% uptime from > 300 records)")
+	if avgUptime <= 0 && stats.TotalFetched > 50 {
+		fmt.Println("Archiving Monero node (0% uptime from > 50 records)")
 		if err := r.Archive(report.Node.ID); err != nil {
 			slog.Warn(err.Error())
 		}
