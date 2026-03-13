@@ -3,7 +3,7 @@ module github.com/ditatompel/xmr-remote-nodes
 go 1.25.0
 
 require (
-	github.com/a-h/templ v0.3.977
+	github.com/a-h/templ v0.3.1001
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/gofiber/fiber/v2 v2.52.12
 	github.com/google/go-querystring v1.2.0
