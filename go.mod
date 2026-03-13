@@ -1,8 +1,6 @@
 module github.com/ditatompel/xmr-remote-nodes
 
-go 1.24.0
-
-toolchain go1.24.1
+go 1.25.0
 
 require (
 	github.com/a-h/templ v0.3.977
@@ -14,7 +12,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/oschwald/geoip2-golang v1.13.0
 	github.com/spf13/cobra v1.10.2
-	golang.org/x/net v0.50.0
+	golang.org/x/net v0.51.0
 )
 
 require (
