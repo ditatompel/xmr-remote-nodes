@@ -12,7 +12,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/oschwald/geoip2-golang v1.13.0
 	github.com/spf13/cobra v1.10.2
-	golang.org/x/net v0.57.0
+	golang.org/x/net v0.58.0
 )
 
 require (
