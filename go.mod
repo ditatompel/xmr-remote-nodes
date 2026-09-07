@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	github.com/a-h/templ v0.3.1020
-	github.com/go-sql-driver/mysql v1.10.0
+	github.com/go-sql-driver/mysql v1.10.1
 	github.com/gofiber/fiber/v2 v2.52.14
 	github.com/google/go-querystring v1.2.0
 	github.com/google/uuid v1.6.0
