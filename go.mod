@@ -1,6 +1,6 @@
 module github.com/ditatompel/xmr-remote-nodes
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/a-h/templ v0.3.1020
@@ -12,7 +12,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/oschwald/geoip2-golang v1.13.0
 	github.com/spf13/cobra v1.10.2
-	golang.org/x/net v0.57.0
+	golang.org/x/net v0.62.0
 )
 
 require (
@@ -29,5 +29,5 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	golang.org/x/sys v0.47.0 // indirect
+	golang.org/x/sys v0.49.0 // indirect
 )
